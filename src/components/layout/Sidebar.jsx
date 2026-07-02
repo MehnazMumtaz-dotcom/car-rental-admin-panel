@@ -40,13 +40,23 @@ export default function Sidebar() {
   const [openProfile, setOpenProfile] = useState(false);
   const profileRef = useRef(null);
 
-  // ✅ FIX 1: Mobile pe default sidebar close
+  // ✅ FIX 1: App load pe mobile sidebar closed
   useEffect(() => {
     if (isMobile && sidebarOpen) {
       toggleSidebar();
     }
+    // eslint-disable-next-line
   }, [isMobile]);
 
+  // ✅ FIX 2: Route change pe auto close (NEW 🔥)
+  useEffect(() => {
+    if (isMobile && sidebarOpen) {
+      toggleSidebar();
+    }
+    // eslint-disable-next-line
+  }, [location]);
+
+  // outside click profile close
   useEffect(() => {
     const handleClick = (e) => {
       if (profileRef.current && !profileRef.current.contains(e.target)) {
@@ -63,7 +73,7 @@ export default function Sidebar() {
     navigate("/login", { replace: true });
   };
 
-  // ✅ FIX 2: Link click pe mobile sidebar close
+  // ✅ FIX 3: Click pe close
   const handleItemClick = () => {
     if (isMobile && sidebarOpen) {
       toggleSidebar();
@@ -149,7 +159,7 @@ export default function Sidebar() {
                 path={item.path}
                 open={sidebarOpen}
                 active={active}
-                onClick={handleItemClick} // ✅ added
+                onClick={handleItemClick}
               />
             );
           })}
