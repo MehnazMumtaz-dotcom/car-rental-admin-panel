@@ -13,6 +13,9 @@ export const useUIStore = create((set, get) => ({
     });
   },
 
+  // ✅ NEW (IMPORTANT 🔥)
+  setSidebarOpen: (value) => set({ sidebarOpen: value }),
+
   toggleSidebar: () => {
     const { sidebarOpen } = get();
     set({ sidebarOpen: !sidebarOpen });
@@ -27,39 +30,40 @@ export const useUIStore = create((set, get) => ({
       set({ sidebarOpen: false });
     }
   },
-setTheme: (theme) => {
-  const root = document.documentElement;
 
-  root.classList.remove("dark");
+  setTheme: (theme) => {
+    const root = document.documentElement;
 
-  if (window.__themeListener) {
-    window.matchMedia("(prefers-color-scheme: dark)")
-      .removeEventListener("change", window.__themeListener);
-    window.__themeListener = null;
+    root.classList.remove("dark");
+
+    if (window.__themeListener) {
+      window.matchMedia("(prefers-color-scheme: dark)")
+        .removeEventListener("change", window.__themeListener);
+      window.__themeListener = null;
+    }
+
+    if (theme === "dark") {
+      root.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+    } 
+    else if (theme === "light") {
+      localStorage.setItem("theme", "light");
+    } 
+    else {
+      const media = window.matchMedia("(prefers-color-scheme: dark)");
+
+      const applySystemTheme = () => {
+        root.classList.toggle("dark", media.matches);
+      };
+
+      applySystemTheme();
+
+      media.addEventListener("change", applySystemTheme);
+      window.__themeListener = applySystemTheme;
+
+      localStorage.setItem("theme", "system");
+    }
+
+    set({ theme });
   }
-
-  if (theme === "dark") {
-    root.classList.add("dark");
-    localStorage.setItem("theme", "dark");
-  } 
-  else if (theme === "light") {
-    localStorage.setItem("theme", "light");
-  } 
-  else {
-    const media = window.matchMedia("(prefers-color-scheme: dark)");
-
-    const applySystemTheme = () => {
-      root.classList.toggle("dark", media.matches);
-    };
-
-    applySystemTheme();
-
-    media.addEventListener("change", applySystemTheme);
-    window.__themeListener = applySystemTheme;
-
-    localStorage.setItem("theme", "system");
-  }
-
-  set({ theme });
-}
 }));

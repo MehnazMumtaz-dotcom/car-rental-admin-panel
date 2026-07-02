@@ -29,6 +29,7 @@ export default function Sidebar() {
   const {
     sidebarOpen,
     toggleSidebar,
+    setSidebarOpen, // ✅ NEW
     theme,
     setTheme,
     isMobile,
@@ -42,18 +43,16 @@ export default function Sidebar() {
 
   // ✅ FIX 1: App load pe mobile sidebar closed
   useEffect(() => {
-    if (isMobile && sidebarOpen) {
-      toggleSidebar();
+    if (isMobile) {
+      setSidebarOpen(false);
     }
-    // eslint-disable-next-line
   }, [isMobile]);
 
-  // ✅ FIX 2: Route change pe auto close (NEW 🔥)
+  // ✅ FIX 2: Route change pe auto close
   useEffect(() => {
-    if (isMobile && sidebarOpen) {
-      toggleSidebar();
+    if (isMobile) {
+      setSidebarOpen(false);
     }
-    // eslint-disable-next-line
   }, [location]);
 
   // outside click profile close
@@ -75,8 +74,8 @@ export default function Sidebar() {
 
   // ✅ FIX 3: Click pe close
   const handleItemClick = () => {
-    if (isMobile && sidebarOpen) {
-      toggleSidebar();
+    if (isMobile) {
+      setSidebarOpen(false);
     }
   };
 
@@ -95,7 +94,7 @@ export default function Sidebar() {
     <>
       {sidebarOpen && (
         <div
-          onClick={toggleSidebar}
+          onClick={() => setSidebarOpen(false)} // ✅ FIX
           className="fixed inset-0 bg-black/40 z-40 md:hidden"
         />
       )}
@@ -111,7 +110,6 @@ export default function Sidebar() {
       >
         {/* LOGO */}
         <div className="flex items-center justify-between px-4 py-5 border-b border-secondaryLight">
-          
           <div
             className={`flex items-center ${
               sidebarOpen ? "gap-2" : "justify-center w-full"
@@ -133,7 +131,7 @@ export default function Sidebar() {
 
           <div className="hidden md:block">
             <button
-              onClick={toggleSidebar}
+              onClick={toggleSidebar} // ✅ desktop pe toggle sahi hai
               className="p-1 rounded hover:bg-secondaryLight"
             >
               {sidebarOpen ? (
@@ -201,7 +199,6 @@ export default function Sidebar() {
 
           {openProfile && (
             <div className="absolute bottom-full left-2 right-2 mb-2 bg-white text-black rounded-xl shadow-xl p-4 z-50">
-              
               <div className="mb-3">
                 <p className="font-semibold text-sm">
                   {user?.name || "Admin User"}
@@ -215,15 +212,30 @@ export default function Sidebar() {
                 <p className="text-xs text-gray-400 mb-2">Appearance</p>
 
                 <div className="flex bg-gray-100 rounded-lg p-1">
-                  <button onClick={() => setTheme("light")} className={`flex-1 py-1 rounded ${theme === "light" ? "bg-white shadow" : ""}`}>
+                  <button
+                    onClick={() => setTheme("light")}
+                    className={`flex-1 py-1 rounded ${
+                      theme === "light" ? "bg-white shadow" : ""
+                    }`}
+                  >
                     <Sun size={14} />
                   </button>
 
-                  <button onClick={() => setTheme("dark")} className={`flex-1 py-1 rounded ${theme === "dark" ? "bg-white shadow" : ""}`}>
+                  <button
+                    onClick={() => setTheme("dark")}
+                    className={`flex-1 py-1 rounded ${
+                      theme === "dark" ? "bg-white shadow" : ""
+                    }`}
+                  >
                     <Moon size={14} />
                   </button>
 
-                  <button onClick={() => setTheme("system")} className={`flex-1 py-1 rounded ${theme === "system" ? "bg-white shadow" : ""}`}>
+                  <button
+                    onClick={() => setTheme("system")}
+                    className={`flex-1 py-1 rounded ${
+                      theme === "system" ? "bg-white shadow" : ""
+                    }`}
+                  >
                     <Monitor size={14} />
                   </button>
                 </div>
