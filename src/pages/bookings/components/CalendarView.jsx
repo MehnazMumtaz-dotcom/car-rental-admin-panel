@@ -1,17 +1,12 @@
 import React, { useMemo } from "react";
-
-// ✅ NEW IMPORT (Phase 3)
 import BookingCard from "./BookingCard";
 
-// helper: get days in month
-const getDaysInMonth = (year, month) => {
-  return new Date(year, month + 1, 0).getDate();
-};
+// helpers
+const getDaysInMonth = (year, month) =>
+  new Date(year, month + 1, 0).getDate();
 
-// helper: first day of month (0 = Sun)
-const getFirstDay = (year, month) => {
-  return new Date(year, month, 1).getDay();
-};
+const getFirstDay = (year, month) =>
+  new Date(year, month, 1).getDay();
 
 export default function CalendarView({ currentDate, view }) {
   const year = currentDate.getFullYear();
@@ -23,20 +18,12 @@ export default function CalendarView({ currentDate, view }) {
 
     const days = [];
 
-    // empty slots before month start
-    for (let i = 0; i < firstDay; i++) {
-      days.push(null);
-    }
-
-    // actual dates
-    for (let i = 1; i <= daysInMonth; i++) {
-      days.push(i);
-    }
+    for (let i = 0; i < firstDay; i++) days.push(null);
+    for (let i = 1; i <= daysInMonth; i++) days.push(i);
 
     return days;
   }, [year, month]);
 
-  // WEEKLY VIEW
   const weeklyDays = useMemo(() => {
     const start = new Date(currentDate);
     start.setDate(currentDate.getDate() - currentDate.getDay());
@@ -50,97 +37,90 @@ export default function CalendarView({ currentDate, view }) {
     return week;
   }, [currentDate]);
 
-  // ✅ PHASE 3 — DUMMY BOOKINGS DATA
+  // dummy bookings
   const bookings = [
-    {
-      id: 1,
-      title: "Ali - Corolla",
-      start: 3,
-      end: 5,
-      status: "ongoing",
-    },
-    {
-      id: 2,
-      title: "Sara - Civic",
-      start: 5,
-      end: 7,
-      status: "upcoming",
-    },
-    {
-      id: 3,
-      title: "Ahmed - Alto",
-      start: 5,
-      end: 6,
-      status: "conflict",
-    },
+    { id: 1, title: "Ali - Corolla", start: 3, end: 5, status: "ongoing" },
+    { id: 2, title: "Sara - Civic", start: 5, end: 7, status: "upcoming" },
+    { id: 3, title: "Ahmed - Alto", start: 5, end: 6, status: "conflict" },
   ];
 
-  // ✅ PHASE 3 — HELPER FUNCTION
   const getBookingsForDay = (day) => {
     if (!day) return [];
-
-    return bookings.filter(
-      (b) => day >= b.start && day <= b.end
-    );
+    return bookings.filter((b) => day >= b.start && day <= b.end);
   };
 
   return (
-    <div>
-      {/* Days Header */}
-      <div className="grid grid-cols-7 border-b">
-        {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
-          <div
-            key={day}
-            className="p-3 text-sm font-medium text-gray-500 text-center border-r last:border-r-0"
-          >
-            {day}
+    <div className="w-full overflow-x-auto">
+
+      {/* ✅ FIX: min width for mobile scroll */}
+      <div className="min-w-[700px]">
+
+        {/* Days Header */}
+        <div className="grid grid-cols-7 border-b bg-gray-50 sticky top-0 z-10">
+          {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
+            <div
+              key={day}
+              className="p-2 sm:p-3 text-xs sm:text-sm font-medium text-gray-500 text-center border-r last:border-r-0"
+            >
+              {day}
+            </div>
+          ))}
+        </div>
+
+        {/* MONTH VIEW */}
+        {view === "monthly" && (
+          <div className="grid grid-cols-7">
+            {calendarDays.map((day, index) => (
+              <div
+                key={index}
+                className="
+                  min-h-[80px] sm:min-h-[100px] md:min-h-[120px]
+                  border-r border-b 
+                  p-1 sm:p-2 
+                  text-xs sm:text-sm 
+                  text-gray-700 
+                  overflow-hidden
+                "
+              >
+                {day && <span className="font-medium">{day}</span>}
+
+                <div className="mt-1 space-y-1">
+                  {getBookingsForDay(day).map((booking) => (
+                    <BookingCard key={booking.id} booking={booking} />
+                  ))}
+                </div>
+              </div>
+            ))}
           </div>
-        ))}
+        )}
+
+        {/* WEEK VIEW */}
+        {view === "weekly" && (
+          <div className="grid grid-cols-7">
+            {weeklyDays.map((day, index) => (
+              <div
+                key={index}
+                className="
+                  min-h-[100px] sm:min-h-[120px] md:min-h-[140px]
+                  border-r border-b 
+                  p-1 sm:p-2 
+                  text-xs sm:text-sm 
+                  text-gray-700 
+                  overflow-hidden
+                "
+              >
+                <span className="font-medium">{day}</span>
+
+                <div className="mt-1 space-y-1">
+                  {getBookingsForDay(day).map((booking) => (
+                    <BookingCard key={booking.id} booking={booking} />
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
-
-      {/* MONTH VIEW */}
-      {view === "monthly" && (
-        <div className="grid grid-cols-7">
-          {calendarDays.map((day, index) => (
-            <div
-              key={index}
-              className="h-28 border-r border-b p-2 text-sm text-gray-700 overflow-hidden"
-            >
-              {/* EXISTING */}
-              {day && <span className="font-medium">{day}</span>}
-
-              {/* ✅ PHASE 3 ADDITION */}
-              <div className="mt-1 space-y-1">
-                {getBookingsForDay(day).map((booking) => (
-                  <BookingCard key={booking.id} booking={booking} />
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* WEEK VIEW */}
-      {view === "weekly" && (
-        <div className="grid grid-cols-7">
-          {weeklyDays.map((day, index) => (
-            <div
-              key={index}
-              className="h-32 border-r border-b p-2 text-sm text-gray-700 overflow-hidden"
-            >
-              {/* EXISTING */}
-              <span className="font-medium">{day}</span>
-
-              {/* ✅ PHASE 3 ADDITION */}
-              <div className="mt-1 space-y-1">
-                {getBookingsForDay(day).map((booking) => (
-                  <BookingCard key={booking.id} booking={booking} />
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
     </div>
   );
 }
