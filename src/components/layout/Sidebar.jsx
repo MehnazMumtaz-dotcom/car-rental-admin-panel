@@ -12,6 +12,8 @@ import {
   Moon,
   Monitor,
   ChevronUp,
+  ChevronsLeft,
+  ChevronsRight,
 } from "lucide-react";
 
 import { useAuthStore } from "../../store/authStore";
@@ -24,7 +26,14 @@ export default function Sidebar() {
   const user = useAuthStore((state) => state.user);
   const logout = useAuthStore((state) => state.logout);
 
-  const { sidebarOpen, toggleSidebar, theme, setTheme } = useUIStore();
+  const {
+    sidebarOpen,
+    toggleSidebar,
+    theme,
+    setTheme,
+    isMobile,
+  } = useUIStore();
+
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -40,11 +49,11 @@ export default function Sidebar() {
     document.addEventListener("mousedown", handleClick);
     return () => document.removeEventListener("mousedown", handleClick);
   }, []);
-  const handleLogout = () => {
-    logout(); 
-    setOpenProfile(false); 
 
-    navigate("/login", { replace: true }); 
+  const handleLogout = () => {
+    logout();
+    setOpenProfile(false);
+    navigate("/login", { replace: true });
   };
 
   const menuItems = [
@@ -76,13 +85,40 @@ export default function Sidebar() {
             : "w-20 -translate-x-full md:translate-x-0"
         }`}
       >
-        <div className="flex items-center gap-1 px-4 py-5 border-b border-secondaryLight">
-          <img src={logo} alt="logo" className="w-10 h-10" />
-          {sidebarOpen && (
-            <div>
-              <h1 className="text-sm font-semibold">Car Rental</h1>
-              <p className="text-xs text-textSecondary">Admin Panel</p>
-            </div>
+        {/* 🔥 LOGO + ARROW */}
+        <div className="flex items-center justify-between px-4 py-5 border-b border-secondaryLight">
+          
+          <div
+            className={`flex items-center ${
+              sidebarOpen ? "gap-2" : "justify-center w-full"
+            }`}
+          >
+            <img
+              src={logo}
+              alt="logo"
+              className={`w-10 h-10 ${!sidebarOpen ? "mx-auto" : ""}`}
+            />
+
+            {sidebarOpen && (
+              <div>
+                <h1 className="text-sm font-semibold">Car Rental</h1>
+                <p className="text-xs text-textSecondary">Admin Panel</p>
+              </div>
+            )}
+          </div>
+
+          {/* ✅ DESKTOP ARROW BUTTON */}
+          {!isMobile && (
+            <button
+              onClick={toggleSidebar}
+              className="p-1 rounded hover:bg-secondaryLight"
+            >
+              {sidebarOpen ? (
+                <ChevronsLeft size={18} />
+              ) : (
+                <ChevronsRight size={18} />
+              )}
+            </button>
           )}
         </div>
 
@@ -104,6 +140,7 @@ export default function Sidebar() {
           })}
         </nav>
 
+        {/* PROFILE */}
         <div
           ref={profileRef}
           className="relative border-t border-secondaryLight p-3"
@@ -139,7 +176,7 @@ export default function Sidebar() {
 
           {openProfile && (
             <div className="absolute bottom-full left-2 right-2 mb-2 bg-white text-black rounded-xl shadow-xl p-4 z-50">
-
+              
               <div className="mb-3">
                 <p className="font-semibold text-sm">
                   {user?.name || "Admin User"}
@@ -155,32 +192,29 @@ export default function Sidebar() {
                 <div className="flex bg-gray-100 rounded-lg p-1">
                   <button
                     onClick={() => setTheme("light")}
-                    className={`flex-1 flex items-center justify-center gap-1 py-1 rounded ${
+                    className={`flex-1 py-1 rounded ${
                       theme === "light" ? "bg-white shadow" : ""
                     }`}
                   >
                     <Sun size={14} />
-                    <span className="text-xs">Light</span>
                   </button>
 
                   <button
                     onClick={() => setTheme("dark")}
-                    className={`flex-1 flex items-center justify-center gap-1 py-1 rounded ${
+                    className={`flex-1 py-1 rounded ${
                       theme === "dark" ? "bg-white shadow" : ""
                     }`}
                   >
                     <Moon size={14} />
-                    <span className="text-xs">Dark</span>
                   </button>
 
                   <button
                     onClick={() => setTheme("system")}
-                    className={`flex-1 flex items-center justify-center gap-1 py-1 rounded ${
+                    className={`flex-1 py-1 rounded ${
                       theme === "system" ? "bg-white shadow" : ""
                     }`}
                   >
                     <Monitor size={14} />
-                    <span className="text-xs">System</span>
                   </button>
                 </div>
               </div>
@@ -204,7 +238,9 @@ function SidebarItem({ icon, text, path, open, active }) {
   return (
     <Link to={path}>
       <div
-        className={`flex items-center gap-3 px-3 py-2 rounded-lg
+        className={`flex items-center ${
+          open ? "gap-3 justify-start" : "justify-center"
+        } px-3 py-2 rounded-lg
         ${
           active
             ? "bg-primary text-white"

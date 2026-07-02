@@ -5,7 +5,7 @@ import Dashboard from "../pages/dashboard/Dashboard";
 import ComplaintList from "../pages/complaints/ComplaintList";
 
 import Bookings from "../pages/bookings/BookingList";
-import Customers from "../pages/customers/CustomerList";
+import CustomerPage from "../pages/customers/CustomerPage";
 import SubAdmins from "../pages/subadmins/SubAdminList";
 import Config from "../pages/config/config";
 import Reports from "../pages/reports/ReportsDashboard";
@@ -24,7 +24,7 @@ export default function AppRoutes() {
         <Route index element={<Dashboard />} />
         <Route path="complaints" element={<ComplaintList />} />
         <Route path="bookings" element={<Bookings />} />
-        <Route path="customers" element={<Customers />} />
+        <Route path="customers" element={<CustomerPage />} />
         <Route path="subadmins" element={<SubAdmins />} />
         <Route path="config" element={<Config />} />
         <Route path="sla" element={<SLASettings />} />

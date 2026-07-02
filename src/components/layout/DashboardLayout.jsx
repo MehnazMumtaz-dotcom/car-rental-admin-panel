@@ -4,24 +4,38 @@ import Navbar from "./Navbar";
 import { useUIStore } from "../../store/uiStore";
 import { Outlet } from "react-router-dom";
 
-const DashboardLayout = ({ children }) => {
+const DashboardLayout = () => {
   const { sidebarOpen } = useUIStore();
 
   return (
     <div className="flex h-screen overflow-hidden bg-gray-100">
 
-     <Sidebar />
+      {/* SIDEBAR (fixed, no scroll) */}
+      <Sidebar />
 
+      {/* MAIN AREA */}
       <div
-        className={`flex flex-col flex-1 transition-all duration-300
-        ${sidebarOpen ? "md:ml-56" : "md:ml-20"} ml-0 w-full`}
+        className={`flex flex-col flex-1 min-w-0 transition-all duration-300
+        ${sidebarOpen ? "md:ml-56" : "md:ml-20"}`}
       >
+
+        {/* NAVBAR fixed height */}
         <Navbar />
 
-        <main className="flex-1 overflow-y-auto p-4 sm:p-6">
+        {/* ONLY ONE SCROLL CONTAINER */}
+        <main
+          className="
+            flex-1 
+            min-w-0 
+            overflow-y-auto 
+            overflow-x-hidden 
+            p-4 sm:p-6
 
-          {children || <Outlet />}
-
+            /* hide scrollbar (cross-browser) */
+            scrollbar-hide
+          "
+        >
+          <Outlet />
         </main>
 
       </div>

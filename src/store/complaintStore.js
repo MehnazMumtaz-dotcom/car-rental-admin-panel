@@ -59,22 +59,17 @@ export const useComplaintStore = create((set) => ({
   ],
 
   selectedComplaint: null,
-  isDrawerOpen: false,
   loading: false,
 
   setComplaints: (data) => set({ complaints: data }),
 
+  // ✅ open drawer
   setSelectedComplaint: (complaint) =>
-    set({
-      selectedComplaint: complaint,
-      isDrawerOpen: true,
-    }),
+    set({ selectedComplaint: complaint }),
 
+  // ✅ close drawer
   closeDrawer: () =>
-    set({
-      selectedComplaint: null,
-      isDrawerOpen: false,
-    }),
+    set({ selectedComplaint: null }),
 
   setLoading: (value) => set({ loading: value }),
 }));

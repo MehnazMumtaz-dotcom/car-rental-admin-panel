@@ -43,7 +43,6 @@ const StatCard = ({ title, value, previousValue = 0, icon, color }) => {
       shadow-card hover:shadow-md transition w-full
     ">
 
-      {/* TOP */}
       <div className="
         flex items-center gap-3
         flex-col sm:flex-row
@@ -58,14 +57,12 @@ const StatCard = ({ title, value, previousValue = 0, icon, color }) => {
         </p>
       </div>
 
-      {/* VALUE (STRICT CENTER) */}
       <div className="flex justify-center mt-4">
         <h3 className="text-lg sm:text-xl font-semibold text-textPrimary text-center">
           {formatValue()}
         </h3>
       </div>
 
-      {/* % CHANGE (ALSO CENTERED) */}
       <p
         className={`
           text-sm mt-2 font-medium text-center

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useComplaintStore } from "../../store/complaintStore";
 import { X, User, Folder, Bot } from "lucide-react";
+import ConfirmDialog from "../../components/ui/ConfirmDialog";
 
 export default function ComplaintDetails({ complaint, onClose }) {
   const { complaints, setComplaints, setSelectedComplaint } =
@@ -9,6 +10,8 @@ export default function ComplaintDetails({ complaint, onClose }) {
   const [status, setStatus] = useState("Open");
   const [assignedTo, setAssignedTo] = useState("");
   const [notes, setNotes] = useState("");
+
+  const [openDialog, setOpenDialog] = useState(false); 
 
   useEffect(() => {
     if (complaint) {
@@ -59,6 +62,15 @@ export default function ComplaintDetails({ complaint, onClose }) {
     }
 
     return "New complaint received. Waiting for assignment and review.";
+  };
+
+  const handleDelete = () => {
+    const updated = complaints.filter(
+      (c) => c.complaintId !== complaint.complaintId
+    );
+    setComplaints(updated);
+    setSelectedComplaint(null);
+    setOpenDialog(false);
   };
 
   return (
@@ -160,21 +172,23 @@ export default function ComplaintDetails({ complaint, onClose }) {
         </button>
 
         <button
-          onClick={() => {
-            const ok = window.confirm("Delete?");
-            if (!ok) return;
-            const updated = complaints.filter(
-              (c) => c.complaintId !== complaint.complaintId
-            );
-            setComplaints(updated);
-            setSelectedComplaint(null);
-          }}
+          onClick={() => setOpenDialog(true)}
           className="py-2 bg-red-600 text-white rounded-md"
         >
           Delete
         </button>
 
       </div>
+
+      <ConfirmDialog
+        open={openDialog}
+        title="Delete Complaint"
+        message="Are you sure you want to delete this complaint?"
+        confirmText="Delete"
+        cancelText="Cancel"
+        onConfirm={handleDelete}
+        onCancel={() => setOpenDialog(false)}
+      />
     </div>
   );
 }
