@@ -24,6 +24,7 @@ export default function ComplaintList() {
     slaStatus: "",
   });
 
+  // ❌ isMobile logic ab remove karne ki zarurat nahi, par use nahi ho raha
   const [isMobile, setIsMobile] = useState(false);
 
   const [deleteRow, setDeleteRow] = useState(null);
@@ -184,22 +185,20 @@ export default function ComplaintList() {
           <ComplaintFilters onApply={setFilters} />
         </div>
 
-        {/* ✅ FIXED WRAPPER */}
-        <div className="flex-1 min-w-0 border rounded-xl overflow-x-auto lg:overflow-x-hidden">
+        {/* ✅ FIXED FOR MOBILE */}
+        <div className="flex-1 min-w-0 border rounded-xl overflow-x-auto">
 
-          {!isMobile && (
-            <div className="w-full">
-              <DataTable
-                columns={columns}
-                data={filteredComplaints}
-                onRowClick={(row) => {
-                  setTimeout(() => {
-                    setSelectedComplaint(row);
-                  }, 0);
-                }}
-              />
-            </div>
-          )}
+          <div className="w-full min-w-[800px]">
+            <DataTable
+              columns={columns}
+              data={filteredComplaints}
+              onRowClick={(row) => {
+                setTimeout(() => {
+                  setSelectedComplaint(row);
+                }, 0);
+              }}
+            />
+          </div>
 
         </div>
 

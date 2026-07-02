@@ -40,6 +40,13 @@ export default function Sidebar() {
   const [openProfile, setOpenProfile] = useState(false);
   const profileRef = useRef(null);
 
+  // ✅ FIX 1: Mobile pe default sidebar close
+  useEffect(() => {
+    if (isMobile && sidebarOpen) {
+      toggleSidebar();
+    }
+  }, [isMobile]);
+
   useEffect(() => {
     const handleClick = (e) => {
       if (profileRef.current && !profileRef.current.contains(e.target)) {
@@ -54,6 +61,13 @@ export default function Sidebar() {
     logout();
     setOpenProfile(false);
     navigate("/login", { replace: true });
+  };
+
+  // ✅ FIX 2: Link click pe mobile sidebar close
+  const handleItemClick = () => {
+    if (isMobile && sidebarOpen) {
+      toggleSidebar();
+    }
   };
 
   const menuItems = [
@@ -85,7 +99,7 @@ export default function Sidebar() {
             : "w-20 -translate-x-full md:translate-x-0"
         }`}
       >
-        {/* 🔥 LOGO + ARROW */}
+        {/* LOGO */}
         <div className="flex items-center justify-between px-4 py-5 border-b border-secondaryLight">
           
           <div
@@ -107,22 +121,21 @@ export default function Sidebar() {
             )}
           </div>
 
-          {/* ✅ DESKTOP ARROW BUTTON */}
-       {/* DESKTOP ARROW BUTTON ONLY */}
-<div className="hidden md:block">
-  <button
-    onClick={toggleSidebar}
-    className="p-1 rounded hover:bg-secondaryLight"
-  >
-    {sidebarOpen ? (
-      <ChevronsLeft size={18} />
-    ) : (
-      <ChevronsRight size={18} />
-    )}
-  </button>
-</div>
+          <div className="hidden md:block">
+            <button
+              onClick={toggleSidebar}
+              className="p-1 rounded hover:bg-secondaryLight"
+            >
+              {sidebarOpen ? (
+                <ChevronsLeft size={18} />
+              ) : (
+                <ChevronsRight size={18} />
+              )}
+            </button>
+          </div>
         </div>
 
+        {/* MENU */}
         <nav className="flex-1 px-2 py-3 space-y-1 overflow-y-auto">
           {menuItems.map((item) => {
             const Icon = item.icon;
@@ -136,6 +149,7 @@ export default function Sidebar() {
                 path={item.path}
                 open={sidebarOpen}
                 active={active}
+                onClick={handleItemClick} // ✅ added
               />
             );
           })}
@@ -191,30 +205,15 @@ export default function Sidebar() {
                 <p className="text-xs text-gray-400 mb-2">Appearance</p>
 
                 <div className="flex bg-gray-100 rounded-lg p-1">
-                  <button
-                    onClick={() => setTheme("light")}
-                    className={`flex-1 py-1 rounded ${
-                      theme === "light" ? "bg-white shadow" : ""
-                    }`}
-                  >
+                  <button onClick={() => setTheme("light")} className={`flex-1 py-1 rounded ${theme === "light" ? "bg-white shadow" : ""}`}>
                     <Sun size={14} />
                   </button>
 
-                  <button
-                    onClick={() => setTheme("dark")}
-                    className={`flex-1 py-1 rounded ${
-                      theme === "dark" ? "bg-white shadow" : ""
-                    }`}
-                  >
+                  <button onClick={() => setTheme("dark")} className={`flex-1 py-1 rounded ${theme === "dark" ? "bg-white shadow" : ""}`}>
                     <Moon size={14} />
                   </button>
 
-                  <button
-                    onClick={() => setTheme("system")}
-                    className={`flex-1 py-1 rounded ${
-                      theme === "system" ? "bg-white shadow" : ""
-                    }`}
-                  >
+                  <button onClick={() => setTheme("system")} className={`flex-1 py-1 rounded ${theme === "system" ? "bg-white shadow" : ""}`}>
                     <Monitor size={14} />
                   </button>
                 </div>
@@ -235,9 +234,9 @@ export default function Sidebar() {
   );
 }
 
-function SidebarItem({ icon, text, path, open, active }) {
+function SidebarItem({ icon, text, path, open, active, onClick }) {
   return (
-    <Link to={path}>
+    <Link to={path} onClick={onClick}>
       <div
         className={`flex items-center ${
           open ? "gap-3 justify-start" : "justify-center"
