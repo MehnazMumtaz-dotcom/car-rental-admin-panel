@@ -12,7 +12,7 @@ import Reports from "../pages/reports/ReportsDashboard";
 import Vendors from "../pages/vendors/VendorList";
 import SLASettings from "../pages/config/SLASettings";
 
-import Login from "../pages/auth/Login";
+import Login from "../pages/auth/login";
 
 export default function AppRoutes() {
   return (
