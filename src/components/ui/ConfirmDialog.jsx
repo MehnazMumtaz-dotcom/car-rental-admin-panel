@@ -38,7 +38,6 @@ const ConfirmDialog = ({
 
 export default ConfirmDialog;
 
-// ✅ Simple inline styles (you can replace with your CSS)
 const styles = {
   overlay: {
     position: "fixed",

@@ -146,7 +146,9 @@ export default function CustomerPage() {
   };
 
   const confirmDelete = () => {
-    setCustomerList((prev) => prev.filter((c) => c.id !== deleteRow.id));
+    setCustomerList((prev) =>
+      prev.filter((c) => c.id !== deleteRow.id)
+    );
 
     setSelectedCustomer((prev) =>
       prev?.id === deleteRow.id ? null : prev
@@ -162,48 +164,12 @@ export default function CustomerPage() {
   };
 
   const columns = [
-    {
-      header: "ID",
-      width: "6%",
-      cell: (row) => (
-        <span className="whitespace-nowrap font-semibold">{row.id}</span>
-      ),
-    },
-    {
-      header: "Name",
-      width: "13%",
-      cell: (row) => (
-        <span className="whitespace-nowrap font-semibold">{row.name}</span>
-      ),
-    },
-    {
-      header: "Phone",
-      width: "12%",
-      cell: (row) => <span className="whitespace-nowrap">{row.phone}</span>,
-    },
-    {
-      header: "Email",
-      width: "19%",
-      cell: (row) => <span className="whitespace-nowrap">{row.email}</span>,
-    },
-    {
-      header: "Bookings",
-      width: "11%",
-      cell: (row) => (
-        <span className="whitespace-nowrap text-center">
-          {row.bookings}
-        </span>
-      ),
-    },
-    {
-      header: "Spent",
-      width: "11%",
-      cell: (row) => (
-        <span className="whitespace-nowrap">
-          Rs {row.spent.toLocaleString()}
-        </span>
-      ),
-    },
+    { header: "ID", width: "6%", cell: (row) => <span className="whitespace-nowrap font-semibold">{row.id}</span> },
+    { header: "Name", width: "13%", cell: (row) => <span className="whitespace-nowrap font-semibold">{row.name}</span> },
+    { header: "Phone", width: "12%", cell: (row) => <span className="whitespace-nowrap">{row.phone}</span> },
+    { header: "Email", width: "19%", cell: (row) => <span className="whitespace-nowrap">{row.email}</span> },
+    { header: "Bookings", width: "11%", cell: (row) => <span className="whitespace-nowrap text-center">{row.bookings}</span> },
+    { header: "Spent", width: "11%", cell: (row) => <span className="whitespace-nowrap">Rs {row.spent.toLocaleString()}</span> },
     {
       header: "Status",
       width: "10%",
@@ -213,25 +179,14 @@ export default function CustomerPage() {
           suspended: "bg-red-100 text-red-700",
           flagged: "bg-yellow-100 text-yellow-700",
         };
-
         return (
-          <span
-            className={`px-2 py-1 rounded-full text-xs font-semibold whitespace-nowrap ${
-              styles[row.status] || "bg-gray-100 text-gray-700"
-            }`}
-          >
+          <span className={`px-2 py-1 rounded-full text-xs font-semibold whitespace-nowrap ${styles[row.status] || "bg-gray-100 text-gray-700"}`}>
             {row.status}
           </span>
         );
       },
     },
-    {
-      header: "Joined",
-      width: "12%",
-      cell: (row) => (
-        <span className="whitespace-nowrap">{row.joined}</span>
-      ),
-    },
+    { header: "Joined", width: "12%", cell: (row) => <span className="whitespace-nowrap">{row.joined}</span> },
     {
       header: "Actions",
       width: "12%",
@@ -259,12 +214,10 @@ export default function CustomerPage() {
   ];
 
   return (
-    <div className="bg-background min-h-screen p-3 sm:p-4 md:p-6 w-full">
+    <div className="bg-background min-h-screen p-4 md:p-6 w-full">
+      <div className="bg-surface rounded-xl shadow-card p-5 md:p-6 w-full min-w-0">
 
-      <div className="bg-surface rounded-xl shadow-card p-4 sm:p-5 md:p-6 w-full min-w-0">
-
-        {/* FILTERS */}
-        <div className="flex flex-col sm:flex-row flex-wrap gap-3 mb-6">
+        <div className="flex flex-wrap md:flex-nowrap gap-4 mb-6">
           <SearchInput
             value={searchQuery}
             onChange={setSearchQuery}
@@ -285,9 +238,9 @@ export default function CustomerPage() {
           <Button onClick={resetFilters}>Reset</Button>
         </div>
 
-        {/* TABLE RESPONSIVE WRAPPER */}
-        <div className="w-full overflow-x-auto">
-          <div className="min-w-[900px]">
+        {/* ✅ FINAL RESPONSIVE FIX */}
+        <div className="w-full overflow-x-auto lg:overflow-visible">
+          <div className="min-w-[900px] lg:min-w-0">
             <DataTable
               columns={columns}
               data={filteredCustomers}
@@ -298,7 +251,6 @@ export default function CustomerPage() {
 
       </div>
 
-      {/* DRAWER */}
       {isDrawerOpen && (
         <CustomerDrawer
           isOpen={isDrawerOpen}
@@ -311,7 +263,6 @@ export default function CustomerPage() {
         />
       )}
 
-      {/* MODAL */}
       {isModalOpen && (
         <WalkInRegistration
           isOpen={isModalOpen}
@@ -320,7 +271,6 @@ export default function CustomerPage() {
         />
       )}
 
-      {/* CONFIRM */}
       {showConfirm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div
