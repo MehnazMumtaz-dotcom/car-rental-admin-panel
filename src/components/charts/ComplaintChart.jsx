@@ -31,6 +31,7 @@ const ComplaintChart = ({ weekRange }) => {
   return (
     <div className="bg-surface p-4 rounded-xl shadow-card h-80 flex flex-col border border-borderColor">
 
+      {/* HEADER */}
       <div className="flex items-center gap-2 mb-3">
         <AlertCircle size={18} className="text-textPrimary" />
         <h3 className="text-textPrimary font-semibold">
@@ -38,11 +39,14 @@ const ComplaintChart = ({ weekRange }) => {
         </h3>
       </div>
 
+      {/* MAIN CONTENT */}
       <div className="flex flex-col md:flex-row flex-1">
 
+        {/* CHART SIDE */}
         <div className="w-full md:w-1/2 flex items-center justify-center relative">
 
-          <div className="w-full h-full max-w-[280px] max-h-[280px]">
+          {/* ✅ FIXED MOBILE HEIGHT */}
+          <div className="w-full h-[220px] sm:h-[260px] max-w-[280px] mx-auto">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
@@ -52,7 +56,7 @@ const ComplaintChart = ({ weekRange }) => {
                   cx="50%"
                   cy="50%"
                   innerRadius="58%"
-                  outerRadius="92%"   
+                  outerRadius="92%"
                 >
                   {data.map((_, i) => (
                     <Cell key={i} fill={colors[i]} />
@@ -64,7 +68,7 @@ const ComplaintChart = ({ weekRange }) => {
             </ResponsiveContainer>
           </div>
 
-
+          {/* CENTER TOTAL */}
           <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
             <span className="text-2xl font-bold text-textPrimary">
               {total}
@@ -73,10 +77,9 @@ const ComplaintChart = ({ weekRange }) => {
               Total
             </span>
           </div>
-
         </div>
 
-
+        {/* LEGEND SIDE */}
         <div className="w-full md:w-1/2 pl-0 md:pl-3 flex flex-col justify-center space-y-2 mt-3 md:mt-0">
 
           {data.map((item, i) => (

@@ -108,18 +108,19 @@ export default function Sidebar() {
           </div>
 
           {/* ✅ DESKTOP ARROW BUTTON */}
-          {!isMobile && (
-            <button
-              onClick={toggleSidebar}
-              className="p-1 rounded hover:bg-secondaryLight"
-            >
-              {sidebarOpen ? (
-                <ChevronsLeft size={18} />
-              ) : (
-                <ChevronsRight size={18} />
-              )}
-            </button>
-          )}
+       {/* DESKTOP ARROW BUTTON ONLY */}
+<div className="hidden md:block">
+  <button
+    onClick={toggleSidebar}
+    className="p-1 rounded hover:bg-secondaryLight"
+  >
+    {sidebarOpen ? (
+      <ChevronsLeft size={18} />
+    ) : (
+      <ChevronsRight size={18} />
+    )}
+  </button>
+</div>
         </div>
 
         <nav className="flex-1 px-2 py-3 space-y-1 overflow-y-auto">

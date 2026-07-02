@@ -3,7 +3,7 @@ import { useComplaintStore } from "../../store/complaintStore";
 import ComplaintFilters from "./ComplaintFilters";
 import DataTable from "../../components/tables/DataTable";
 import ComplaintDetails from "./ComplaintDetails";
-import ConfirmDialog from "../../components/ui/ConfirmDialog"; 
+import ConfirmDialog from "../../components/ui/ConfirmDialog";
 import { Eye, Pencil, Trash2 } from "lucide-react";
 
 export default function ComplaintList() {
@@ -85,25 +85,15 @@ export default function ComplaintList() {
 
     const slaStatusMatch = filters.slaStatus
       ? (() => {
-          if (c.slaStatus) {
-            return normalize(c.slaStatus).includes(normalize(filters.slaStatus));
-          }
-
           const end = new Date(c.slaDeadline);
           const now = new Date();
           const diffHours = (end - now) / (1000 * 60 * 60);
 
-          if (normalize(filters.slaStatus) === "overdue") {
-            return diffHours <= 0;
-          }
+          const val = normalize(filters.slaStatus);
 
-          if (normalize(filters.slaStatus) === "active") {
-            return diffHours > 24;
-          }
-
-          if (normalize(filters.slaStatus) === "near") {
-            return diffHours > 0 && diffHours <= 24;
-          }
+          if (val === "overdue") return diffHours <= 0;
+          if (val === "active") return diffHours > 24;
+          if (val === "near") return diffHours > 0 && diffHours <= 24;
 
           return true;
         })()
@@ -118,7 +108,7 @@ export default function ComplaintList() {
       slaStatusMatch
     );
   });
-  
+
   const handleDelete = (row) => {
     setDeleteRow(row);
     setShowConfirm(true);
@@ -156,51 +146,29 @@ export default function ComplaintList() {
     {
       header: "SLA",
       width: "120px",
-      cell: (row) => (
-        <span className={slaBadge(row.slaType)}>
-          {row.slaType}
-        </span>
-      ),
+      cell: (row) => <span className={slaBadge(row.slaType)}>{row.slaType}</span>,
     },
 
-    {
-      header: "Time",
-      accessor: "slaTimer",
-      width: "120px",
-    },
+    { header: "Time", accessor: "slaTimer", width: "120px" },
 
     {
       header: "Status",
       width: "140px",
-      cell: (row) => (
-        <span className={statusBadge(row.status)}>
-          {row.status}
-        </span>
-      ),
+      cell: (row) => <span className={statusBadge(row.status)}>{row.status}</span>,
     },
 
-    {
-      header: "Assigned",
-      accessor: "assignedTo",
-      width: "150px",
-    },
+    { header: "Assigned", accessor: "assignedTo", width: "150px" },
 
     {
       header: "Actions",
       width: "160px",
       cell: (row) => (
         <div className="flex items-center gap-3 whitespace-nowrap">
-          <button
-            onClick={() => setSelectedComplaint(row)}
-            className="text-blue-600"
-          >
+          <button onClick={() => setSelectedComplaint(row)} className="text-blue-600">
             <Eye size={18} />
           </button>
 
-          <button
-            onClick={() => setSelectedComplaint(row)}
-            className="text-yellow-600"
-          >
+          <button onClick={() => setSelectedComplaint(row)} className="text-yellow-600">
             <Pencil size={18} />
           </button>
 
@@ -221,41 +189,42 @@ export default function ComplaintList() {
   return (
     <div className="flex flex-col lg:flex-row min-h-screen bg-white">
 
-      <div className="flex-1 flex flex-col px-4 sm:px-6 pb-4 gap-4 min-w-0">
+      {/* LEFT SECTION */}
+      <div className="flex-1 flex flex-col px-3 sm:px-6 pb-4 gap-4 min-w-0">
 
+        {/* FILTERS */}
         <div className="shrink-0">
           <ComplaintFilters onApply={setFilters} />
         </div>
 
-        <div className="flex-1 min-w-0 border rounded-xl overflow-auto">
+        {/* TABLE */}
+        <div className="flex-1 min-w-0 border rounded-xl overflow-x-auto">
 
-          {!isMobile && (
-            <DataTable
-              columns={columns}
-              data={filteredComplaints}
-              onRowClick={(row) => {
-                setTimeout(() => {
-                  setSelectedComplaint(row);
-                }, 0);
-              }}
-            />
-          )}
-
+          <DataTable
+            columns={columns}
+            data={filteredComplaints}
+            onRowClick={(row) => {
+              setTimeout(() => setSelectedComplaint(row), 0);
+            }}
+          />
         </div>
-
       </div>
 
+      {/* BACKDROP (mobile safe) */}
       {selectedComplaint && (
         <div
           onClick={closeDrawer}
-          className="fixed inset-0 bg-black/40"
+          className="fixed inset-0 bg-black/40 z-40"
         />
       )}
 
+      {/* DRAWER (RESPONSIVE FIX) */}
       <div
-        className={`fixed right-0 top-0 h-full w-96 bg-white transition-transform ${
-          selectedComplaint ? "translate-x-0" : "translate-x-full"
-        }`}
+        className={`
+          fixed top-0 right-0 h-full bg-white transition-transform z-50
+          w-full sm:w-96
+          ${selectedComplaint ? "translate-x-0" : "translate-x-full"}
+        `}
       >
         <ComplaintDetails
           complaint={selectedComplaint}
@@ -263,6 +232,7 @@ export default function ComplaintList() {
         />
       </div>
 
+      {/* CONFIRM DIALOG */}
       {showConfirm && (
         <ConfirmDialog
           open={showConfirm}

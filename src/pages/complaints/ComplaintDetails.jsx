@@ -11,7 +11,7 @@ export default function ComplaintDetails({ complaint, onClose }) {
   const [assignedTo, setAssignedTo] = useState("");
   const [notes, setNotes] = useState("");
 
-  const [openDialog, setOpenDialog] = useState(false); 
+  const [openDialog, setOpenDialog] = useState(false);
 
   useEffect(() => {
     if (complaint) {
@@ -23,7 +23,7 @@ export default function ComplaintDetails({ complaint, onClose }) {
 
   if (!complaint) {
     return (
-      <div className="h-full flex items-center justify-center">
+      <div className="h-full flex items-center justify-center text-sm text-gray-500">
         Select complaint
       </div>
     );
@@ -74,51 +74,57 @@ export default function ComplaintDetails({ complaint, onClose }) {
   };
 
   return (
-    <div className="h-full flex flex-col p-4">
+    <div className="h-full flex flex-col p-3 sm:p-4 overflow-y-auto">
 
-      <div className="flex justify-between items-center border-b pb-2">
-        <div className="flex items-center gap-2 font-semibold">
+      {/* HEADER */}
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 border-b pb-2">
+
+        <div className="flex items-center gap-2 font-semibold text-sm sm:text-base">
           <Folder size={18} />
           {complaint.complaintId}
         </div>
 
-        <button onClick={onClose}>
+        <button onClick={onClose} className="self-end sm:self-auto">
           <X size={18} />
         </button>
       </div>
 
-      <div className="flex flex-col flex-1">
+      {/* CONTENT */}
+      <div className="flex flex-col flex-1 gap-2 mt-2">
 
-        <div className="pt-2">
-          <div className="flex items-center gap-2 font-medium">
+        {/* CUSTOMER INFO */}
+        <div>
+          <div className="flex items-center gap-2 font-medium text-sm">
             <User size={16} />
             {complaint.customer}
           </div>
 
-          <div className="text-sm flex items-center gap-2">
+          <div className="text-xs flex items-center gap-2 text-gray-600">
             <Folder size={14} />
             {complaint.category}
           </div>
         </div>
 
-        <div className="border rounded-md p-2 mt-2">
+        {/* AI SUMMARY */}
+        <div className="border rounded-md p-2 bg-gray-50">
           <div className="flex items-center gap-2 text-sm font-medium">
             <Bot size={16} />
             AI Summary
           </div>
 
-          <div className="text-xs">
+          <div className="text-xs mt-1 text-gray-700">
             {getAISummary()}
           </div>
         </div>
 
+        {/* STATUS */}
         <select
           value={status}
           onChange={(e) => {
             setStatus(e.target.value);
             updateComplaint({ status: e.target.value });
           }}
-          className="w-full border px-3 py-2 mt-2 rounded-md"
+          className="w-full border px-3 py-2 rounded-md text-sm"
         >
           <option>Open</option>
           <option>In Progress</option>
@@ -126,13 +132,14 @@ export default function ComplaintDetails({ complaint, onClose }) {
           <option>Escalated</option>
         </select>
 
+        {/* ASSIGN */}
         <select
           value={assignedTo}
           onChange={(e) => {
             setAssignedTo(e.target.value);
             updateComplaint({ assignedTo: e.target.value });
           }}
-          className="w-full border px-3 py-2 mt-2 rounded-md"
+          className="w-full border px-3 py-2 rounded-md text-sm"
         >
           <option value="">Select Admin</option>
           <option value="admin1">Admin 1</option>
@@ -140,7 +147,8 @@ export default function ComplaintDetails({ complaint, onClose }) {
           <option value="senior-admin">Senior Admin</option>
         </select>
 
-        <div className="mt-2 flex flex-col flex-1">
+        {/* NOTES */}
+        <div className="flex flex-col flex-1 min-h-[120px] sm:min-h-[150px]">
           <label className="text-xs mb-1">Notes</label>
 
           <textarea
@@ -149,37 +157,39 @@ export default function ComplaintDetails({ complaint, onClose }) {
               setNotes(e.target.value);
               updateComplaint({ notes: e.target.value });
             }}
-            className="flex-1 border rounded-md p-3 resize-none"
+            className="flex-1 border rounded-md p-2 sm:p-3 resize-none text-sm"
             placeholder="Write notes..."
           />
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-2 pt-2">
+      {/* ACTION BUTTONS */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-3">
 
         <button
           onClick={() => updateComplaint({ status: "Resolved" })}
-          className="py-2 bg-green-600 text-white rounded-md"
+          className="py-2 bg-green-600 text-white rounded-md text-sm"
         >
           Resolve
         </button>
 
         <button
           onClick={() => updateComplaint({ status: "Escalated" })}
-          className="py-2 bg-yellow-500 text-white rounded-md"
+          className="py-2 bg-yellow-500 text-white rounded-md text-sm"
         >
           Escalate
         </button>
 
         <button
           onClick={() => setOpenDialog(true)}
-          className="py-2 bg-red-600 text-white rounded-md"
+          className="py-2 bg-red-600 text-white rounded-md text-sm"
         >
           Delete
         </button>
 
       </div>
 
+      {/* CONFIRM DIALOG */}
       <ConfirmDialog
         open={openDialog}
         title="Delete Complaint"

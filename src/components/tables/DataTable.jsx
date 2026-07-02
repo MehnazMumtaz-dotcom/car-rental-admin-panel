@@ -21,7 +21,7 @@ export default function DataTable({
   }, [data, currentPage]);
 
   return (
-    <div className="w-full overflow-hidden">
+    <div className="w-full">
 
       {/* LOADING */}
       {progressPending && (
@@ -30,9 +30,10 @@ export default function DataTable({
         </div>
       )}
 
-      {/* TABLE */}
-      <div className="w-full overflow-hidden">
-        <table className="w-full table-fixed text-sm">
+      {/* TABLE WRAPPER */}
+      <div className="w-full overflow-x-auto lg:overflow-visible">
+
+        <table className="w-full lg:table-fixed min-w-[650px] lg:min-w-0 text-sm border-collapse">
 
           {/* HEADER */}
           <thead className="bg-gray-100 border-b">
@@ -40,10 +41,8 @@ export default function DataTable({
               {columns.map((col, i) => (
                 <th
                   key={i}
-                  style={{
-                    width: col.width,
-                  }}
-                  className="px-4 py-3 text-left font-medium text-gray-600 whitespace-normal break-words"
+                  style={{ width: col.width }}
+                  className="px-4 py-3 text-left font-medium text-gray-600 whitespace-nowrap"
                 >
                   {col.header || col.name}
                 </th>
@@ -72,10 +71,8 @@ export default function DataTable({
                   {columns.map((col, i) => (
                     <td
                       key={i}
-                      style={{
-                        width: col.width,
-                      }}
-                      className="px-4 py-3 align-middle min-w-0 whitespace-normal break-words"
+                      style={{ width: col.width }}
+                      className="px-4 py-3 align-middle whitespace-normal break-words"
                     >
                       {col.cell
                         ? col.cell(row)
@@ -90,15 +87,17 @@ export default function DataTable({
               ))
             )}
           </tbody>
+
         </table>
       </div>
 
-      <div className="flex items-center justify-between mt-3 px-2">
+      {/* PAGINATION */}
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-2 mt-3 px-2">
 
         <button
           onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
           disabled={currentPage === 1}
-          className="px-3 py-1 border rounded disabled:opacity-50"
+          className="px-3 py-1 border rounded disabled:opacity-50 w-full sm:w-auto"
         >
           Previous
         </button>
@@ -110,12 +109,13 @@ export default function DataTable({
         <button
           onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
           disabled={currentPage === totalPages || totalPages === 0}
-          className="px-3 py-1 border rounded disabled:opacity-50"
+          className="px-3 py-1 border rounded disabled:opacity-50 w-full sm:w-auto"
         >
           Next
         </button>
 
       </div>
+
     </div>
   );
 }

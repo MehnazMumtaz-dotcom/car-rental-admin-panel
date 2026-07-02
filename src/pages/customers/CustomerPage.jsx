@@ -146,9 +146,7 @@ export default function CustomerPage() {
   };
 
   const confirmDelete = () => {
-    setCustomerList((prev) =>
-      prev.filter((c) => c.id !== deleteRow.id)
-    );
+    setCustomerList((prev) => prev.filter((c) => c.id !== deleteRow.id));
 
     setSelectedCustomer((prev) =>
       prev?.id === deleteRow.id ? null : prev
@@ -163,111 +161,110 @@ export default function CustomerPage() {
     setDeleteRow(null);
   };
 
-  // ✅ UPDATED COLUMNS (NO CUT, NO WRAP, PROPER WIDTH)
-  // ✅ UPDATED COLUMNS (BALANCED WIDTH + LAST COLUMNS FIXED)
-const columns = [
-  {
-    header: "ID",
-    width: "6%",
-    cell: (row) => (
-      <span className="whitespace-nowrap font-semibold">{row.id}</span>
-    ),
-  },
-  {
-    header: "Name",
-    width: "13%",
-    cell: (row) => (
-      <span className="whitespace-nowrap font-semibold">{row.name}</span>
-    ),
-  },
-  {
-    header: "Phone",
-    width: "12%",
-    cell: (row) => (
-      <span className="whitespace-nowrap">{row.phone}</span>
-    ),
-  },
-  {
-    header: "Email",
-    width: "19%",
-    cell: (row) => (
-      <span className="whitespace-nowrap">{row.email}</span>
-    ),
-  },
-  {
-    header: "Bookings",
-    width: "11%",
-    cell: (row) => (
-      <span className="whitespace-nowrap text-center">{row.bookings}</span>
-    ),
-  },
-  {
-    header: "Spent",
-    width: "11%",
-    cell: (row) => (
-      <span className="whitespace-nowrap">
-        Rs {row.spent.toLocaleString()}
-      </span>
-    ),
-  },
-  {
-    header: "Status",
-    width: "10%",
-    cell: (row) => {
-      const styles = {
-        active: "bg-green-100 text-green-700",
-        suspended: "bg-red-100 text-red-700",
-        flagged: "bg-yellow-100 text-yellow-700",
-      };
-
-      return (
-        <span
-          className={`px-2 py-1 rounded-full text-xs font-semibold whitespace-nowrap ${
-            styles[row.status] || "bg-gray-100 text-gray-700"
-          }`}
-        >
-          {row.status}
-        </span>
-      );
+  const columns = [
+    {
+      header: "ID",
+      width: "6%",
+      cell: (row) => (
+        <span className="whitespace-nowrap font-semibold">{row.id}</span>
+      ),
     },
-  },
-  {
-    header: "Joined",
-    width: "12%",
-    cell: (row) => (
-      <span className="whitespace-nowrap">{row.joined}</span>
-    ),
-  },
-  {
-    header: "Actions",
-    width: "12%", // 🔥 increased
-    cell: (row) => (
-      <div className="flex items-center justify-center gap-3 whitespace-nowrap">
-        <button onClick={() => handleRowClick(row)} className="text-blue-500">
-          <Eye size={18} />
-        </button>
-        <button onClick={() => handleRowClick(row)} className="text-amber-500">
-          <Pencil size={18} />
-        </button>
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            setDeleteRow(row);
-            setShowConfirm(true);
-          }}
-          className="text-red-500"
-        >
-          <Trash2 size={18} />
-        </button>
-      </div>
-    ),
-  },
-];
-  return (
-    <div className="bg-background min-h-screen p-4 md:p-6 w-full">
-      <div className="bg-surface rounded-xl shadow-card p-5 md:p-6 w-full min-w-0">
+    {
+      header: "Name",
+      width: "13%",
+      cell: (row) => (
+        <span className="whitespace-nowrap font-semibold">{row.name}</span>
+      ),
+    },
+    {
+      header: "Phone",
+      width: "12%",
+      cell: (row) => <span className="whitespace-nowrap">{row.phone}</span>,
+    },
+    {
+      header: "Email",
+      width: "19%",
+      cell: (row) => <span className="whitespace-nowrap">{row.email}</span>,
+    },
+    {
+      header: "Bookings",
+      width: "11%",
+      cell: (row) => (
+        <span className="whitespace-nowrap text-center">
+          {row.bookings}
+        </span>
+      ),
+    },
+    {
+      header: "Spent",
+      width: "11%",
+      cell: (row) => (
+        <span className="whitespace-nowrap">
+          Rs {row.spent.toLocaleString()}
+        </span>
+      ),
+    },
+    {
+      header: "Status",
+      width: "10%",
+      cell: (row) => {
+        const styles = {
+          active: "bg-green-100 text-green-700",
+          suspended: "bg-red-100 text-red-700",
+          flagged: "bg-yellow-100 text-yellow-700",
+        };
 
-        <div className="flex flex-wrap md:flex-nowrap gap-4 mb-6">
+        return (
+          <span
+            className={`px-2 py-1 rounded-full text-xs font-semibold whitespace-nowrap ${
+              styles[row.status] || "bg-gray-100 text-gray-700"
+            }`}
+          >
+            {row.status}
+          </span>
+        );
+      },
+    },
+    {
+      header: "Joined",
+      width: "12%",
+      cell: (row) => (
+        <span className="whitespace-nowrap">{row.joined}</span>
+      ),
+    },
+    {
+      header: "Actions",
+      width: "12%",
+      cell: (row) => (
+        <div className="flex items-center justify-center gap-3 whitespace-nowrap">
+          <button onClick={() => handleRowClick(row)} className="text-blue-500">
+            <Eye size={18} />
+          </button>
+          <button onClick={() => handleRowClick(row)} className="text-amber-500">
+            <Pencil size={18} />
+          </button>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setDeleteRow(row);
+              setShowConfirm(true);
+            }}
+            className="text-red-500"
+          >
+            <Trash2 size={18} />
+          </button>
+        </div>
+      ),
+    },
+  ];
+
+  return (
+    <div className="bg-background min-h-screen p-3 sm:p-4 md:p-6 w-full">
+
+      <div className="bg-surface rounded-xl shadow-card p-4 sm:p-5 md:p-6 w-full min-w-0">
+
+        {/* FILTERS */}
+        <div className="flex flex-col sm:flex-row flex-wrap gap-3 mb-6">
           <SearchInput
             value={searchQuery}
             onChange={setSearchQuery}
@@ -288,16 +285,20 @@ const columns = [
           <Button onClick={resetFilters}>Reset</Button>
         </div>
 
-        {/* ✅ IMPORTANT WRAPPER FIX */}
-        <div className="w-full min-w-0">
-          <DataTable
-            columns={columns}
-            data={filteredCustomers}
-            onRowClick={handleRowClick}
-          />
+        {/* TABLE RESPONSIVE WRAPPER */}
+        <div className="w-full overflow-x-auto">
+          <div className="min-w-[900px]">
+            <DataTable
+              columns={columns}
+              data={filteredCustomers}
+              onRowClick={handleRowClick}
+            />
+          </div>
         </div>
+
       </div>
 
+      {/* DRAWER */}
       {isDrawerOpen && (
         <CustomerDrawer
           isOpen={isDrawerOpen}
@@ -310,6 +311,7 @@ const columns = [
         />
       )}
 
+      {/* MODAL */}
       {isModalOpen && (
         <WalkInRegistration
           isOpen={isModalOpen}
@@ -318,6 +320,7 @@ const columns = [
         />
       )}
 
+      {/* CONFIRM */}
       {showConfirm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div
