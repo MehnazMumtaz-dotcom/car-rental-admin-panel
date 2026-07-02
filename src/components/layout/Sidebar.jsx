@@ -29,10 +29,9 @@ export default function Sidebar() {
   const {
     sidebarOpen,
     toggleSidebar,
-    setSidebarOpen, // ✅ NEW
+    setSidebarOpen,
     theme,
     setTheme,
-    isMobile,
   } = useUIStore();
 
   const location = useLocation();
@@ -41,19 +40,12 @@ export default function Sidebar() {
   const [openProfile, setOpenProfile] = useState(false);
   const profileRef = useRef(null);
 
-  // ✅ FIX 1: App load pe mobile sidebar closed
+  // ✅ MOBILE ONLY route close
   useEffect(() => {
-    if (isMobile) {
+    if (window.innerWidth < 768) {
       setSidebarOpen(false);
     }
-  }, [isMobile]);
-
-  // ✅ FIX 2: Route change pe auto close
-  useEffect(() => {
-    if (isMobile) {
-      setSidebarOpen(false);
-    }
-  }, [location]);
+  }, [location.pathname]);
 
   // outside click profile close
   useEffect(() => {
@@ -72,9 +64,9 @@ export default function Sidebar() {
     navigate("/login", { replace: true });
   };
 
-  // ✅ FIX 3: Click pe close
+  // ✅ MOBILE ONLY click close
   const handleItemClick = () => {
-    if (isMobile) {
+    if (window.innerWidth < 768) {
       setSidebarOpen(false);
     }
   };
@@ -92,9 +84,10 @@ export default function Sidebar() {
 
   return (
     <>
+      {/* ✅ overlay (mobile only) */}
       {sidebarOpen && (
         <div
-          onClick={() => setSidebarOpen(false)} // ✅ FIX
+          onClick={() => setSidebarOpen(false)}
           className="fixed inset-0 bg-black/40 z-40 md:hidden"
         />
       )}
@@ -129,9 +122,10 @@ export default function Sidebar() {
             )}
           </div>
 
+          {/* desktop toggle */}
           <div className="hidden md:block">
             <button
-              onClick={toggleSidebar} // ✅ desktop pe toggle sahi hai
+              onClick={toggleSidebar}
               className="p-1 rounded hover:bg-secondaryLight"
             >
               {sidebarOpen ? (
@@ -199,48 +193,6 @@ export default function Sidebar() {
 
           {openProfile && (
             <div className="absolute bottom-full left-2 right-2 mb-2 bg-white text-black rounded-xl shadow-xl p-4 z-50">
-              <div className="mb-3">
-                <p className="font-semibold text-sm">
-                  {user?.name || "Admin User"}
-                </p>
-                <p className="text-xs text-gray-500">
-                  {user?.email || "admin@email.com"}
-                </p>
-              </div>
-
-              <div className="mb-3">
-                <p className="text-xs text-gray-400 mb-2">Appearance</p>
-
-                <div className="flex bg-gray-100 rounded-lg p-1">
-                  <button
-                    onClick={() => setTheme("light")}
-                    className={`flex-1 py-1 rounded ${
-                      theme === "light" ? "bg-white shadow" : ""
-                    }`}
-                  >
-                    <Sun size={14} />
-                  </button>
-
-                  <button
-                    onClick={() => setTheme("dark")}
-                    className={`flex-1 py-1 rounded ${
-                      theme === "dark" ? "bg-white shadow" : ""
-                    }`}
-                  >
-                    <Moon size={14} />
-                  </button>
-
-                  <button
-                    onClick={() => setTheme("system")}
-                    className={`flex-1 py-1 rounded ${
-                      theme === "system" ? "bg-white shadow" : ""
-                    }`}
-                  >
-                    <Monitor size={14} />
-                  </button>
-                </div>
-              </div>
-
               <button
                 onClick={handleLogout}
                 className="w-full flex items-center gap-2 text-red-500 hover:bg-red-100 p-2 rounded-lg text-sm"

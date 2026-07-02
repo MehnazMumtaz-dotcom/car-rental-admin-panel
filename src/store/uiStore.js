@@ -1,35 +1,19 @@
 import { create } from "zustand";
 
-export const useUIStore = create((set, get) => ({
+export const useUIStore = create((set) => ({
+  // ✅ Sidebar (desktop only control)
   sidebarOpen: true,
-  isMobile: false,
 
-  theme: localStorage.getItem("theme") || "system",
+  toggleSidebar: () =>
+    set((state) => ({ sidebarOpen: !state.sidebarOpen })),
 
-  setIsMobile: (value) => {
-    set({
-      isMobile: value,
-      sidebarOpen: value ? false : true,
-    });
-  },
-
-  // ✅ NEW (IMPORTANT 🔥)
   setSidebarOpen: (value) => set({ sidebarOpen: value }),
-
-  toggleSidebar: () => {
-    const { sidebarOpen } = get();
-    set({ sidebarOpen: !sidebarOpen });
-  },
 
   openSidebar: () => set({ sidebarOpen: true }),
   closeSidebar: () => set({ sidebarOpen: false }),
 
-  handleRouteChange: () => {
-    const { isMobile } = get();
-    if (isMobile) {
-      set({ sidebarOpen: false });
-    }
-  },
+  // ✅ Theme (same as your code)
+  theme: localStorage.getItem("theme") || "system",
 
   setTheme: (theme) => {
     const root = document.documentElement;
@@ -37,7 +21,8 @@ export const useUIStore = create((set, get) => ({
     root.classList.remove("dark");
 
     if (window.__themeListener) {
-      window.matchMedia("(prefers-color-scheme: dark)")
+      window
+        .matchMedia("(prefers-color-scheme: dark)")
         .removeEventListener("change", window.__themeListener);
       window.__themeListener = null;
     }
