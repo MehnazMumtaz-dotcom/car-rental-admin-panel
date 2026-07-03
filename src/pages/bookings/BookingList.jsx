@@ -3,18 +3,13 @@ import Select from "../../components/ui/Select";
 import Button from "../../components/ui/Button";
 import CalendarToolbar from "./components/CalendarToolbar";
 import VehicleFilter from "./components/VehicleFilter";
-
-// ✅ ADD THIS IMPORT
 import CalendarView from "./components/CalendarView";
 
 export default function BookingList() {
   const [view, setView] = useState("monthly");
   const [selectedCar, setSelectedCar] = useState("");
-
-  // ✅ ADD THIS STATE
   const [currentDate, setCurrentDate] = useState(new Date());
 
-  // ✅ ADD NAVIGATION FUNCTIONS
   const handlePrev = () => {
     const newDate = new Date(currentDate);
     if (view === "monthly") {
@@ -40,10 +35,8 @@ export default function BookingList() {
   };
 
   return (
-    <div className="p-6">
-      {/* Page Title */}
-      <h1 className="text-2xl font-semibold mb-4">Bookings</h1>
-
+    <div className="p-6 pt-0"> {/* 🔥 TOP PADDING REMOVE */}
+      
       {/* 🔹 FILTER BAR */}
       <div className="bg-white border rounded-lg p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
         
@@ -75,7 +68,7 @@ export default function BookingList() {
           </div>
         </div>
 
-        {/* ✅ UPDATED TOOLBAR (props add kiye bas) */}
+        {/* Toolbar */}
         <CalendarToolbar
           view={view}
           onPrev={handlePrev}
@@ -85,18 +78,12 @@ export default function BookingList() {
         />
       </div>
 
-      {/* 🔹 CALENDAR CONTAINER */}
+      {/* 🔹 CALENDAR */}
       <div className="bg-white border rounded-lg p-6 min-h-[500px]">
-        
-        {/* ❌ OLD TEXT REMOVE */}
-        {/* Calendar will render here (Phase 2) */}
-
-        {/* ✅ NEW CALENDAR */}
         <CalendarView
           currentDate={currentDate}
           view={view}
         />
-
       </div>
     </div>
   );
