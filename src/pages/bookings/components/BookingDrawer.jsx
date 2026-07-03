@@ -1,7 +1,7 @@
 import React from "react";
 import { X } from "lucide-react";
 import useBookingStore from "../../../store/bookingStore";
-import Button from "../../../components/ui/Button";
+import Button from "../../components/ui/Button";
 
 export default function BookingDrawer() {
   const {
