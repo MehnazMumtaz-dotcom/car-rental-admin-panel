@@ -144,14 +144,13 @@ export default function CalendarView({
   return (
     <div className="bg-white border rounded-xl shadow-sm p-3 sm:p-4 mt-4">
 
-      {/* DAYS HEADER */}
+
       <div className="grid grid-cols-7 text-[10px] sm:text-sm text-gray-500 mb-2">
         {dayNames.map((d) => (
           <div key={d} className="text-center">{d}</div>
         ))}
       </div>
 
-      {/* GRID */}
       <div className="grid grid-cols-7 border relative overflow-x-auto sm:overflow-visible">
 
         {days.map((dateObj, i) => {
