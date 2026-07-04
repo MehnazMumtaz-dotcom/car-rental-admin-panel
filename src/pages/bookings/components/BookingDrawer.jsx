@@ -1,96 +1,169 @@
-import React from "react";
-import { X } from "lucide-react";
-import useBookingStore from "../../../store/bookingStore";
-import Button from "../../components/ui/Button";
+import React, { useState } from "react";
+import ConfirmDialog from "../../../components/ui/ConfirmDialog";
 
-export default function BookingDrawer() {
-  const {
-    isDrawerOpen,
-    selectedBooking,
-    closeDrawer,
-    deleteBooking,
-  } = useBookingStore();
+export default function BookingDrawer({
+  booking,
+  onClose,
+  onDelete,
+  onEdit,
+  onOverride
+}) {
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [showOverrideConfirm, setShowOverrideConfirm] = useState(false);
 
-  if (!isDrawerOpen || !selectedBooking) return null;
+  if (!booking) return null;
 
-  const handleDelete = () => {
-    const confirmDelete = window.confirm("Are you sure to delete?");
-    if (!confirmDelete) return;
+  const handleDeleteClick = () => setShowConfirm(true);
 
-    deleteBooking(selectedBooking.id);
-    closeDrawer();
+  const handleConfirmDelete = () => {
+    onDelete?.(booking.id);
+    setShowConfirm(false);
+  };
+
+  const handleOverrideClick = () => {
+    setShowOverrideConfirm(true);
+  };
+
+  const handleConfirmOverride = () => {
+    onOverride?.(booking);
+    setShowOverrideConfirm(false);
   };
 
   return (
     <>
-      {/* Overlay */}
+      {/* BACKDROP */}
       <div
-        className="fixed inset-0 bg-black/30 z-40"
-        onClick={closeDrawer}
+        className="fixed inset-0 bg-black/40 z-[999]"
+        onClick={onClose}
       />
 
-      {/* Drawer */}
-      <div className="fixed top-0 right-0 h-full w-[400px] bg-white shadow-lg z-50 p-5 flex flex-col">
-        
-        {/* Header */}
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-lg font-semibold">Booking Details</h2>
-          <button onClick={closeDrawer}>
-            <X size={20} />
+      {/* DRAWER */}
+      <div
+        className="
+          fixed right-0 top-0 h-full
+          w-full sm:w-[380px]
+          bg-white shadow-xl z-[1000]
+          p-4 sm:p-5 overflow-y-auto
+        "
+      >
+
+        {/* HEADER */}
+        <div className="flex justify-between items-center border-b pb-2 mb-4">
+          <h2 className="text-base sm:text-lg font-bold">
+            Booking Details
+          </h2>
+          <button
+            onClick={onClose}
+            className="text-lg sm:text-xl"
+          >
+            ✖
           </button>
         </div>
 
-        {/* Content */}
-        <div className="flex-1 space-y-4">
-
+        {/* INFO */}
+        <div className="space-y-3 text-sm">
           <div>
-            <p className="text-sm text-gray-500">Customer</p>
-            <p className="font-medium">{selectedBooking.customerName}</p>
+            <p className="text-gray-500 text-xs sm:text-sm">Customer</p>
+            <p className="font-semibold">{booking.name}</p>
           </div>
 
           <div>
-            <p className="text-sm text-gray-500">Car</p>
-            <p className="font-medium">{selectedBooking.carName}</p>
+            <p className="text-gray-500 text-xs sm:text-sm">Vehicle</p>
+            <p className="font-semibold">{booking.vehicle}</p>
           </div>
 
           <div>
-            <p className="text-sm text-gray-500">Start Date</p>
-            <p className="font-medium">{selectedBooking.startDate}</p>
+            <p className="text-gray-500 text-xs sm:text-sm">City</p>
+            <p className="font-semibold">{booking.city}</p>
           </div>
 
           <div>
-            <p className="text-sm text-gray-500">End Date</p>
-            <p className="font-medium">{selectedBooking.endDate}</p>
+            <p className="text-gray-500 text-xs sm:text-sm">Start Date</p>
+            <p className="font-semibold">{booking.startDate}</p>
           </div>
 
           <div>
-            <p className="text-sm text-gray-500">Status</p>
-            <span
-              className={`px-2 py-1 text-xs rounded-full ${
-                selectedBooking.status === "confirmed"
-                  ? "bg-green-100 text-green-600"
-                  : selectedBooking.status === "pending"
-                  ? "bg-yellow-100 text-yellow-600"
-                  : "bg-red-100 text-red-600"
-              }`}
-            >
-              {selectedBooking.status}
-            </span>
+            <p className="text-gray-500 text-xs sm:text-sm">End Date</p>
+            <p className="font-semibold">{booking.endDate}</p>
           </div>
 
+          <div>
+            <p className="text-gray-500 text-xs sm:text-sm">Status</p>
+            <p className="font-semibold">{booking.status}</p>
+          </div>
         </div>
 
-        {/* Footer Actions */}
-        <div className="flex gap-2 mt-4">
-          <Button className="w-full">Edit</Button>
-          <Button
-            className="w-full bg-red-500 hover:bg-red-600 text-white"
-            onClick={handleDelete}
+        {/* ACTIONS */}
+        <div className="mt-6 flex flex-col sm:flex-row gap-2">
+
+          <button
+            onClick={() => onEdit?.(booking)}
+            className="flex-1 bg-yellow-500 text-white py-2 rounded text-sm"
+          >
+            Edit
+          </button>
+
+          <button
+            onClick={handleDeleteClick}
+            className="flex-1 bg-red-500 text-white py-2 rounded text-sm"
           >
             Delete
-          </Button>
+          </button>
+
+          <button
+            onClick={handleOverrideClick}
+            className="flex-1 bg-purple-600 text-white py-2 rounded text-sm"
+          >
+            Override
+          </button>
+
         </div>
       </div>
+
+      {/* DELETE CONFIRM */}
+      <ConfirmDialog
+        open={showConfirm}
+        title="Delete Booking"
+        message="Are you sure you want to delete this booking?"
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setShowConfirm(false)}
+      />
+
+      {/* OVERRIDE CONFIRM */}
+      {showOverrideConfirm && (
+        <div className="fixed inset-0 z-[1100] flex items-center justify-center bg-black/40 p-3">
+
+          <div className="bg-white p-4 rounded shadow-lg w-full max-w-[320px]">
+
+            <h3 className="font-bold text-lg mb-2">
+              Override Booking
+            </h3>
+
+            <p className="text-sm text-gray-600 mb-4">
+              This will override existing bookings and may cause conflicts. Continue?
+            </p>
+
+            <div className="flex flex-col sm:flex-row justify-end gap-2">
+
+              <button
+                onClick={() => setShowOverrideConfirm(false)}
+                className="px-3 py-1 border rounded text-sm"
+              >
+                Cancel
+              </button>
+
+              <button
+                onClick={handleConfirmOverride}
+                className="px-3 py-1 bg-purple-600 text-white rounded text-sm"
+              >
+                Confirm
+              </button>
+
+            </div>
+
+          </div>
+        </div>
+      )}
     </>
   );
 }
