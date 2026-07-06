@@ -154,7 +154,7 @@ export default function CalendarView({
   };
 
   return (
-    <div className="bg-white border rounded-xl shadow-sm p-3 sm:p-4 mt-4">
+    <div className="bg-white border rounded-xl shadow-sm p-3 sm:p-4 mt-4 w-full overflow-hidden">
 
       <div className="grid grid-cols-7 text-[10px] sm:text-sm text-gray-500 mb-2">
         {dayNames.map((d) => (
@@ -221,16 +221,23 @@ export default function CalendarView({
                       e.stopPropagation();
                       onBookingClick && onBookingClick(b);
                     }}
-                    className={`absolute top-8 left-0 z-10 px-1 sm:px-2 py-[2px] rounded border text-[8px] sm:text-[10px] flex items-center whitespace-nowrap
+                    className={`absolute top-8 left-0 z-10 px-1 sm:px-2 py-[2px] rounded border text-[7px] min-[400px]:text-[8px] sm:text-[10px] flex items-center justify-between gap-1 overflow-hidden
                       ${clash ? "bg-red-500 text-white" : getStatusColor(status)}
                     `}
-                    style={{ width: `${segmentLength * 100}%` }}
+                    style={{ 
+                      width: `calc(${segmentLength * 100}% - 2px)`,
+                      marginLeft: '1px'
+                    }}
                   >
-                    <span className="truncate max-w-[45px] sm:max-w-none">
-                      {b.name} ({calculateDays(b.startDate, b.endDate)})
+                    <span className="truncate flex-1 min-w-0">
+                      {b.name}
                     </span>
 
-                    <span className="flex items-center gap-1 ml-1 sm:ml-2">
+                    <span className="flex-shrink-0 font-medium">
+                      ({calculateDays(b.startDate, b.endDate)})
+                    </span>
+
+                    <span className="hidden min-[500px]:flex items-center gap-1 ml-1 flex-shrink-0">
                       {clash && <AlertTriangle size={10} />}
                       {clash ? "Conflict" : status}
                     </span>
