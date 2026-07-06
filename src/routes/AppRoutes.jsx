@@ -10,7 +10,6 @@ import SubAdmins from "../pages/subadmins/SubAdminList";
 import Config from "../pages/config/config";
 import Reports from "../pages/reports/ReportsDashboard";
 import Vendors from "../pages/vendors/VendorList";
-import SLASettings from "../pages/config/SLASettings";
 
 import Login from "../pages/auth/login";
 
@@ -27,7 +26,6 @@ export default function AppRoutes() {
         <Route path="customers" element={<CustomerPage />} />
         <Route path="subadmins" element={<SubAdmins />} />
         <Route path="config" element={<Config />} />
-        <Route path="sla" element={<SLASettings />} />
         <Route path="reports" element={<Reports />} />
         <Route path="vendors" element={<Vendors />} />
 

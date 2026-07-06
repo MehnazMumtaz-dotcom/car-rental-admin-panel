@@ -1,7 +1,17 @@
 import React, { useState } from "react";
 import ConfirmDialog from "../../../components/ui/ConfirmDialog";
 import { Trash2, Pencil, X, CalendarDays, AlertTriangle } from "lucide-react";
+const calculateDays = (start, end) => {
+  if (!start || !end) return "";
 
+  const startDate = new Date(start);
+  const endDate = new Date(end);
+
+  const diffTime = endDate - startDate;
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+
+  return `${diffDays} days`;
+};
 export default function CalendarView({
   filters = {},
   bookings = [],
