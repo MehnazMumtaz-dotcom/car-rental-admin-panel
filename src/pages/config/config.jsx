@@ -1,7 +1,7 @@
 import React from "react";
 import { CheckCircle2, Loader2, AlertCircle } from "lucide-react";
 
-import { useConfigStore } from "../../store/configStore";
+import { useConfigStore } from "../../store/ConfigStore";
 import CommisionConfig from "./CommisionConfig";
 import PricingConfig from "./PricingConfig";
 import SLASettings from "./SLASettings";

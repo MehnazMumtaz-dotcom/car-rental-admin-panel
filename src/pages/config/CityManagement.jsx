@@ -1,6 +1,6 @@
 import React from "react";
 import { Building2 } from "lucide-react";
-import { useConfigStore } from "../../store/configStore";
+import { useConfigStore } from "../../store/ConfigStore";
 import StatusBadge from "../../components/ui/StatusBadge";
 
 function ToggleSwitch({ enabled, onChange }) {
