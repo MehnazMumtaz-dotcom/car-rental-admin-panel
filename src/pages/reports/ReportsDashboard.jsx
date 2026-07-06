@@ -3,7 +3,6 @@ import StatCard from "./components/StatCard";
 import BookingTrendChart from "./components/BookingTrendChart";
 import RevenueByCityChart from "./components/RevenueByCityChart";
 
-// ✅ NEW IMPORTS
 import ComplaintSummaryTable from "./components/ComplaintSummaryTable";
 import RevenueByCityTable from "./components/RevenueByCityTable";
 
@@ -63,20 +62,17 @@ export default function ReportDashboard() {
   return (
     <div className="p-3 sm:p-4 md:p-6 bg-background min-h-screen w-full overflow-x-hidden">
 
-      {/* ✅ STAT CARDS */}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-5 md:gap-6">
         {stats.map((item, i) => (
           <StatCard key={i} {...item} />
         ))}
       </div>
 
-      {/* ✅ CHARTS */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-5 md:gap-6 mt-6">
         <BookingTrendChart />
         <RevenueByCityChart />
       </div>
 
-      {/* ✅ TABLES */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-5 md:gap-6 mt-6">
         <ComplaintSummaryTable />
         <RevenueByCityTable />

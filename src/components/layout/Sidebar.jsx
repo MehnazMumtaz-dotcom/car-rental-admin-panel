@@ -14,6 +14,7 @@ import {
   ChevronUp,
   ChevronsLeft,
   ChevronsRight,
+  User,
 } from "lucide-react";
 
 import { useAuthStore } from "../../store/authStore";
@@ -39,15 +40,12 @@ export default function Sidebar() {
 
   const [openProfile, setOpenProfile] = useState(false);
   const profileRef = useRef(null);
-
-  // ✅ MOBILE ONLY route close
   useEffect(() => {
     if (window.innerWidth < 768) {
       setSidebarOpen(false);
     }
   }, [location.pathname]);
 
-  // outside click profile close
   useEffect(() => {
     const handleClick = (e) => {
       if (profileRef.current && !profileRef.current.contains(e.target)) {
@@ -64,7 +62,6 @@ export default function Sidebar() {
     navigate("/login", { replace: true });
   };
 
-  // ✅ MOBILE ONLY click close
   const handleItemClick = () => {
     if (window.innerWidth < 768) {
       setSidebarOpen(false);
@@ -76,15 +73,14 @@ export default function Sidebar() {
     { icon: AlertCircle, text: "Complaints", path: "/complaints" },
     { icon: Calendar, text: "Booking Calendar", path: "/bookings" },
     { icon: Users, text: "Customers", path: "/customers" },
-    { icon: UserCog, text: "Sub Admins", path: "/admins" },
+    { icon: UserCog, text: "Sub Admins", path: "/subadmins" },
     { icon: Settings, text: "Config Panel", path: "/config" },
     { icon: BarChart3, text: "Reports", path: "/reports" },
-    { icon: Timer, text: "SLA Timers", path: "/sla" },
+    { icon: Timer, text: "SLA Timers", path: "/sla-timers" },
   ];
 
   return (
     <>
-      {/* ✅ overlay (mobile only) */}
       {sidebarOpen && (
         <div
           onClick={() => setSidebarOpen(false)}
@@ -101,7 +97,6 @@ export default function Sidebar() {
             : "w-20 -translate-x-full md:translate-x-0"
         }`}
       >
-        {/* LOGO */}
         <div className="flex items-center justify-between px-4 py-5 border-b border-secondaryLight">
           <div
             className={`flex items-center ${
@@ -122,7 +117,6 @@ export default function Sidebar() {
             )}
           </div>
 
-          {/* desktop toggle */}
           <div className="hidden md:block">
             <button
               onClick={toggleSidebar}
@@ -137,11 +131,13 @@ export default function Sidebar() {
           </div>
         </div>
 
-        {/* MENU */}
         <nav className="flex-1 px-2 py-3 space-y-1 overflow-y-auto">
           {menuItems.map((item) => {
             const Icon = item.icon;
-            const active = location.pathname === item.path;
+            
+            const active = item.path === "/" 
+              ? location.pathname === "/" 
+              : location.pathname.startsWith(item.path);
 
             return (
               <SidebarItem
@@ -156,8 +152,6 @@ export default function Sidebar() {
             );
           })}
         </nav>
-
-        {/* PROFILE */}
         <div
           ref={profileRef}
           className="relative border-t border-secondaryLight p-3"
@@ -192,10 +186,23 @@ export default function Sidebar() {
           </div>
 
           {openProfile && (
-            <div className="absolute bottom-full left-2 right-2 mb-2 bg-white text-black rounded-xl shadow-xl p-4 z-50">
+            <div className="absolute bottom-full left-2 right-2 mb-2 bg-white text-black rounded-xl shadow-xl p-2 z-50 flex flex-col gap-1">
+              
+              <Link
+                to="/profile-settings"
+                onClick={() => setOpenProfile(false)}
+                className="w-full flex items-center gap-2 text-red-500 hover:bg-red-100 p-2 rounded-lg text-sm transition"
+              >
+                <User size={16} />
+                Profile Settings
+              </Link>
+
+              {/* Separator */}
+              <hr className="border-gray-100 my-1" />
+
               <button
                 onClick={handleLogout}
-                className="w-full flex items-center gap-2 text-red-500 hover:bg-red-100 p-2 rounded-lg text-sm"
+                className="w-full flex items-center gap-2 text-red-500 hover:bg-red-100 p-2 rounded-lg text-sm transition"
               >
                 <LogOut size={16} />
                 Logout

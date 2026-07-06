@@ -32,10 +32,9 @@ const ComplaintSummaryTable = () => {
   return (
     <div className="bg-white p-3 sm:p-4 md:p-5 rounded-xl border shadow-sm w-full">
 
-      {/* Header */}
+
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 mb-3">
 
-        {/* ✅ TITLE COLOR CHANGED TO GREEN */}
         <h3 className="font-semibold text-sm sm:text-base text-green-700 flex items-center gap-2">
           <AlertCircle size={18} className="text-red-500" />
           Complaint Summary
@@ -49,8 +48,6 @@ const ComplaintSummaryTable = () => {
         </button>
 
       </div>
-
-      {/* Table */}
       <div className="overflow-x-auto sm:overflow-visible">
 
         <table className="w-full text-xs sm:text-sm">
@@ -99,7 +96,6 @@ const ComplaintSummaryTable = () => {
 
       </div>
 
-      {/* Footer */}
       <div className="text-center text-xs text-gray-500 mt-3">
         Showing {visibleData.length} of {data.length}
       </div>

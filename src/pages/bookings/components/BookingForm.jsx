@@ -136,18 +136,15 @@ export default function BookingForm({
 
   return createPortal(
     <>
-      {/* BACKDROP */}
+\
       <div className="fixed inset-0 bg-black/60 z-[9990]" />
 
-      {/* MODAL */}
       <div className="fixed inset-0 z-[10000] flex items-center justify-center p-2 sm:p-4">
 
         <div
           className="w-full sm:w-[520px] max-h-[90vh] bg-white rounded-xl shadow-2xl overflow-y-auto p-3 sm:p-5"
           onClick={(e) => e.stopPropagation()}
         >
-
-          {/* HEADER */}
           <div className="flex justify-between items-center mb-3 border-b pb-2">
             <h2 className="font-bold text-base sm:text-lg">
               {editingBooking ? "Edit Booking" : "Add Booking"}
@@ -155,7 +152,6 @@ export default function BookingForm({
             <button onClick={onClose}>✖</button>
           </div>
 
-          {/* INPUTS */}
           {[
             ["vehicle", "Vehicle"],
             ["name", "Customer Name"],
@@ -177,7 +173,6 @@ export default function BookingForm({
             </div>
           ))}
 
-          {/* DATES */}
           <input
             type="date"
             className="w-full border p-2 mb-2 text-sm"
@@ -192,7 +187,6 @@ export default function BookingForm({
             onChange={(e) => handleChange("endDate", e.target.value)}
           />
 
-          {/* TIMES */}
           <input
             type="time"
             className="w-full border p-2 mb-2 text-sm"
@@ -207,7 +201,6 @@ export default function BookingForm({
             onChange={(e) => handleChange("dropTime", e.target.value)}
           />
 
-          {/* BUTTONS */}
           <div className="flex flex-col sm:flex-row gap-2 mt-4">
             <button
               onClick={onClose}
@@ -227,7 +220,6 @@ export default function BookingForm({
         </div>
       </div>
 
-      {/* CONFLICT MODAL */}
       {conflictData && (
         <ConflictModal
           conflict={conflictData}

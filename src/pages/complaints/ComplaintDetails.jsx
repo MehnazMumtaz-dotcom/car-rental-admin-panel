@@ -75,8 +75,6 @@ export default function ComplaintDetails({ complaint, onClose }) {
 
   return (
     <div className="h-full flex flex-col p-3 sm:p-4 overflow-y-auto">
-
-      {/* HEADER */}
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 border-b pb-2">
 
         <div className="flex items-center gap-2 font-semibold text-sm sm:text-base">
@@ -88,11 +86,7 @@ export default function ComplaintDetails({ complaint, onClose }) {
           <X size={18} />
         </button>
       </div>
-
-      {/* CONTENT */}
       <div className="flex flex-col flex-1 gap-2 mt-2">
-
-        {/* CUSTOMER INFO */}
         <div>
           <div className="flex items-center gap-2 font-medium text-sm">
             <User size={16} />
@@ -105,7 +99,6 @@ export default function ComplaintDetails({ complaint, onClose }) {
           </div>
         </div>
 
-        {/* AI SUMMARY */}
         <div className="border rounded-md p-2 bg-gray-50">
           <div className="flex items-center gap-2 text-sm font-medium">
             <Bot size={16} />
@@ -116,8 +109,6 @@ export default function ComplaintDetails({ complaint, onClose }) {
             {getAISummary()}
           </div>
         </div>
-
-        {/* STATUS */}
         <select
           value={status}
           onChange={(e) => {
@@ -132,7 +123,6 @@ export default function ComplaintDetails({ complaint, onClose }) {
           <option>Escalated</option>
         </select>
 
-        {/* ASSIGN */}
         <select
           value={assignedTo}
           onChange={(e) => {
@@ -147,7 +137,6 @@ export default function ComplaintDetails({ complaint, onClose }) {
           <option value="senior-admin">Senior Admin</option>
         </select>
 
-        {/* NOTES */}
         <div className="flex flex-col flex-1 min-h-[120px] sm:min-h-[150px]">
           <label className="text-xs mb-1">Notes</label>
 
@@ -163,7 +152,6 @@ export default function ComplaintDetails({ complaint, onClose }) {
         </div>
       </div>
 
-      {/* ACTION BUTTONS */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-3">
 
         <button
@@ -189,7 +177,6 @@ export default function ComplaintDetails({ complaint, onClose }) {
 
       </div>
 
-      {/* CONFIRM DIALOG */}
       <ConfirmDialog
         open={openDialog}
         title="Delete Complaint"

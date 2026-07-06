@@ -19,11 +19,7 @@ export default function CustomerDrawer({
 
   return (
     <div className="fixed inset-0 z-50 flex bg-black/40">
-
-      {/* DRAWER */}
       <div className="ml-auto w-full sm:w-[520px] lg:w-[440px] h-full bg-white shadow-2xl flex flex-col">
-
-        {/* HEADER */}
         <div className="flex justify-between p-4 sm:p-5 border-b bg-gray-50">
 
           <div className="min-w-0">
@@ -32,7 +28,6 @@ export default function CustomerDrawer({
               {customer.name}
             </h2>
 
-            {/* STATUS BADGE */}
             <span
               className={`inline-flex mt-2 px-3 py-1 text-xs font-medium rounded-full border ${
                 statusStyles[customer.status] ||
@@ -41,8 +36,6 @@ export default function CustomerDrawer({
             >
               {customer.status}
             </span>
-
-            {/* STATUS CHANGE */}
             <div className="mt-2">
               <select
                 value={customer.status}
@@ -67,7 +60,6 @@ export default function CustomerDrawer({
           </button>
         </div>
 
-        {/* STATS */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-4 sm:p-5 bg-gray-50">
 
           <div className="p-3 sm:p-4 bg-white border rounded-lg">
@@ -97,8 +89,6 @@ export default function CustomerDrawer({
           </div>
 
         </div>
-
-        {/* TABS */}
         <div className="flex border-b text-sm">
 
           {["overview", "bookings", "activity"].map((tab) => (
@@ -117,10 +107,8 @@ export default function CustomerDrawer({
 
         </div>
 
-        {/* CONTENT */}
         <div className="flex-1 overflow-y-auto p-4 sm:p-5 bg-gray-50 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
 
-          {/* OVERVIEW */}
           {activeTab === "overview" && (
             <div className="space-y-3">
 
@@ -139,7 +127,6 @@ export default function CustomerDrawer({
             </div>
           )}
 
-          {/* BOOKINGS */}
           {activeTab === "bookings" && (
             <div className="space-y-3">
 
@@ -158,7 +145,6 @@ export default function CustomerDrawer({
             </div>
           )}
 
-          {/* ACTIVITY */}
           {activeTab === "activity" && (
             <div className="space-y-3">
 

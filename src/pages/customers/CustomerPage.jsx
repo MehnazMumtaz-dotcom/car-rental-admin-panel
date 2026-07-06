@@ -238,7 +238,6 @@ export default function CustomerPage() {
           <Button onClick={resetFilters}>Reset</Button>
         </div>
 
-        {/* ✅ FINAL RESPONSIVE FIX */}
         <div className="w-full overflow-x-auto lg:overflow-visible">
           <div className="min-w-[900px] lg:min-w-0">
             <DataTable

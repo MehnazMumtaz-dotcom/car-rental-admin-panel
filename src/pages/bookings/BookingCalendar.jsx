@@ -58,7 +58,7 @@ export default function BookingCalendar() {
         open={showConflict}
         onClose={() => setShowConflict(false)}
         onConfirm={() => {
-          addBooking({ ...pendingBooking, override: true }); // 💥 FORCE SAVE
+          addBooking({ ...pendingBooking, override: true }); 
           setShowConflict(false);
           setPendingBooking(null);
         }}

@@ -27,10 +27,10 @@ export default function PricingConfig() {
     <div className="bg-surface rounded-xl shadow-card border border-borderColor p-4 sm:p-5">
       <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 mb-4">
         <div>
-          <h2 className="font-semibold text-textPrimary">
+          <h2 className="font-bold text-red-600 text-base sm:text-lg">
             2. Minimum Booking Fee
           </h2>
-          <p className="text-sm text-textSecondary">
+          <p className="text-sm text-textSecondary mt-0.5">
             Set the minimum booking amount. Bookings below this amount will
             not be allowed.
           </p>

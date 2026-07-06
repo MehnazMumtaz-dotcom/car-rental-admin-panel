@@ -51,7 +51,6 @@ export default function WalkInRegistration({ isOpen, onClose, onSave }) {
   return (
     <div className="fixed inset-0 z-[9999] bg-black/50 flex items-center justify-center p-4">
       
-      {/* ❌ removed scroll */}
       <div className="bg-white w-full max-w-[500px] rounded-xl p-6">
 
         <h2 className="text-xl font-semibold mb-5">
@@ -60,7 +59,6 @@ export default function WalkInRegistration({ isOpen, onClose, onSave }) {
 
         <div className="space-y-4">
 
-          {/* NAME */}
           <div>
             <input
               name="name"
@@ -78,7 +76,6 @@ export default function WalkInRegistration({ isOpen, onClose, onSave }) {
             )}
           </div>
 
-          {/* PHONE */}
           <div>
             <input
               name="phone"
@@ -95,8 +92,6 @@ export default function WalkInRegistration({ isOpen, onClose, onSave }) {
               </p>
             )}
           </div>
-
-          {/* CNIC */}
           <input
             name="cnic"
             placeholder="CNIC"
@@ -105,7 +100,6 @@ export default function WalkInRegistration({ isOpen, onClose, onSave }) {
             className="w-full border p-2 rounded"
           />
 
-          {/* EMAIL */}
           <input
             name="email"
             placeholder="Email"
@@ -114,7 +108,6 @@ export default function WalkInRegistration({ isOpen, onClose, onSave }) {
             className="w-full border p-2 rounded"
           />
 
-          {/* ADDRESS */}
           <input
             name="address"
             placeholder="Address"
@@ -123,7 +116,6 @@ export default function WalkInRegistration({ isOpen, onClose, onSave }) {
             className="w-full border p-2 rounded"
           />
 
-          {/* NOTES */}
           <textarea
             name="notes"
             placeholder="Notes"

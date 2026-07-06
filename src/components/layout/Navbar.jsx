@@ -14,12 +14,12 @@ export default function Navbar() {
 
   const routeConfig = {
     "/": {
-      title: "Dashboard",
+      title: "Dashboard Overview",
       showNotification: true,
     },
     "/customers": {
-      title: "Customers",
-      subtitle: "Manage your customers",
+      title: "Customers Directory",
+      subtitle: "Manage customer profiles, history, and records.",
       action: (
         <Button onClick={() => window.dispatchEvent(new Event("openWalkInCustomer"))}>
           + Add Walk-in Customer
@@ -27,8 +27,32 @@ export default function Navbar() {
       ),
     },
     "/complaints": {
-      title: "Complaints",
-      subtitle: "Track and resolve complaints",
+      title: "Complaints & Support",
+      subtitle: "Track, manage, and resolve customer support tickets.",
+    },
+    "/bookings": {
+      title: "Booking Calendar",
+      subtitle: "View, schedule, and organize vehicle reservations.",
+    },
+    "/subadmins": {
+      title: "Sub Admins Management",
+      subtitle: "Control team access permissions and manage system roles.",
+    },
+    "/config": {
+      title: "Configuration Panel",
+      subtitle: "Adjust your system preferences, pricing, and master settings.",
+    },
+    "/reports": {
+      title: "Analytics & Reports",
+      subtitle: "Generate and download financial and analytical data insights.",
+    },
+    "/sla-timers": {
+      title: "SLA Timers Tracker",
+      subtitle: "Monitor active service level agreements and resolution deadlines.",
+    },
+    "/profile-settings": {
+      title: "Profile Settings",
+      subtitle: "Update your password, account details, and security preferences.",
     },
   };
 
@@ -41,7 +65,7 @@ export default function Navbar() {
           .pop()
           ?.replace(/-/g, " ")
           .replace(/\b\w/g, (char) => char.toUpperCase()) || "Dashboard",
-      subtitle: "",
+      subtitle: "Manage your panel details here.",
     };
 
   return (
@@ -57,17 +81,16 @@ export default function Navbar() {
         </button>
 
         <div className="min-w-0">
-          <h1 className="text-sm sm:text-lg font-semibold text-gray-800 truncate">
+          <h1 className="text-base sm:text-xl font-bold text-gray-800 truncate">
             {page.title}
           </h1>
           {page.subtitle && (
-            <p className="text-xs sm:text-sm text-gray-500 truncate">
+            <p className="text-xs text-gray-500 truncate mt-0.5">
               {page.subtitle}
             </p>
           )}
         </div>
       </div>
-
 
       <div className="flex items-center gap-3 sm:gap-6">
 

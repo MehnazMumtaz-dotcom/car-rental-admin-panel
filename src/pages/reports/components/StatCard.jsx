@@ -28,18 +28,15 @@ export default function StatCard({
       h-full
     ">
       
-      {/* TOP */}
       <div className="flex items-center gap-2 sm:gap-3">
         <div className={`p-2 sm:p-3 rounded-full ${iconBg}`}>
           <Icon className={`w-4 h-4 sm:w-5 sm:h-5 ${iconColor}`} />
         </div>
-
-        <p className="text-xs sm:text-sm text-textSecondary font-medium">
+        <p className="text-xs sm:text-sm text-amber-700 font-semibold">
           {title}
         </p>
       </div>
 
-      {/* CENTER VALUE */}
       <div className="flex-1 flex items-center justify-center py-2 sm:py-3">
         <h2 className="
           text-xl sm:text-2xl 
@@ -50,7 +47,6 @@ export default function StatCard({
         </h2>
       </div>
 
-      {/* BOTTOM */}
       <div
         className={`
           flex items-center gap-1 sm:gap-2 

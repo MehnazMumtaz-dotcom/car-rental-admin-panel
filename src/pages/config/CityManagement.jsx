@@ -24,8 +24,10 @@ export default function CityManagement() {
   return (
     <div className="bg-surface rounded-xl shadow-card border border-borderColor p-4 sm:p-5">
       <div className="mb-4">
-        <h2 className="font-semibold text-textPrimary">4. City Settings</h2>
-        <p className="text-sm text-textSecondary">
+        <h2 className="font-bold text-red-600 text-base sm:text-lg">
+          4. City Settings
+        </h2>
+        <p className="text-sm text-textSecondary mt-0.5">
           Enable or disable cities available on the platform.
         </p>
       </div>
@@ -52,7 +54,9 @@ export default function CityManagement() {
                   </div>
                 </td>
                 <td className="py-3 whitespace-nowrap">
-                  <StatusBadge status={city.active ? "active" : "inactive"} />
+                  <span className="capitalize">
+                    <StatusBadge status={city.active ? "active" : "inactive"} />
+                  </span>
                 </td>
                 <td className="py-3">
                   <div className="flex justify-end">

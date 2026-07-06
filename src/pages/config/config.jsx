@@ -78,27 +78,6 @@ function FooterBar() {
 export default function Confi() {
   return (
     <div className="min-h-screen bg-background p-3 sm:p-4 md:p-6 pt-0">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6 pt-0">
-        <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-textPrimary">
-            Configuration Settings
-          </h1>
-          <p className="text-sm text-textSecondary mt-1">
-            Manage platform settings and parameters
-          </p>
-        </div>
-
-        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-          <span className="flex items-center gap-1 text-xs font-medium text-success bg-success/10 px-3 py-1 rounded-full whitespace-nowrap">
-            <span className="w-2 h-2 rounded-full bg-success animate-pulse" />
-            Live
-          </span>
-          <span className="text-xs sm:text-sm font-medium text-success whitespace-nowrap">
-            Changes apply in real-time
-          </span>
-        </div>
-      </div>
-
       <div className="space-y-4 sm:space-y-6 max-w-full overflow-x-hidden">
         <CommisionConfig />
         <PricingConfig />

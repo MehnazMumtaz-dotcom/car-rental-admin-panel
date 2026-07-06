@@ -47,10 +47,10 @@ export default function CommisionConfig() {
     <div className="bg-surface rounded-xl shadow-card border border-borderColor p-4 sm:p-5">
       <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 mb-4">
         <div>
-          <h2 className="font-semibold text-textPrimary">
+          <h2 className="font-bold text-red-600 text-base sm:text-lg">
             1. Commission Settings
           </h2>
-          <p className="text-sm text-textSecondary">
+          <p className="text-sm text-textSecondary mt-0.5">
             Choose how platform commission will be calculated on each booking.
           </p>
         </div>
@@ -83,7 +83,8 @@ export default function CommisionConfig() {
 
             <div className="flex flex-col items-center text-center mt-3">
               {opt.icon}
-              <h3 className="font-semibold text-textPrimary mt-2">
+              
+              <h3 className="font-bold text-amber-700 text-sm sm:text-base mt-2">
                 {opt.title}
               </h3>
               <p className="text-xs text-textSecondary mt-1">{opt.desc}</p>

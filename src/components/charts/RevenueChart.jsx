@@ -92,7 +92,7 @@ const RevenueChart = ({ weekRange }) => {
               axisLine={false}
               tickLine={false}
               tick={{ fontSize: 10, fill: "#94a3b8" }}
-              width={30} // 👈 important for mobile
+              width={30} 
             />
 
             <Tooltip

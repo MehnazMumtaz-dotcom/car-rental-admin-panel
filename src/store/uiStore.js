@@ -1,7 +1,6 @@
 import { create } from "zustand";
 
 export const useUIStore = create((set) => ({
-  // ✅ Sidebar (desktop only control)
   sidebarOpen: true,
 
   toggleSidebar: () =>
@@ -11,8 +10,6 @@ export const useUIStore = create((set) => ({
 
   openSidebar: () => set({ sidebarOpen: true }),
   closeSidebar: () => set({ sidebarOpen: false }),
-
-  // ✅ Theme (same as your code)
   theme: localStorage.getItem("theme") || "system",
 
   setTheme: (theme) => {

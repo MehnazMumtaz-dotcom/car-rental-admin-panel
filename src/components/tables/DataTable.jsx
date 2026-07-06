@@ -23,18 +23,14 @@ export default function DataTable({
   return (
     <div className="w-full overflow-hidden">
 
-      {/* LOADING */}
       {progressPending && (
         <div className="p-4 text-center text-gray-500">
           Loading...
         </div>
       )}
 
-      {/* TABLE */}
       <div className="w-full overflow-hidden">
         <table className="w-full table-fixed text-sm">
-
-          {/* HEADER */}
           <thead className="bg-gray-100 border-b">
             <tr>
               {columns.map((col, i) => (
@@ -50,8 +46,6 @@ export default function DataTable({
               ))}
             </tr>
           </thead>
-
-          {/* BODY */}
           <tbody>
             {paginatedData.length === 0 ? (
               <tr>

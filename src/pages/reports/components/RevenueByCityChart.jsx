@@ -33,7 +33,6 @@ export default function RevenueByCityChart() {
   return (
     <div className="bg-white p-3 sm:p-4 md:p-6 rounded-2xl border shadow-sm w-full">
 
-      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-4 sm:mb-6">
 
         <div className="flex items-center gap-2 font-semibold text-gray-800 text-sm sm:text-base">
@@ -41,7 +40,6 @@ export default function RevenueByCityChart() {
           Revenue by City
         </div>
 
-        {/* Dropdown */}
         <div className="relative w-full sm:w-auto">
           <button
             onClick={() => setOpen(!open)}
@@ -115,7 +113,6 @@ export default function RevenueByCityChart() {
               }}
             />
 
-            {/* Bar stays same */}
             <Bar
               dataKey="value"
               radius={[8, 8, 0, 0]}

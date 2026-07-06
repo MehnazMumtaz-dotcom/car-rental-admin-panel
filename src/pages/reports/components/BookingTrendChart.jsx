@@ -39,7 +39,6 @@ export default function BookingTrendChart() {
   return (
     <div className="bg-white p-3 sm:p-4 md:p-6 rounded-2xl border shadow-sm w-full">
 
-      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-4 sm:mb-6">
 
         <div className="flex items-center gap-2 font-semibold text-gray-800 text-sm sm:text-base">
@@ -47,7 +46,6 @@ export default function BookingTrendChart() {
           Booking Trend
         </div>
 
-        {/* Dropdown */}
         <div className="relative w-full sm:w-auto">
           <button
             onClick={() => setOpen(!open)}
@@ -89,7 +87,6 @@ export default function BookingTrendChart() {
         </div>
       </div>
 
-      {/* Chart */}
       <div className="w-full h-[200px] sm:h-[240px] md:h-[300px]">
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={data}>

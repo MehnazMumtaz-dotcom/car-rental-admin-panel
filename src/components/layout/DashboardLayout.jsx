@@ -9,20 +9,12 @@ const DashboardLayout = () => {
 
   return (
     <div className="flex h-screen overflow-hidden bg-gray-100">
-
-      {/* SIDEBAR (fixed, no scroll) */}
       <Sidebar />
-
-      {/* MAIN AREA */}
       <div
         className={`flex flex-col flex-1 min-w-0 transition-all duration-300
         ${sidebarOpen ? "md:ml-56" : "md:ml-20"}`}
       >
-
-        {/* NAVBAR fixed height */}
         <Navbar />
-
-        {/* ONLY ONE SCROLL CONTAINER */}
         <main
           className="
             flex-1 

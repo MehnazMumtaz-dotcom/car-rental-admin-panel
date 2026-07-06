@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import ConfirmDialog from "../../../components/ui/ConfirmDialog";
 import { Trash2, Pencil, X, CalendarDays, AlertTriangle } from "lucide-react";
+
 const calculateDays = (start, end) => {
   if (!start || !end) return "";
 
@@ -12,6 +13,7 @@ const calculateDays = (start, end) => {
 
   return `${diffDays} days`;
 };
+
 export default function CalendarView({
   filters = {},
   bookings = [],
@@ -154,7 +156,6 @@ export default function CalendarView({
   return (
     <div className="bg-white border rounded-xl shadow-sm p-3 sm:p-4 mt-4">
 
-
       <div className="grid grid-cols-7 text-[10px] sm:text-sm text-gray-500 mb-2">
         {dayNames.map((d) => (
           <div key={d} className="text-center">{d}</div>
@@ -226,7 +227,7 @@ export default function CalendarView({
                     style={{ width: `${segmentLength * 100}%` }}
                   >
                     <span className="truncate max-w-[45px] sm:max-w-none">
-                      {b.name}
+                      {b.name} ({calculateDays(b.startDate, b.endDate)})
                     </span>
 
                     <span className="flex items-center gap-1 ml-1 sm:ml-2">
@@ -352,7 +353,6 @@ export default function CalendarView({
         </div>
 
       </div>
-
 
       <ConfirmDialog
         open={confirmOpen}
