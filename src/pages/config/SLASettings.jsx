@@ -1,6 +1,6 @@
 import React from "react";
 import { Info } from "lucide-react";
-import { useConfigStore } from "../../store/configStore";
+import { useConfigStore } from "../../store/ConfigStore";
 import Input from "../../components/ui/Input";
 
 function ToggleSwitch({ enabled, onChange }) {

@@ -4,7 +4,7 @@ import { persist } from "zustand/middleware";
 const defaultConfig = {
   commission: {
     enabled: true,
-    type: "flat", // flat | percentage | hybrid
+    type: "flat", 
     flatAmount: "100.00",
     percentage: "10",
     hybridFlat: "50.00",
@@ -30,7 +30,6 @@ export const useConfigStore = create(
   persist(
     (set, get) => ({
       config: defaultConfig,
-      // status: "saved" | "saving" | "error"
       status: "saved",
       lastSaved: null,
       updateConfig: async (section, data) => {
@@ -39,7 +38,6 @@ export const useConfigStore = create(
         set({ config: updated });
 
         try {
-          // ---- BACKEND CALL YAHAN LAGAO ----
           // const res = await fetch("/api/config", {
           //   method: "PUT",
           //   headers: { "Content-Type": "application/json" },
@@ -65,7 +63,6 @@ export const useConfigStore = create(
         set({ config: updated });
 
         try {
-          // ---- BACKEND CALL YAHAN LAGAO ----
           // const res = await fetch("/api/config/cities", {
           //   method: "PUT",
           //   headers: { "Content-Type": "application/json" },
@@ -83,8 +80,8 @@ export const useConfigStore = create(
       },
     }),
     {
-      name: "fixitnow_config", // localStorage key
-      partialize: (state) => ({ config: state.config }), // status/lastSaved persist nahi karte
+      name: "fixitnow_config", 
+      partialize: (state) => ({ config: state.config }),
     }
   )
 );

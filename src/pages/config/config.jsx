@@ -7,9 +7,6 @@ import PricingConfig from "./PricingConfig";
 import SLASettings from "./SLASettings";
 import CityManagement from "./CityManagement";
 
-// Footer status bar needs green/amber/red backgrounds which the shared
-// Button component (primary/secondary/outline/danger) doesn't provide,
-// so it's kept as a plain styled button here instead of reusing Button.
 function FooterBar() {
   const status = useConfigStore((s) => s.status);
   const lastSaved = useConfigStore((s) => s.lastSaved);
@@ -81,7 +78,6 @@ function FooterBar() {
 export default function Confi() {
   return (
     <div className="min-h-screen bg-background p-3 sm:p-4 md:p-6 pt-0">
-      {/* ---------- HEADER ---------- */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6 pt-0">
         <div>
           <h1 className="text-xl sm:text-2xl font-bold text-textPrimary">
@@ -103,7 +99,6 @@ export default function Confi() {
         </div>
       </div>
 
-      {/* ---------- CARDS ---------- */}
       <div className="space-y-4 sm:space-y-6 max-w-full overflow-x-hidden">
         <CommisionConfig />
         <PricingConfig />

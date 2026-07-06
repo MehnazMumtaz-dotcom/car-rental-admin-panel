@@ -2,8 +2,6 @@ import React from "react";
 import { Coins, Percent, Layers, Info } from "lucide-react";
 import { useConfigStore } from "../../store/ConfigStore";
 
-// No shared Switch/Toggle component exists in the project yet,
-// so a small local one is used here.
 function ToggleSwitch({ enabled, onChange }) {
   return (
     <button
