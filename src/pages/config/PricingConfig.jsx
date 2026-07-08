@@ -1,43 +1,35 @@
 import React from "react";
 import { Info } from "lucide-react";
 import { useConfigStore } from "../../store/ConfigStore";
+import { useAuthStore } from "../../store/authStore";
 import Input from "../../components/ui/Input";
-
-function ToggleSwitch({ enabled, onChange }) {
-  return (
-    <button
-      type="button"
-      onClick={() => onChange(!enabled)}
-      className={`w-11 h-6 rounded-full flex items-center px-1 transition-colors ${
-        enabled ? "bg-success justify-end" : "bg-borderColor justify-start"
-      }`}
-    >
-      <span className="w-4 h-4 bg-white rounded-full shadow" />
-    </button>
-  );
-}
+import Switch from "../../components/ui/Switch";
 
 export default function PricingConfig() {
-  const m = useConfigStore((s) => s.config.minBooking);
+  const configs = useConfigStore((s) => s.configs);
   const updateConfig = useConfigStore((s) => s.updateConfig);
+  const adminCity = useAuthStore((s) => s.user?.city);
 
-  const patch = (data) => updateConfig("minBooking", { ...m, ...data });
+  const cityConfig = configs[adminCity];
+  const m = cityConfig?.minBooking || { enabled: true, amount: "0" };
+
+  const patch = (data) => updateConfig(adminCity, "minBooking", { ...m, ...data });
 
   return (
     <div className="bg-surface rounded-xl shadow-card border border-borderColor p-4 sm:p-5">
       <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 mb-4">
         <div>
-          <h2 className="font-bold text-red-600 text-base sm:text-lg">
-            2. Minimum Booking Fee
+          <h2 className="font-bold text-textPrimary text-base sm:text-lg">
+            2. Minimum Booking Fee {adminCity ? `— ${adminCity}` : ""}
           </h2>
           <p className="text-sm text-textSecondary mt-0.5">
             Set the minimum booking amount. Bookings below this amount will
             not be allowed.
           </p>
         </div>
-        <ToggleSwitch
-          enabled={m.enabled}
-          onChange={(val) => patch({ enabled: val })}
+        <Switch
+          checked={m.enabled}
+          onCheckedChange={(val) => patch({ enabled: val })}
         />
       </div>
 

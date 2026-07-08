@@ -13,20 +13,29 @@ const ConfirmDialog = ({
   if (!open) return null;
 
   return (
-    <div style={styles.overlay} onClick={onCancel}>
-      <div style={styles.dialog} onClick={(e) => e.stopPropagation()}>
-        <h3 style={styles.title}>{title}</h3>
-        <p style={styles.message}>{message}</p>
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-secondary/50 p-4"
+      onClick={onCancel}
+    >
+      <div
+        className="bg-surface rounded-xl shadow-card border border-borderColor w-full max-w-sm p-5"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <h3 className="font-semibold text-textPrimary mb-2">{title}</h3>
+        <p className="text-sm text-textSecondary mb-5">{message}</p>
 
-        <div style={styles.actions}>
-          <button style={styles.cancelBtn} onClick={onCancel}>
+        <div className="flex justify-end gap-3">
+          <button
+            onClick={onCancel}
+            className="px-4 py-2 rounded-xl font-medium text-sm border border-borderColor text-textPrimary hover:bg-background transition"
+          >
             {cancelText}
           </button>
 
           <button
-            style={styles.confirmBtn}
             onClick={onConfirm}
             disabled={loading}
+            className="px-4 py-2 rounded-xl font-medium text-sm bg-danger text-white hover:opacity-90 transition disabled:opacity-60"
           >
             {loading ? "Processing..." : confirmText}
           </button>
@@ -38,49 +47,3 @@ const ConfirmDialog = ({
 
 export default ConfirmDialog;
 
-const styles = {
-  overlay: {
-    position: "fixed",
-    top: 0,
-    left: 0,
-    width: "100%",
-    height: "100%",
-    background: "rgba(0,0,0,0.4)",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    zIndex: 9999,
-  },
-  dialog: {
-    background: "#fff",
-    padding: "20px",
-    borderRadius: "8px",
-    width: "350px",
-    maxWidth: "90%",
-  },
-  title: {
-    marginBottom: "10px",
-  },
-  message: {
-    marginBottom: "20px",
-    color: "#555",
-  },
-  actions: {
-    display: "flex",
-    justifyContent: "flex-end",
-    gap: "10px",
-  },
-  cancelBtn: {
-    padding: "8px 12px",
-    border: "1px solid #ccc",
-    background: "#fff",
-    cursor: "pointer",
-  },
-  confirmBtn: {
-    padding: "8px 12px",
-    background: "red",
-    color: "#fff",
-    border: "none",
-    cursor: "pointer",
-  },
-};

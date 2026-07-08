@@ -1,43 +1,35 @@
 import React from "react";
 import { Info } from "lucide-react";
 import { useConfigStore } from "../../store/ConfigStore";
+import { useAuthStore } from "../../store/authStore";
 import Input from "../../components/ui/Input";
-
-function ToggleSwitch({ enabled, onChange }) {
-  return (
-    <button
-      type="button"
-      onClick={() => onChange(!enabled)}
-      className={`w-11 h-6 rounded-full flex items-center px-1 transition-colors ${
-        enabled ? "bg-success justify-end" : "bg-borderColor justify-start"
-      }`}
-    >
-      <span className="w-4 h-4 bg-white rounded-full shadow" />
-    </button>
-  );
-}
+import Switch from "../../components/ui/Switch";
 
 export default function SLASettings() {
-  const s = useConfigStore((st) => st.config.urgentSurcharge);
+  const configs = useConfigStore((st) => st.configs);
   const updateConfig = useConfigStore((st) => st.updateConfig);
+  const adminCity = useAuthStore((st) => st.user?.city);
 
-  const patch = (data) => updateConfig("urgentSurcharge", { ...s, ...data });
+  const cityConfig = configs[adminCity];
+  const s = cityConfig?.urgentSurcharge || { enabled: true, amount: "0" };
+
+  const patch = (data) => updateConfig(adminCity, "urgentSurcharge", { ...s, ...data });
 
   return (
     <div className="bg-surface rounded-xl shadow-card border border-borderColor p-4 sm:p-5">
       <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 mb-4">
         <div>
-          <h2 className="font-bold text-red-600 text-base sm:text-lg">
-            3. Urgent Complaint Surcharge
+          <h2 className="font-bold text-textPrimary text-base sm:text-lg">
+            3. Urgent Complaint Surcharge {adminCity ? `— ${adminCity}` : ""}
           </h2>
           <p className="text-sm text-textSecondary mt-0.5">
             Extra charge will be applied when customer raises an urgent
             complaint.
           </p>
         </div>
-        <ToggleSwitch
-          enabled={s.enabled}
-          onChange={(val) => patch({ enabled: val })}
+        <Switch
+          checked={s.enabled}
+          onCheckedChange={(val) => patch({ enabled: val })}
         />
       </div>
 
@@ -61,5 +53,4 @@ export default function SLASettings() {
     </div>
   );
 }
-
 

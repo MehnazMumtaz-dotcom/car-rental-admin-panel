@@ -1,10 +1,13 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-const defaultConfig = {
+// Each city/tenant gets its own independent config -
+// a Lahore admin's commission rules never affect Multan's, and vice versa.
+const defaultCityConfig = () => ({
+  active: true,
   commission: {
     enabled: true,
-    type: "flat", 
+    type: "flat",
     flatAmount: "100.00",
     percentage: "10",
     hybridFlat: "50.00",
@@ -18,30 +21,42 @@ const defaultConfig = {
     enabled: true,
     amount: "300.00",
   },
-  cities: [
-    { name: "Karachi", active: true },
-    { name: "Lahore", active: true },
-    { name: "Islamabad", active: false },
-    { name: "Faisalabad", active: true },
-  ],
+});
+
+const defaultConfigs = {
+  Lahore: defaultCityConfig(),
+  Multan: defaultCityConfig(),
+  Karachi: defaultCityConfig(),
+  Islamabad: { ...defaultCityConfig(), active: false },
 };
 
 export const useConfigStore = create(
   persist(
     (set, get) => ({
-      config: defaultConfig,
+      configs: defaultConfigs,
       status: "saved",
       lastSaved: null,
-      updateConfig: async (section, data) => {
+
+      // Multi-tenant: get (or lazily create) the config for one city
+      getConfigForCity: (city) => {
+        return get().configs[city] || defaultCityConfig();
+      },
+
+      updateConfig: async (city, section, data) => {
+        if (!city) return;
         set({ status: "saving" });
-        const updated = { ...get().config, [section]: data };
-        set({ config: updated });
+
+        const cityConfig = get().configs[city] || defaultCityConfig();
+        const updatedCityConfig = { ...cityConfig, [section]: data };
+        const updatedConfigs = { ...get().configs, [city]: updatedCityConfig };
+        set({ configs: updatedConfigs });
 
         try {
-          // const res = await fetch("/api/config", {
+          // ---- BACKEND CALL YAHAN LAGAO ----
+          // const res = await fetch(`/api/config/${city}`, {
           //   method: "PUT",
           //   headers: { "Content-Type": "application/json" },
-          //   body: JSON.stringify(updated),
+          //   body: JSON.stringify(updatedCityConfig),
           // });
           // if (!res.ok) throw new Error("Save failed");
 
@@ -54,19 +69,24 @@ export const useConfigStore = create(
         }
       },
 
-      updateCity: async (index, patch) => {
+      // Toggles whether the admin's own city is currently active on the platform
+      toggleCityActive: async (city, active) => {
+        if (!city) return;
         set({ status: "saving" });
-        const cities = get().config.cities.map((c, i) =>
-          i === index ? { ...c, ...patch } : c
-        );
-        const updated = { ...get().config, cities };
-        set({ config: updated });
+
+        const cityConfig = get().configs[city] || defaultCityConfig();
+        const updatedConfigs = {
+          ...get().configs,
+          [city]: { ...cityConfig, active },
+        };
+        set({ configs: updatedConfigs });
 
         try {
-          // const res = await fetch("/api/config/cities", {
+          // ---- BACKEND CALL YAHAN LAGAO ----
+          // const res = await fetch(`/api/config/${city}/status`, {
           //   method: "PUT",
           //   headers: { "Content-Type": "application/json" },
-          //   body: JSON.stringify(cities),
+          //   body: JSON.stringify({ active }),
           // });
           // if (!res.ok) throw new Error("Save failed");
 
@@ -74,14 +94,14 @@ export const useConfigStore = create(
 
           set({ status: "saved", lastSaved: new Date() });
         } catch (err) {
-          console.error("City save failed:", err);
+          console.error("City status save failed:", err);
           set({ status: "error" });
         }
       },
     }),
     {
-      name: "fixitnow_config", 
-      partialize: (state) => ({ config: state.config }),
+      name: "fixitnow_config",
+      partialize: (state) => ({ configs: state.configs }),
     }
   )
 );

@@ -1,76 +1,30 @@
-import { useState, useMemo } from "react";
-
-const alertsData = [
-  {
-    id: "#A-501",
-    customer: "Ahmed Khan",
-    category: "Vehicle Issue",
-    expires: "01h 40m",
-    priority: "Urgent",
-    date: "2026-05-20",
-  },
-  {
-    id: "#A-502",
-    customer: "Sara Ali",
-    category: "Billing",
-    expires: "03h 20m",
-    priority: "High",
-    date: "2026-05-21",
-  },
-  {
-    id: "#A-503",
-    customer: "Usman Tariq",
-    category: "Driver Behavior",
-    expires: "05h 10m",
-    priority: "Medium",
-    date: "2026-05-22",
-  },
-  {
-    id: "#A-504",
-    customer: "Hina Sheikh",
-    category: "Booking Error",
-    expires: "08h 55m",
-    priority: "High",
-    date: "2026-05-25",
-  },
-  {
-    id: "#A-505",
-    customer: "Ali Raza",
-    category: "Other",
-    expires: "12h 30m",
-    priority: "Low",
-    date: "2026-05-28",
-  },
-];
+import { useMemo, useState } from "react";
+import { useSLAStore, getComplaintStatus, formatTimeLeft } from "../../store/SLAStore";
+import { useAuthStore } from "../../store/authStore";
 
 const getPriorityStyle = (priority) => {
-  switch (priority) {
-    case "Urgent":
-      return "bg-danger/10 text-danger";
-    case "High":
-      return "bg-warning/10 text-warning";
-    case "Medium":
-      return "bg-warning/10 text-warning";
-    case "Low":
-      return "bg-success/10 text-success";
-    default:
-      return "bg-borderColor text-textSecondary";
-  }
+  return priority === "urgent"
+    ? "bg-danger/10 text-danger"
+    : "bg-primary/10 text-primary";
 };
 
-const AlertsTable = ({ startDate, endDate, onRowClick }) => {
+const AlertsTable = ({ onRowClick }) => {
   const [showAll, setShowAll] = useState(false);
+  const complaints = useSLAStore((s) => s.complaints);
+  const adminCity = useAuthStore((s) => s.user?.city);
 
-  const filteredData = useMemo(() => {
-    if (!startDate || !endDate) return alertsData;
+  const alerts = useMemo(() => {
+    const now = Date.now();
+    return complaints
+      .filter((c) => !c.resolved)
+      .filter((c) => !adminCity || c.city === adminCity)
+      .map((c) => ({ ...c, ...getComplaintStatus(c, now) }))
+      // Only complaints that actually need urgent attention
+      .filter((c) => c.status === "at-risk" || c.status === "breached")
+      .sort((a, b) => a.msLeft - b.msLeft);
+  }, [complaints, adminCity]);
 
-    return alertsData.filter((item) => {
-      const d = new Date(item.date);
-      return d >= startDate && d <= endDate;
-    });
-  }, [startDate, endDate]);
-
-  const visibleData = showAll ? filteredData : filteredData.slice(0, 2);
+  const visibleData = showAll ? alerts : alerts.slice(0, 2);
 
   return (
     <div className="bg-surface p-4 sm:p-5 rounded-xl shadow-card border border-borderColor">
@@ -103,9 +57,9 @@ const AlertsTable = ({ startDate, endDate, onRowClick }) => {
 
           <tbody className="text-textPrimary">
 
-            {visibleData.map((item, index) => (
+            {visibleData.map((item) => (
               <tr
-                key={index}
+                key={item.id}
                 onClick={() => onRowClick?.(item)}
                 className="border-b border-borderColor last:border-none cursor-pointer hover:bg-background transition"
               >
@@ -116,13 +70,13 @@ const AlertsTable = ({ startDate, endDate, onRowClick }) => {
 
                 <td className="px-1 truncate">{item.category}</td>
 
-                <td className="text-warning font-medium px-1 truncate">
-                  ⏱ {item.expires}
+                <td className="text-warning font-medium px-1 truncate whitespace-nowrap">
+                  ⏱ {formatTimeLeft(item.msLeft)}
                 </td>
 
                 <td className="px-1">
                   <span
-                    className={`px-2 py-[2px] text-[9px] sm:text-xs rounded-full font-medium whitespace-nowrap ${getPriorityStyle(
+                    className={`px-2 py-[2px] text-[9px] sm:text-xs rounded-full font-medium whitespace-nowrap capitalize ${getPriorityStyle(
                       item.priority
                     )}`}
                   >
@@ -133,12 +87,20 @@ const AlertsTable = ({ startDate, endDate, onRowClick }) => {
               </tr>
             ))}
 
+            {visibleData.length === 0 && (
+              <tr>
+                <td colSpan={5} className="py-4 text-center text-textSecondary">
+                  Nothing expiring soon.
+                </td>
+              </tr>
+            )}
+
           </tbody>
         </table>
       </div>
 
       <div className="text-xs sm:text-sm text-textSecondary mt-4 text-center">
-        Showing {visibleData.length} of {filteredData.length}
+        Showing {visibleData.length} of {alerts.length}
       </div>
     </div>
   );

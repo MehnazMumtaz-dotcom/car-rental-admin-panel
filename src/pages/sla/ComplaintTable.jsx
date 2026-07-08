@@ -7,6 +7,7 @@ import {
 } from "../../store/SLAStore";
 import ComplaintDetailModal from "./ComplaintDetailModal";
 import AssignComplaintModal from "./AssignComplaintModal";
+import { useAuthStore } from "../../store/authStore";
 
 const PAGE_SIZE = 6;
 
@@ -84,11 +85,15 @@ export default function ComplaintTable({ filters, now }) {
   const [viewingComplaint, setViewingComplaint] = useState(null);
   const [assigningComplaint, setAssigningComplaint] = useState(null);
 
+  // Multi-tenant: admin only ever sees complaints for their own city
+  const adminCity = useAuthStore((s) => s.user?.city);
+
   const enriched = useMemo(() => {
     return complaints
       .filter((c) => !c.resolved)
+      .filter((c) => !adminCity || c.city === adminCity)
       .map((c) => ({ ...c, ...getComplaintStatus(c, now) }));
-  }, [complaints, now]);
+  }, [complaints, now, adminCity]);
 
   const filtered = useMemo(() => {
     return enriched.filter((c) => {

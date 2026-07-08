@@ -27,8 +27,8 @@ export default function Navbar() {
       ),
     },
     "/complaints": {
-      title: "Complaints & Support",
-      subtitle: "Track, manage, and resolve customer support tickets.",
+      title: "Complaints & SLA Timers",
+      subtitle: "Track, assign, resolve tickets and monitor live SLA deadlines.",
     },
     "/bookings": {
       title: "Booking Calendar",
@@ -45,10 +45,6 @@ export default function Navbar() {
     "/reports": {
       title: "Analytics & Reports",
       subtitle: "Generate and download financial and analytical data insights.",
-    },
-    "/sla-timers": {
-      title: "SLA Timers Tracker",
-      subtitle: "Monitor active service level agreements and resolution deadlines.",
     },
     "/profile-settings": {
       title: "Profile Settings",
@@ -69,23 +65,23 @@ export default function Navbar() {
     };
 
   return (
-    <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-3 sm:px-6">
+    <header className="h-16 bg-surface border-b border-borderColor flex items-center justify-between px-3 sm:px-6">
 
       <div className="flex items-center gap-2 sm:gap-4 min-w-0">
 
         <button
           onClick={toggleSidebar}
-          className="p-2 rounded-md hover:bg-gray-100 transition flex-shrink-0 lg:hidden"
+          className="p-2 rounded-md hover:bg-background transition flex-shrink-0 lg:hidden"
         >
           <Menu size={20} />
         </button>
 
         <div className="min-w-0">
-          <h1 className="text-base sm:text-xl font-bold text-gray-800 truncate">
+          <h1 className="text-base sm:text-xl font-bold text-textPrimary truncate">
             {page.title}
           </h1>
           {page.subtitle && (
-            <p className="text-xs text-gray-500 truncate mt-0.5">
+            <p className="text-xs text-textSecondary truncate mt-0.5">
               {page.subtitle}
             </p>
           )}
@@ -98,10 +94,10 @@ export default function Navbar() {
 
         {page.showNotification && (
           <div className="relative cursor-pointer flex-shrink-0">
-            <Bell size={20} className="text-gray-600" />
+            <Bell size={20} className="text-textSecondary" />
 
             {unreadCount > 0 && (
-              <span className="absolute -top-1 -right-1 min-w-[14px] h-4 px-[4px] bg-red-500 text-white text-[9px] flex items-center justify-center rounded-full">
+              <span className="absolute -top-1 -right-1 min-w-[14px] h-4 px-[4px] bg-danger text-white text-[9px] flex items-center justify-center rounded-full">
                 {unreadCount}
               </span>
             )}

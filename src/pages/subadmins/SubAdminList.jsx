@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from "react";
 import { Edit2, Trash2 } from "lucide-react";
 import { useSubAdminStore, PERMISSIONS } from "../../store/SubAdminStore";
+import { useAuthStore } from "../../store/authStore";
 import SearchInput from "../../components/ui/SearchInput";
 import Select from "../../components/ui/Select";
 import StatusBadge from "../../components/ui/StatusBadge";
@@ -18,14 +19,20 @@ function initials(name) {
 }
 
 export default function SubAdminList() {
-  const subAdmins = useSubAdminStore((s) => s.subAdmins);
+  const allSubAdmins = useSubAdminStore((s) => s.subAdmins);
   const deleteSubAdmin = useSubAdminStore((s) => s.deleteSubAdmin);
   const updateSubAdmin = useSubAdminStore((s) => s.updateSubAdmin);
+  const adminCity = useAuthStore((s) => s.user?.city);
 
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [page, setPage] = useState(1);
   const [editingAdmin, setEditingAdmin] = useState(null);
+
+  const subAdmins = useMemo(
+    () => allSubAdmins.filter((a) => !adminCity || a.city === adminCity),
+    [allSubAdmins, adminCity]
+  );
 
   const filtered = useMemo(() => {
     return subAdmins.filter((a) => {

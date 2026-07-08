@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 
 import {
   AreaChart,
@@ -12,51 +12,77 @@ import {
 } from "recharts";
 
 import { Calendar, ChevronDown } from "lucide-react";
+import { useBookingStore } from "../../../store/bookingStore";
+import { useAuthStore } from "../../../store/authStore";
 
 export default function BookingTrendChart() {
   const [active, setActive] = useState("weekly");
   const [open, setOpen] = useState(false);
 
-  const weeklyData = [
-    { date: "29 Jun", value: 120 },
-    { date: "30 Jun", value: 105 },
-    { date: "01 Jul", value: 90 },
-    { date: "02 Jul", value: 40 },
-    { date: "03 Jul", value: 120 },
-    { date: "04 Jul", value: 115 },
-    { date: "05 Jul", value: 100 },
-  ];
+  const bookings = useBookingStore((s) => s.bookings);
+  const adminCity = useAuthStore((s) => s.user?.city);
 
-  const monthlyData = [
-    { date: "W1", value: 400 },
-    { date: "W2", value: 550 },
-    { date: "W3", value: 480 },
-    { date: "W4", value: 600 },
-  ];
+  const cityBookings = useMemo(
+    () => bookings.filter((b) => !adminCity || b.city === adminCity),
+    [bookings, adminCity]
+  );
+
+  // Real count of bookings starting on each of the last 7 days
+  const weeklyData = useMemo(() => {
+    const days = [];
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      const iso = d.toISOString().split("T")[0];
+      const label = d.toLocaleDateString("en-GB", { day: "2-digit", month: "short" });
+      const value = cityBookings.filter((b) => b.startDate === iso).length;
+      days.push({ date: label, value });
+    }
+    return days;
+  }, [cityBookings]);
+
+  // Real count of bookings starting in each of the last 4 weeks
+  const monthlyData = useMemo(() => {
+    const weeks = [];
+    for (let w = 3; w >= 0; w--) {
+      const weekEnd = new Date();
+      weekEnd.setDate(weekEnd.getDate() - w * 7);
+      const weekStart = new Date(weekEnd);
+      weekStart.setDate(weekStart.getDate() - 6);
+
+      const value = cityBookings.filter((b) => {
+        const d = new Date(b.startDate);
+        return d >= weekStart && d <= weekEnd;
+      }).length;
+
+      weeks.push({ date: `W${4 - w}`, value });
+    }
+    return weeks;
+  }, [cityBookings]);
 
   const data = active === "weekly" ? weeklyData : monthlyData;
 
   return (
-    <div className="bg-white p-3 sm:p-4 md:p-6 rounded-2xl border shadow-sm w-full">
+    <div className="bg-surface p-3 sm:p-4 md:p-6 rounded-2xl border border-borderColor shadow-card w-full">
 
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-4 sm:mb-6">
 
-        <div className="flex items-center gap-2 font-semibold text-gray-800 text-sm sm:text-base">
-          <Calendar size={18} className="text-blue-600" />
+        <div className="flex items-center gap-2 font-semibold text-textPrimary text-sm sm:text-base">
+          <Calendar size={18} className="text-primary" />
           Booking Trend
         </div>
 
         <div className="relative w-full sm:w-auto">
           <button
             onClick={() => setOpen(!open)}
-            className="flex items-center justify-between w-full sm:w-auto gap-2 px-3 sm:px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-md text-sm text-gray-700 transition"
+            className="flex items-center justify-between w-full sm:w-auto gap-2 px-3 sm:px-4 py-2 bg-background hover:bg-borderColor rounded-md text-sm text-textSecondary transition"
           >
             {active === "weekly" ? "Weekly" : "Monthly"}
             <ChevronDown size={16} />
           </button>
 
           {open && (
-            <div className="absolute right-0 mt-2 w-full sm:w-28 bg-white border rounded-md shadow-md z-10">
+            <div className="absolute right-0 mt-2 w-full sm:w-28 bg-surface border border-borderColor rounded-md shadow-card z-10">
 
               {active === "weekly" && (
                 <div
@@ -64,7 +90,7 @@ export default function BookingTrendChart() {
                     setActive("monthly");
                     setOpen(false);
                   }}
-                  className="px-3 py-2 text-sm hover:bg-gray-100 cursor-pointer"
+                  className="px-3 py-2 text-sm text-textPrimary hover:bg-background cursor-pointer"
                 >
                   Monthly
                 </div>
@@ -76,7 +102,7 @@ export default function BookingTrendChart() {
                     setActive("weekly");
                     setOpen(false);
                   }}
-                  className="px-3 py-2 text-sm hover:bg-gray-100 cursor-pointer"
+                  className="px-3 py-2 text-sm text-textPrimary hover:bg-background cursor-pointer"
                 >
                   Weekly
                 </div>
@@ -112,6 +138,7 @@ export default function BookingTrendChart() {
             />
 
             <YAxis
+              allowDecimals={false}
               tick={{ fontSize: 11, fill: "#6b7280" }}
               axisLine={false}
               tickLine={false}

@@ -6,7 +6,6 @@ import {
   UserCog,
   Settings,
   BarChart3,
-  Timer,
   LogOut,
   Sun,
   Moon,
@@ -76,7 +75,6 @@ export default function Sidebar() {
     { icon: UserCog, text: "Sub Admins", path: "/subadmins" },
     { icon: Settings, text: "Config Panel", path: "/config" },
     { icon: BarChart3, text: "Reports", path: "/reports" },
-    { icon: Timer, text: "SLA Timers", path: "/sla-timers" },
   ];
 
   return (
@@ -186,23 +184,64 @@ export default function Sidebar() {
           </div>
 
           {openProfile && (
-            <div className="absolute bottom-full left-2 right-2 mb-2 bg-white text-black rounded-xl shadow-xl p-2 z-50 flex flex-col gap-1">
-              
+            <div className="absolute bottom-full left-2 right-2 mb-2 bg-surface text-textPrimary border border-borderColor rounded-xl shadow-card p-2 z-50 flex flex-col gap-1">
+
+              {/* Theme toggle */}
+              <div className="flex items-center justify-between px-2 py-1.5">
+                <span className="text-xs text-textSecondary">Theme</span>
+                <div className="flex items-center gap-1 bg-background rounded-lg p-1">
+                  <button
+                    onClick={() => setTheme("light")}
+                    className={`p-1.5 rounded-md transition ${
+                      theme === "light"
+                        ? "bg-primary text-white"
+                        : "text-textSecondary hover:bg-borderColor"
+                    }`}
+                    aria-label="Light theme"
+                  >
+                    <Sun size={14} />
+                  </button>
+                  <button
+                    onClick={() => setTheme("dark")}
+                    className={`p-1.5 rounded-md transition ${
+                      theme === "dark"
+                        ? "bg-primary text-white"
+                        : "text-textSecondary hover:bg-borderColor"
+                    }`}
+                    aria-label="Dark theme"
+                  >
+                    <Moon size={14} />
+                  </button>
+                  <button
+                    onClick={() => setTheme("system")}
+                    className={`p-1.5 rounded-md transition ${
+                      theme === "system"
+                        ? "bg-primary text-white"
+                        : "text-textSecondary hover:bg-borderColor"
+                    }`}
+                    aria-label="System theme"
+                  >
+                    <Monitor size={14} />
+                  </button>
+                </div>
+              </div>
+
+              <hr className="border-borderColor my-1" />
+
               <Link
                 to="/profile-settings"
                 onClick={() => setOpenProfile(false)}
-                className="w-full flex items-center gap-2 text-red-500 hover:bg-red-100 p-2 rounded-lg text-sm transition"
+                className="w-full flex items-center gap-2 text-textPrimary hover:bg-background p-2 rounded-lg text-sm transition"
               >
                 <User size={16} />
                 Profile Settings
               </Link>
 
-              {/* Separator */}
-              <hr className="border-gray-100 my-1" />
+              <hr className="border-borderColor my-1" />
 
               <button
                 onClick={handleLogout}
-                className="w-full flex items-center gap-2 text-red-500 hover:bg-red-100 p-2 rounded-lg text-sm transition"
+                className="w-full flex items-center gap-2 text-danger hover:bg-danger/10 p-2 rounded-lg text-sm transition"
               >
                 <LogOut size={16} />
                 Logout

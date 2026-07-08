@@ -22,7 +22,7 @@ const StatCard = ({ title, value, previousValue = 0, icon, color }) => {
   const colors = {
     blue: "bg-primary/10 text-primary",
     green: "bg-success/10 text-success",
-    purple: "bg-purple-100 text-purple-600",
+    purple: "bg-accent/10 text-accent",
     red: "bg-danger/10 text-danger",
   };
 

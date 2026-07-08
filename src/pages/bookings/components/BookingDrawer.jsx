@@ -31,13 +31,11 @@ export default function BookingDrawer({
 
   return (
     <>
-      {/* BACKDROP */}
       <div
         className="fixed inset-0 bg-black/40 z-[999]"
         onClick={onClose}
       />
 
-      {/* DRAWER */}
       <div
         className="
           fixed right-0 top-0 h-full
@@ -47,7 +45,6 @@ export default function BookingDrawer({
         "
       >
 
-        {/* HEADER */}
         <div className="flex justify-between items-center border-b pb-2 mb-4">
           <h2 className="text-base sm:text-lg font-bold">
             Booking Details
@@ -60,7 +57,6 @@ export default function BookingDrawer({
           </button>
         </div>
 
-        {/* INFO */}
         <div className="space-y-3 text-sm">
           <div>
             <p className="text-gray-500 text-xs sm:text-sm">Customer</p>
@@ -93,7 +89,6 @@ export default function BookingDrawer({
           </div>
         </div>
 
-        {/* ACTIONS */}
         <div className="mt-6 flex flex-col sm:flex-row gap-2">
 
           <button
@@ -120,7 +115,6 @@ export default function BookingDrawer({
         </div>
       </div>
 
-      {/* DELETE CONFIRM */}
       <ConfirmDialog
         open={showConfirm}
         title="Delete Booking"

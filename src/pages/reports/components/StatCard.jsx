@@ -32,7 +32,7 @@ export default function StatCard({
         <div className={`p-2 sm:p-3 rounded-full ${iconBg}`}>
           <Icon className={`w-4 h-4 sm:w-5 sm:h-5 ${iconColor}`} />
         </div>
-        <p className="text-xs sm:text-sm text-amber-700 font-semibold">
+        <p className="text-xs sm:text-sm text-textSecondary font-semibold">
           {title}
         </p>
       </div>

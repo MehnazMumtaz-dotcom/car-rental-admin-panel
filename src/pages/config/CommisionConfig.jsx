@@ -1,26 +1,25 @@
 import React from "react";
 import { Coins, Percent, Layers, Info } from "lucide-react";
 import { useConfigStore } from "../../store/ConfigStore";
-
-function ToggleSwitch({ enabled, onChange }) {
-  return (
-    <button
-      type="button"
-      onClick={() => onChange(!enabled)}
-      className={`w-11 h-6 rounded-full flex items-center px-1 transition-colors ${
-        enabled ? "bg-success justify-end" : "bg-borderColor justify-start"
-      }`}
-    >
-      <span className="w-4 h-4 bg-white rounded-full shadow" />
-    </button>
-  );
-}
+import { useAuthStore } from "../../store/authStore";
+import Switch from "../../components/ui/Switch";
 
 export default function CommisionConfig() {
-  const c = useConfigStore((s) => s.config.commission);
+  const configs = useConfigStore((s) => s.configs);
   const updateConfig = useConfigStore((s) => s.updateConfig);
+  const adminCity = useAuthStore((s) => s.user?.city);
 
-  const patch = (data) => updateConfig("commission", { ...c, ...data });
+  const cityConfig = configs[adminCity];
+  const c = cityConfig?.commission || {
+    enabled: true,
+    type: "flat",
+    flatAmount: "0",
+    percentage: "0",
+    hybridFlat: "0",
+    hybridPercentage: "0",
+  };
+
+  const patch = (data) => updateConfig(adminCity, "commission", { ...c, ...data });
 
   const options = [
     {
@@ -47,16 +46,16 @@ export default function CommisionConfig() {
     <div className="bg-surface rounded-xl shadow-card border border-borderColor p-4 sm:p-5">
       <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 mb-4">
         <div>
-          <h2 className="font-bold text-red-600 text-base sm:text-lg">
-            1. Commission Settings
+          <h2 className="font-bold text-textPrimary text-base sm:text-lg">
+            1. Commission Settings {adminCity ? `— ${adminCity}` : ""}
           </h2>
           <p className="text-sm text-textSecondary mt-0.5">
             Choose how platform commission will be calculated on each booking.
           </p>
         </div>
-        <ToggleSwitch
-          enabled={c.enabled}
-          onChange={(val) => patch({ enabled: val })}
+        <Switch
+          checked={c.enabled}
+          onCheckedChange={(val) => patch({ enabled: val })}
         />
       </div>
 
@@ -83,8 +82,8 @@ export default function CommisionConfig() {
 
             <div className="flex flex-col items-center text-center mt-3">
               {opt.icon}
-              
-              <h3 className="font-bold text-amber-700 text-sm sm:text-base mt-2">
+
+              <h3 className="font-bold text-textPrimary text-sm sm:text-base mt-2">
                 {opt.title}
               </h3>
               <p className="text-xs text-textSecondary mt-1">{opt.desc}</p>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { ShieldCheck, KeyRound, User, Save, RefreshCw, QrCode } from "lucide-react";
-import { useAuthStore } from "../store/authStore"; 
+import { useAuthStore } from "../store/authStore";
+import Switch from "../components/ui/Switch";
 
 export default function ProfileSettings() {
   const loggedInUser = useAuthStore((state) => state.user);
@@ -194,20 +195,11 @@ export default function ProfileSettings() {
                 </p>
               </div>
 
-              <button
-                type="button"
+              <Switch
+                checked={is2FAEnabled}
+                onCheckedChange={() => handle2FAToggle()}
                 disabled={isToggling2FA}
-                onClick={handle2FAToggle}
-                className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none disabled:opacity-50 ${
-                  is2FAEnabled ? "bg-success" : "bg-borderColor"
-                }`}
-              >
-                <span
-                  className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-surface shadow ring-0 transition duration-200 ease-in-out ${
-                    is2FAEnabled ? "translate-x-5" : "translate-x-0"
-                  }`}
-                />
-              </button>
+              />
             </div>
             {is2FAEnabled && qrCodeUrl && (
               <div className="mt-6 p-4 bg-background rounded-xl border border-borderColor flex flex-col sm:flex-row items-center gap-5 animate-fadeIn">

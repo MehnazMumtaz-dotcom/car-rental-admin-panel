@@ -1,16 +1,41 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import StatCard from "../../components/ui/StatCard";
 import BookingChart from "../../components/charts/BookingsChart";
 import ComplaintChart from "../../components/charts/ComplaintChart";
 import RevenueChart from "../../components/charts/RevenueChart";
 import ComplaintsTable from "../../components/tables/ComplaintsTable";
 import AlertsTable from "../../components/tables/AlertsTable";
+import { useBookingStore } from "../../store/bookingStore";
+import { useSLAStore } from "../../store/SLAStore";
+import { useAuthStore } from "../../store/authStore";
 
 const Dashboard = () => {
   const [weekRange, setWeekRange] = useState({
     start: "",
     end: "",
   });
+
+  const adminCity = useAuthStore((s) => s.user?.city);
+  const bookings = useBookingStore((s) => s.bookings);
+  const complaints = useSLAStore((s) => s.complaints);
+
+  const cityBookings = useMemo(
+    () => bookings.filter((b) => !adminCity || b.city === adminCity),
+    [bookings, adminCity]
+  );
+
+  const cityOpenComplaints = useMemo(
+    () =>
+      complaints.filter(
+        (c) => !c.resolved && (!adminCity || c.city === adminCity)
+      ),
+    [complaints, adminCity]
+  );
+
+  const totalRevenue = useMemo(
+    () => cityBookings.reduce((sum, b) => sum + (Number(b.price) || 0), 0),
+    [cityBookings]
+  );
 
   useEffect(() => {
     const today = new Date();
@@ -83,10 +108,11 @@ const Dashboard = () => {
         grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4
         gap-4 sm:gap-5 mb-6
       ">
-        <StatCard title="Active Bookings" value={128} previousValue={100} icon="bookings" color="blue" />
-        <StatCard title="Open Complaints" value={36} previousValue={40} icon="complaints" color="red" />
-        <StatCard title="Total Revenue" value={1245750} previousValue={1100000} icon="revenue" color="green" />
-        <StatCard title="Vendor Count" value={42} previousValue={35} icon="users" color="purple" />
+        <StatCard title="Active Bookings" value={cityBookings.length} previousValue={cityBookings.length} icon="bookings" color="blue" />
+        <StatCard title="Open Complaints" value={cityOpenComplaints.length} previousValue={cityOpenComplaints.length} icon="complaints" color="red" />
+        <StatCard title="Total Revenue" value={totalRevenue} previousValue={totalRevenue} icon="revenue" color="green" />
+        {/* Vendor module is Phase 5 (doc-deferred) - no real data model exists yet, kept as a placeholder */}
+        <StatCard title="Vendor Count" value={42} previousValue={42} icon="users" color="purple" />
       </div>
 
       <div className="
@@ -94,7 +120,7 @@ const Dashboard = () => {
         gap-4 sm:gap-6 mb-6
       ">
         <BookingChart weekRange={weekRange} />
-        <ComplaintChart weekRange={weekRange} />
+        <ComplaintChart />
         <RevenueChart weekRange={weekRange} />
       </div>
 
@@ -102,8 +128,8 @@ const Dashboard = () => {
         grid grid-cols-1 xl:grid-cols-2
         gap-4 sm:gap-6
       ">
-        <ComplaintsTable weekRange={weekRange} />
-        <AlertsTable weekRange={weekRange} />
+        <ComplaintsTable />
+        <AlertsTable />
       </div>
     </>
   );

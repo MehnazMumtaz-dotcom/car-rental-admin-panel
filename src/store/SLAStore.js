@@ -32,80 +32,100 @@ const now = Date.now();
 const defaultComplaints = [
   {
     id: "CMP-2025-00128",
+    customer: "Ali Raza",
     category: "Billing",
     priority: "standard",
+    city: "Lahore",
     deadline: now + 10 * DAY + 4 * HOUR + 32 * 60 * 1000,
     assignedTo: "Sarah Ahmed",
     resolved: false,
   },
   {
     id: "CMP-2025-00127",
+    customer: "Sara Khan",
     category: "Vehicle Issue",
     priority: "urgent",
+    city: "Lahore",
     deadline: now + 1 * DAY + 6 * HOUR + 15 * 60 * 1000,
     assignedTo: "M. Kashif",
     resolved: false,
   },
   {
     id: "CMP-2025-00126",
+    customer: "Usman Malik",
     category: "Driver Behavior",
     priority: "standard",
+    city: "Multan",
     deadline: now + 3 * DAY + 2 * HOUR + 45 * 60 * 1000,
     assignedTo: "Fatima Ali",
     resolved: false,
   },
   {
     id: "CMP-2025-00125",
+    customer: "Hina Batool",
     category: "Booking Error",
     priority: "urgent",
+    city: "Multan",
     deadline: now + 45 * 60 * 1000,
     assignedTo: null,
     resolved: false,
   },
   {
     id: "CMP-2025-00124",
+    customer: "Ahmed Nadeem",
     category: "Billing",
     priority: "standard",
+    city: "Lahore",
     deadline: now + 12 * DAY + 18 * HOUR + 10 * 60 * 1000,
     assignedTo: "Junaid Tariq",
     resolved: false,
   },
   {
     id: "CMP-2025-00123",
+    customer: "Bilal Sheikh",
     category: "Other",
     priority: "urgent",
+    city: "Multan",
     deadline: now - (2 * HOUR + 20 * 60 * 1000),
     assignedTo: null,
     resolved: false,
   },
   {
     id: "CMP-2025-00122",
+    customer: "Ayesha Noor",
     category: "Vehicle Issue",
     priority: "standard",
+    city: "Lahore",
     deadline: now + 6 * DAY + 2 * HOUR,
     assignedTo: "Sarah Ahmed",
     resolved: false,
   },
   {
     id: "CMP-2025-00121",
+    customer: "Kashif Iqbal",
     category: "Billing",
     priority: "urgent",
+    city: "Multan",
     deadline: now + 4 * DAY,
     assignedTo: "Fatima Ali",
     resolved: false,
   },
   {
     id: "CMP-2025-00120",
+    customer: "Mehak Fatima",
     category: "Booking Error",
     priority: "standard",
+    city: "Lahore",
     deadline: now + 9 * DAY,
     assignedTo: null,
     resolved: false,
   },
   {
     id: "CMP-2025-00119",
+    customer: "Tariq Jameel",
     category: "Driver Behavior",
     priority: "urgent",
+    city: "Multan",
     deadline: now + 5 * HOUR,
     assignedTo: "M. Kashif",
     resolved: false,
@@ -142,6 +162,12 @@ export const useSLAStore = create(
     (set, get) => ({
       complaints: defaultComplaints,
       status: "saved",
+
+      // Multi-tenant: only complaints belonging to the admin's own city
+      getComplaintsByCity: (city) => {
+        if (!city) return get().complaints;
+        return get().complaints.filter((c) => c.city === city);
+      },
 
       resolveComplaint: async (id) => {
         set({ status: "saving" });

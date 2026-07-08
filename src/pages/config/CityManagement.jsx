@@ -1,77 +1,52 @@
 import React from "react";
 import { Building2 } from "lucide-react";
 import { useConfigStore } from "../../store/ConfigStore";
+import { useAuthStore } from "../../store/authStore";
 import StatusBadge from "../../components/ui/StatusBadge";
+import Switch from "../../components/ui/Switch";
 
-function ToggleSwitch({ enabled, onChange }) {
-  return (
-    <button
-      type="button"
-      onClick={() => onChange(!enabled)}
-      className={`w-11 h-6 rounded-full flex items-center px-1 transition-colors ${
-        enabled ? "bg-success justify-end" : "bg-borderColor justify-start"
-      }`}
-    >
-      <span className="w-4 h-4 bg-white rounded-full shadow" />
-    </button>
-  );
-}
-
+// NOTE: this used to list ALL cities (Karachi/Lahore/Islamabad/Faisalabad)
+// with toggle switches for each - a serious multi-tenant leak, since it let
+// a Lahore admin enable/disable Karachi's or Islamabad's tenant. An admin
+// only ever runs one city's business, so this now only shows and controls
+// their own city's status.
 export default function CityManagement() {
-  const cities = useConfigStore((s) => s.config.cities);
-  const updateCity = useConfigStore((s) => s.updateCity);
+  const configs = useConfigStore((s) => s.configs);
+  const toggleCityActive = useConfigStore((s) => s.toggleCityActive);
+  const adminCity = useAuthStore((s) => s.user?.city);
+
+  const cityConfig = configs[adminCity];
+  const isActive = cityConfig?.active ?? true;
 
   return (
     <div className="bg-surface rounded-xl shadow-card border border-borderColor p-4 sm:p-5">
       <div className="mb-4">
-        <h2 className="font-bold text-red-600 text-base sm:text-lg">
+        <h2 className="font-bold text-textPrimary text-base sm:text-lg">
           4. City Settings
         </h2>
         <p className="text-sm text-textSecondary mt-0.5">
-          Enable or disable cities available on the platform.
+          Enable or disable your branch on the platform.
         </p>
       </div>
 
-      <div className="overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
-        <table className="w-full min-w-[480px] text-sm">
-          <thead>
-            <tr className="border-b border-borderColor text-left text-textSecondary">
-              <th className="py-2 font-medium">City Name</th>
-              <th className="py-2 font-medium">Status</th>
-              <th className="py-2 font-medium text-right">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {cities.map((city, index) => (
-              <tr
-                key={city.name}
-                className="border-b border-borderColor last:border-0"
-              >
-                <td className="py-3 whitespace-nowrap">
-                  <div className="flex items-center gap-2 text-textPrimary font-medium">
-                    <Building2 size={16} className="text-textSecondary shrink-0" />
-                    {city.name}
-                  </div>
-                </td>
-                <td className="py-3 whitespace-nowrap">
-                  <span className="capitalize">
-                    <StatusBadge status={city.active ? "active" : "inactive"} />
-                  </span>
-                </td>
-                <td className="py-3">
-                  <div className="flex justify-end">
-                    <ToggleSwitch
-                      enabled={city.active}
-                      onChange={(val) => updateCity(index, { active: val })}
-                    />
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      <div className="flex items-center justify-between border border-borderColor rounded-xl p-4">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0">
+            <Building2 size={16} />
+          </div>
+          <div>
+            <p className="font-medium text-textPrimary">
+              {adminCity || "Your City"}
+            </p>
+            <StatusBadge status={isActive ? "active" : "inactive"} />
+          </div>
+        </div>
+
+        <Switch
+          checked={isActive}
+          onCheckedChange={(val) => toggleCityActive(adminCity, val)}
+        />
       </div>
     </div>
   );
 }
-

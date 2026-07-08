@@ -5,6 +5,8 @@ export default function StatusBadge({ status }) {
     open: "bg-warning text-white",
     closed: "bg-success text-white",
     pending: "bg-primary text-white",
+    suspended: "bg-danger text-white",
+    flagged: "bg-warning text-white",
   };
 
   const key = status?.toLowerCase();
@@ -12,7 +14,7 @@ export default function StatusBadge({ status }) {
   return (
     <span
       className={`px-2 py-1 rounded-xl text-xs font-medium capitalize ${
-        styles[key] || "bg-gray-300 text-black"
+        styles[key] || "bg-borderColor text-textPrimary"
       }`}
     >
       {status}

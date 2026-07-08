@@ -1,32 +1,24 @@
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
-export const useAuthStore = create((set) => ({
-  user: null,
-  token: null,
-
-  login: (user, token) => {
-    localStorage.setItem("token", token);
-
-    set({
-      user,
-      token,
-    });
-  },
-
-  logout: () => {
-    localStorage.removeItem("token");
-
-    set({
-      user: null,
+export const useAuthStore = create(
+  persist(
+    (set, get) => ({
+      user: null, // { name, email, city } - city drives multi-tenant filtering
       token: null,
-    });
-  },
 
-  hydrate: () => {
-    const token = localStorage.getItem("token");
+      login: (user, token) => {
+        set({ user, token });
+      },
 
-    if (token) {
-      set({ token });
+      logout: () => {
+        set({ user: null, token: null });
+      },
+
+      isAuthenticated: () => !!get().token,
+    }),
+    {
+      name: "fixitnow_auth", // localStorage key
     }
-  },
-}));
+  )
+);

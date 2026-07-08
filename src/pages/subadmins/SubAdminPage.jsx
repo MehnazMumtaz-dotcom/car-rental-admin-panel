@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 
 import { useSubAdminStore, PERMISSIONS } from "../../store/SubAdminStore";
+import { useAuthStore } from "../../store/authStore";
 import CreateSubAdmin from "./CreateSubAdmin";
 import RoleManagement from "./RoleManagement";
 import SubAdminList from "./SubAdminList";
@@ -44,10 +45,17 @@ function StatCard({ icon: Icon, label, value, sub, tone }) {
 const emptyForm = { name: "", email: "", status: "active", password: "" };
 
 export default function SubAdminPage() {
-  const subAdmins = useSubAdminStore((s) => s.subAdmins);
+  const allSubAdmins = useSubAdminStore((s) => s.subAdmins);
   const auditLog = useSubAdminStore((s) => s.auditLog);
   const createSubAdmin = useSubAdminStore((s) => s.createSubAdmin);
   const status = useSubAdminStore((s) => s.status);
+  const adminCity = useAuthStore((s) => s.user?.city);
+
+  // Multi-tenant: admin only ever sees/manages sub-admins for their own city
+  const subAdmins = useMemo(
+    () => allSubAdmins.filter((a) => !adminCity || a.city === adminCity),
+    [allSubAdmins, adminCity]
+  );
 
   const stats = useMemo(() => {
     const total = subAdmins.length;
@@ -70,7 +78,7 @@ export default function SubAdminPage() {
 
   const handleSubmit = () => {
     if (!formData.name.trim() || !formData.email.trim()) return;
-    createSubAdmin({ ...formData, permissions: selectedPermissions });
+    createSubAdmin({ ...formData, city: adminCity, permissions: selectedPermissions });
     setFormData(emptyForm);
     setSelectedPermissions([]);
   };

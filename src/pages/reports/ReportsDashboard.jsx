@@ -1,10 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useMemo } from "react";
 import StatCard from "./components/StatCard";
 import BookingTrendChart from "./components/BookingTrendChart";
 import RevenueByCityChart from "./components/RevenueByCityChart";
 
 import ComplaintSummaryTable from "./components/ComplaintSummaryTable";
 import RevenueByCityTable from "./components/RevenueByCityTable";
+
+import { useBookingStore } from "../../store/bookingStore";
+import { useSLAStore, getComplaintStatus } from "../../store/SLAStore";
+import { useAuthStore } from "../../store/authStore";
 
 import {
   Calendar,
@@ -14,50 +18,70 @@ import {
 } from "lucide-react";
 
 export default function ReportDashboard() {
-  const [stats, setStats] = useState([]);
+  const adminCity = useAuthStore((s) => s.user?.city);
+  const bookings = useBookingStore((s) => s.bookings);
+  const complaints = useSLAStore((s) => s.complaints);
 
-  useEffect(() => {
-    const data = [
+  const cityBookings = useMemo(
+    () => bookings.filter((b) => !adminCity || b.city === adminCity),
+    [bookings, adminCity]
+  );
+
+  const cityComplaints = useMemo(
+    () => complaints.filter((c) => !adminCity || c.city === adminCity),
+    [complaints, adminCity]
+  );
+
+  const stats = useMemo(() => {
+    const totalRevenue = cityBookings.reduce(
+      (sum, b) => sum + (Number(b.price) || 0),
+      0
+    );
+
+    const totalComplaints = cityComplaints.length;
+    const resolvedComplaints = cityComplaints.filter((c) => c.resolved).length;
+    const resolutionRate =
+      totalComplaints === 0 ? 0 : (resolvedComplaints / totalComplaints) * 100;
+
+    return [
       {
         title: "Total Bookings",
-        value: "128",
-        current: 128,
-        lastWeek: 100,
+        value: String(cityBookings.length),
+        current: cityBookings.length,
+        lastWeek: cityBookings.length, // no historical snapshot stored yet - see note below
         icon: Calendar,
         iconBg: "bg-primary/10",
         iconColor: "text-primary",
       },
       {
         title: "Total Complaints",
-        value: "52",
-        current: 52,
-        lastWeek: 58,
+        value: String(totalComplaints),
+        current: totalComplaints,
+        lastWeek: totalComplaints,
         icon: AlertCircle,
         iconBg: "bg-danger/10",
         iconColor: "text-danger",
       },
       {
         title: "Total Revenue",
-        value: "PKR 1,245,750",
-        current: 1245750,
-        lastWeek: 1098000,
+        value: `PKR ${totalRevenue.toLocaleString()}`,
+        current: totalRevenue,
+        lastWeek: totalRevenue,
         icon: DollarSign,
         iconBg: "bg-success/10",
         iconColor: "text-success",
       },
       {
         title: "Resolution Rate",
-        value: "76.9%",
-        current: 76.9,
-        lastWeek: 70.8,
+        value: `${resolutionRate.toFixed(1)}%`,
+        current: resolutionRate,
+        lastWeek: resolutionRate,
         icon: Users,
         iconBg: "bg-warning/10",
         iconColor: "text-warning",
       },
     ];
-
-    setStats(data);
-  }, []);
+  }, [cityBookings, cityComplaints]);
 
   return (
     <div className="p-3 sm:p-4 md:p-6 bg-background min-h-screen w-full overflow-x-hidden">

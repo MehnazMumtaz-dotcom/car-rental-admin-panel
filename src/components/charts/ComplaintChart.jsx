@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
 import {
   PieChart,
   Pie,
@@ -7,24 +7,32 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { AlertCircle } from "lucide-react";
+import { useSLAStore, getComplaintStatus } from "../../store/SLAStore";
+import { useAuthStore } from "../../store/authStore";
 
-const colors = ["#ef4444", "#f59e0b", "#22c55e", "#2563eb"];
+const STATUS_META = [
+  { key: "on-track", name: "On Track", color: "#22c55e" },
+  { key: "at-risk", name: "At Risk", color: "#f59e0b" },
+  { key: "breached", name: "Breached", color: "#ef4444" },
+];
 
-const ComplaintChart = ({ weekRange }) => {
-  const [data, setData] = useState([]);
+const ComplaintChart = () => {
+  const complaints = useSLAStore((s) => s.complaints);
+  const adminCity = useAuthStore((s) => s.user?.city);
 
-  useEffect(() => {
-    if (!weekRange?.start) return;
+  const data = useMemo(() => {
+    const now = Date.now();
+    const active = complaints
+      .filter((c) => !c.resolved)
+      .filter((c) => !adminCity || c.city === adminCity)
+      .map((c) => getComplaintStatus(c, now).status);
 
-    const generated = [
-      { name: "Open", value: Math.floor(Math.random() * 20) + 5 },
-      { name: "In Progress", value: Math.floor(Math.random() * 20) + 5 },
-      { name: "Resolved", value: Math.floor(Math.random() * 20) + 5 },
-      { name: "Escalated", value: Math.floor(Math.random() * 10) + 2 },
-    ];
-
-    setData(generated);
-  }, [weekRange]);
+    return STATUS_META.map((s) => ({
+      name: s.name,
+      color: s.color,
+      value: active.filter((status) => status === s.key).length,
+    }));
+  }, [complaints, adminCity]);
 
   const total = data.reduce((sum, item) => sum + item.value, 0);
 
@@ -55,8 +63,8 @@ const ComplaintChart = ({ weekRange }) => {
                   innerRadius="55%"
                   outerRadius="90%"
                 >
-                  {data.map((_, i) => (
-                    <Cell key={i} fill={colors[i]} />
+                  {data.map((entry, i) => (
+                    <Cell key={i} fill={entry.color} />
                   ))}
                 </Pie>
 
@@ -86,7 +94,7 @@ const ComplaintChart = ({ weekRange }) => {
               <div className="flex items-center gap-2 flex-1 min-w-0">
                 <span
                   className="w-2 h-2 rounded-full shrink-0"
-                  style={{ backgroundColor: colors[i] }}
+                  style={{ backgroundColor: item.color }}
                 />
 
                 <span className="text-xs sm:text-sm text-textPrimary whitespace-nowrap truncate">

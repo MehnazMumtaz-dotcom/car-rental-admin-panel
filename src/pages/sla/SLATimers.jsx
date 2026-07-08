@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { FileText, CheckCircle2, Clock, AlertTriangle } from "lucide-react";
 
 import { useSLAStore, getComplaintStatus } from "../../store/SLAStore";
+import { useAuthStore } from "../../store/authStore";
 import ComplaintFilters from "./ComplaintFilters";
 import ComplaintTable from "./ComplaintTable";
 
@@ -35,6 +36,7 @@ export default function SLATimers() {
   const complaints = useSLAStore((s) => s.complaints);
   const refresh = useSLAStore((s) => s.refresh);
   const status = useSLAStore((s) => s.status);
+  const adminCity = useAuthStore((s) => s.user?.city);
 
   const [filters, setFilters] = useState(emptyFilters);
   const [now, setNow] = useState(Date.now());
@@ -45,7 +47,9 @@ export default function SLATimers() {
   }, []);
 
   const stats = useMemo(() => {
-    const active = complaints.filter((c) => !c.resolved);
+    const active = complaints
+      .filter((c) => !c.resolved)
+      .filter((c) => !adminCity || c.city === adminCity);
     const withStatus = active.map((c) => getComplaintStatus(c, now).status);
 
     const total = active.length;
@@ -64,7 +68,7 @@ export default function SLATimers() {
       atRiskPct: pct(atRisk),
       breachedPct: pct(breached),
     };
-  }, [complaints, now]);
+  }, [complaints, now, adminCity]);
 
   const isRefreshing = status === "saving";
 

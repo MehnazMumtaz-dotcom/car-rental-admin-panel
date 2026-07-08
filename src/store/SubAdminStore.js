@@ -17,6 +17,7 @@ const defaultSubAdmins = [
     id: 1,
     name: "Farhan Ali",
     email: "farhan@rental.com",
+    city: "Lahore",
     status: "active",
     permissions: ["dashboard", "complaints", "bookingCalendar", "customers", "auditLog"],
     lastLogin: "Today, 10:30 AM",
@@ -25,6 +26,7 @@ const defaultSubAdmins = [
     id: 2,
     name: "Sarah Khan",
     email: "sarah@rental.com",
+    city: "Lahore",
     status: "active",
     permissions: ["dashboard", "complaints", "customers"],
     lastLogin: "Today, 09:15 AM",
@@ -33,6 +35,7 @@ const defaultSubAdmins = [
     id: 3,
     name: "Ali Raza",
     email: "ali@rental.com",
+    city: "Multan",
     status: "inactive",
     permissions: ["dashboard", "reports"],
     lastLogin: "2 days ago",
@@ -41,6 +44,7 @@ const defaultSubAdmins = [
     id: 4,
     name: "Noor Fatima",
     email: "noor@rental.com",
+    city: "Multan",
     status: "active",
     permissions: ["dashboard", "bookingCalendar", "customers", "reports"],
     lastLogin: "Yesterday, 04:45 PM",
@@ -106,13 +110,13 @@ export const useSubAdminStore = create(
         return { total, active, fullAccess, restricted };
       },
 
-      createSubAdmin: async ({ name, email, status, permissions }) => {
+      createSubAdmin: async ({ name, email, status, permissions, city }) => {
         set({ status: "saving" });
         try {
           // const res = await fetch("/api/sub-admins", {
           //   method: "POST",
           //   headers: { "Content-Type": "application/json" },
-          //   body: JSON.stringify({ name, email, status, permissions }),
+          //   body: JSON.stringify({ name, email, status, permissions, city }),
           // });
           // if (!res.ok) throw new Error("Create failed");
 
@@ -122,6 +126,7 @@ export const useSubAdminStore = create(
             id: Date.now(),
             name,
             email,
+            city: city || "",
             status: status || "active",
             permissions: permissions || [],
             lastLogin: "Never",

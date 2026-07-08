@@ -1,3 +1,5 @@
+import Label from "./Label";
+
 export default function Input({
   label,
   type = "text",
@@ -7,12 +9,8 @@ export default function Input({
 }) {
   return (
     <div className="flex flex-col gap-1">
-      
-      {label && (
-        <label className="text-sm text-textSecondary">
-          {label}
-        </label>
-      )}
+
+      {label && <Label>{label}</Label>}
 
 
       <input
@@ -22,7 +20,7 @@ export default function Input({
         onChange={onChange}
         className="px-3 py-2 rounded-xl border border-borderColor 
         focus:outline-none focus:ring-2 focus:ring-primary 
-        bg-surface text-textPrimary text-sm"
+        bg-surface text-textPrimary text-sm w-full"
       />
     </div>
   );

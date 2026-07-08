@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useMemo } from "react";
 import {
   LineChart,
   Line,
@@ -10,48 +10,64 @@ import {
   CartesianGrid,
 } from "recharts";
 import { FiCalendar } from "react-icons/fi";
+import { useBookingStore } from "../../store/bookingStore";
+import { useAuthStore } from "../../store/authStore";
 
 const BookingChart = ({ weekRange }) => {
   const [isWeek, setIsWeek] = useState(true);
-  const [data, setData] = useState([]);
+  const allBookings = useBookingStore((s) => s.bookings);
+  const adminCity = useAuthStore((s) => s.user?.city);
 
-  useEffect(() => {
-    if (!weekRange?.start) return;
+  const cityBookings = useMemo(
+    () => allBookings.filter((b) => !adminCity || b.city === adminCity),
+    [allBookings, adminCity]
+  );
 
-    // convert "20 May 2025" → Date
+  // Real count of bookings starting on each day of the selected week
+  const weekData = useMemo(() => {
+    if (!weekRange?.start) return [];
+
     const startDate = new Date(weekRange.start);
-
-    let generated = [];
+    const generated = [];
 
     for (let i = 0; i < 7; i++) {
       const d = new Date(startDate);
       d.setDate(d.getDate() + i);
+      const iso = d.toISOString().split("T")[0];
+
+      const count = cityBookings.filter((b) => b.startDate === iso).length;
 
       generated.push({
         day: d.getDate(),
         fullDate: d.toDateString(),
-        bookings: Math.floor(Math.random() * 100) + 20, // 🔥 dummy dynamic data
+        bookings: count,
       });
     }
 
-    setData(generated);
-  }, [weekRange]);
+    return generated;
+  }, [weekRange, cityBookings]);
 
-  const monthData = [
-    { day: 1, bookings: 20 },
-    { day: 5, bookings: 40 },
-    { day: 10, bookings: 60 },
-    { day: 15, bookings: 50 },
-    { day: 20, bookings: 80 },
-    { day: 25, bookings: 70 },
-    { day: 30, bookings: 95 },
-  ];
+  // Real count of bookings starting on each day of the current month
+  const monthData = useMemo(() => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = now.getMonth();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-  const chartData = isWeek ? data : monthData;
+    const generated = [];
+    for (let day = 1; day <= daysInMonth; day++) {
+      const iso = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+      const count = cityBookings.filter((b) => b.startDate === iso).length;
+      generated.push({ day, bookings: count });
+    }
+    return generated;
+  }, [cityBookings]);
+
+  const chartData = isWeek ? weekData : monthData;
 
   return (
     <div className="bg-surface p-5 rounded-xl shadow-card h-80 flex flex-col border border-borderColor">
- 
+
       <div className="flex items-center justify-between mb-4">
 
         <div className="flex items-center gap-2">
@@ -60,22 +76,22 @@ const BookingChart = ({ weekRange }) => {
             Booking Volume
           </h3>
         </div>
-        
+
         <button
           onClick={() => setIsWeek(!isWeek)}
-          className="text-xs px-3 py-1 rounded-lg border border-borderColor text-textSecondary hover:bg-surfaceHover transition"
+          className="text-xs px-3 py-1 rounded-lg border border-borderColor text-textSecondary hover:bg-background transition"
         >
           {isWeek ? "This Week" : "This Month"}
         </button>
 
       </div>
-      
+
       <div className="flex-1">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={chartData} margin={{ top: 10, right: 20, left: 0, bottom: 5 }}>
 
             <CartesianGrid stroke="#eef2f7" strokeDasharray="3 3" vertical={false} />
-        
+
             <XAxis
               dataKey="day"
               tickFormatter={(value) => `${value}`}
@@ -84,23 +100,22 @@ const BookingChart = ({ weekRange }) => {
               tick={{ fontSize: 12, fill: "#94a3b8", dy: 8 }}
             />
 
-            
             <YAxis
+              allowDecimals={false}
               axisLine={false}
               tickLine={false}
               tick={{ fontSize: 12, fill: "#94a3b8" }}
             />
 
-            
             <Tooltip
               content={({ active, payload }) => {
                 if (active && payload && payload.length) {
                   return (
-                    <div className="bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs shadow-sm">
-                      <p className="text-gray-500 mb-1">
-                        {payload[0].payload.fullDate}
+                    <div className="bg-surface border border-borderColor rounded-lg px-3 py-2 text-xs shadow-card">
+                      <p className="text-textSecondary mb-1">
+                        {payload[0].payload.fullDate || `Day ${payload[0].payload.day}`}
                       </p>
-                      <p className="text-black font-medium">
+                      <p className="text-textPrimary font-medium">
                         Bookings: {payload[0].value}
                       </p>
                     </div>
@@ -110,7 +125,6 @@ const BookingChart = ({ weekRange }) => {
               }}
             />
 
-            
             <defs>
               <linearGradient id="bookingFill" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stopColor="#6366f1" stopOpacity={0.35} />
@@ -118,7 +132,6 @@ const BookingChart = ({ weekRange }) => {
               </linearGradient>
             </defs>
 
-           
             <Area
               type="monotone"
               dataKey="bookings"
@@ -126,7 +139,6 @@ const BookingChart = ({ weekRange }) => {
               fill="url(#bookingFill)"
             />
 
-            
             <Line
               type="monotone"
               dataKey="bookings"

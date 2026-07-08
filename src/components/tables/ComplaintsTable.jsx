@@ -1,76 +1,41 @@
-import { useState, useMemo } from "react";
-
-const complaintsData = [
-  {
-    id: "#C-1021",
-    customer: "Ali Raza",
-    category: "Vehicle Issue",
-    sla: "2d 4h 15m",
-    status: "Open",
-    date: "2026-05-20",
-  },
-  {
-    id: "#C-1020",
-    customer: "Sara Khan",
-    category: "Billing",
-    sla: "4d 10h 30m",
-    status: "In Progress",
-    date: "2026-05-21",
-  },
-  {
-    id: "#C-1019",
-    customer: "Usman Malik",
-    category: "Driver Behavior",
-    sla: "1d 6h 20m",
-    status: "Open",
-    date: "2026-05-22",
-  },
-  {
-    id: "#C-1018",
-    customer: "Hina Batool",
-    category: "Booking Error",
-    sla: "5d 12h 45m",
-    status: "In Progress",
-    date: "2026-05-25",
-  },
-  {
-    id: "#C-1017",
-    customer: "Ahmed Nadeem",
-    category: "Other",
-    sla: "6d 3h 10m",
-    status: "Open",
-    date: "2026-05-28",
-  },
-];
+import { useMemo, useState } from "react";
+import { useSLAStore, getComplaintStatus, formatTimeLeft } from "../../store/SLAStore";
+import { useAuthStore } from "../../store/authStore";
 
 const getStatusStyle = (status) => {
   switch (status) {
-    case "Open":
-      return "bg-red-100 text-red-600";
-    case "In Progress":
-      return "bg-orange-100 text-orange-600";
-    case "Resolved":
-      return "bg-green-100 text-green-600";
+    case "on-track":
+      return "bg-success/10 text-success";
+    case "at-risk":
+      return "bg-warning/10 text-warning";
+    case "breached":
+      return "bg-danger/10 text-danger";
     default:
-      return "bg-gray-100 text-gray-600";
+      return "bg-borderColor text-textPrimary";
   }
 };
 
-const ComplaintsTable = ({ startDate, endDate, onRowClick }) => {
+const statusLabel = {
+  "on-track": "On Track",
+  "at-risk": "At Risk",
+  breached: "Breached",
+};
+
+const ComplaintsTable = ({ onRowClick }) => {
   const [showAll, setShowAll] = useState(false);
+  const complaints = useSLAStore((s) => s.complaints);
+  const adminCity = useAuthStore((s) => s.user?.city);
 
-  const filteredData = useMemo(() => {
-    if (!startDate || !endDate) return complaintsData;
+  const enriched = useMemo(() => {
+    const now = Date.now();
+    return complaints
+      .filter((c) => !c.resolved)
+      .filter((c) => !adminCity || c.city === adminCity)
+      .map((c) => ({ ...c, ...getComplaintStatus(c, now) }))
+      .sort((a, b) => a.msLeft - b.msLeft);
+  }, [complaints, adminCity]);
 
-    return complaintsData.filter((item) => {
-      const d = new Date(item.date);
-      return d >= startDate && d <= endDate;
-    });
-  }, [startDate, endDate]);
-
-  const visibleData = showAll
-    ? filteredData
-    : filteredData.slice(0, 2);
+  const visibleData = showAll ? enriched : enriched.slice(0, 5);
 
   return (
     <div className="bg-surface p-4 sm:p-5 rounded-xl shadow-card border border-borderColor">
@@ -95,16 +60,16 @@ const ComplaintsTable = ({ startDate, endDate, onRowClick }) => {
             <th className="pb-2 px-1">ID</th>
             <th className="pb-2 px-1">Customer</th>
             <th className="pb-2 px-1">Category</th>
-            <th className="pb-2 px-1">SLA</th>
+            <th className="pb-2 px-1">Time Left</th>
             <th className="pb-2 px-1">Status</th>
           </tr>
         </thead>
 
         <tbody className="text-textPrimary">
 
-          {visibleData.map((item, index) => (
+          {visibleData.map((item) => (
             <tr
-              key={index}
+              key={item.id}
               onClick={() => onRowClick?.(item)}
               className="border-b border-borderColor last:border-none cursor-pointer hover:bg-background transition"
             >
@@ -116,8 +81,8 @@ const ComplaintsTable = ({ startDate, endDate, onRowClick }) => {
                 {item.category}
               </td>
 
-              <td className="px-1 truncate text-warning font-medium">
-                ⏱ {item.sla}
+              <td className="px-1 truncate text-warning font-medium whitespace-nowrap">
+                ⏱ {formatTimeLeft(item.msLeft)}
               </td>
 
               <td className="px-1">
@@ -126,18 +91,26 @@ const ComplaintsTable = ({ startDate, endDate, onRowClick }) => {
                     item.status
                   )}`}
                 >
-                  {item.status}
+                  {statusLabel[item.status]}
                 </span>
               </td>
 
             </tr>
           ))}
 
+          {visibleData.length === 0 && (
+            <tr>
+              <td colSpan={5} className="py-4 text-center text-textSecondary">
+                No open complaints.
+              </td>
+            </tr>
+          )}
+
         </tbody>
       </table>
 
       <div className="text-xs sm:text-sm text-textSecondary mt-4 text-center">
-        Showing {visibleData.length} of {filteredData.length}
+        Showing {visibleData.length} of {enriched.length}
       </div>
     </div>
   );
