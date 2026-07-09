@@ -15,10 +15,17 @@ export default function BookingDrawer({
 
   const handleDeleteClick = () => setShowConfirm(true);
 
-  const handleConfirmDelete = () => {
-    onDelete?.(booking.id);
-    setShowConfirm(false);
-  };
+ const handleConfirmDelete = () => {
+  console.log("Deleting ID:", booking.id);
+
+  onDelete?.(booking.id);
+
+  setShowConfirm(false);
+
+  setTimeout(() => {
+    onClose?.();
+  }, 0);
+};
 
   const handleOverrideClick = () => {
     setShowOverrideConfirm(true);
@@ -32,18 +39,22 @@ export default function BookingDrawer({
   return (
     <>
       <div
-        className="fixed inset-0 bg-secondary/50 z-[999]"
-        onClick={onClose}
-      />
 
-      <div
-        className="
-          fixed right-0 top-0 h-full
-          w-full sm:w-[380px]
-          bg-surface text-textPrimary shadow-card z-[1000]
-          p-4 sm:p-5 overflow-y-auto
-        "
-      >
+  className={`fixed inset-0 bg-secondary/50 ${
+    showConfirm ? "z-[500]" : "z-[999]"
+  }`}
+  onClick={onClose}
+/>
+
+<div
+  className={`
+    fixed right-0 top-0 h-full
+    w-full sm:w-[380px]
+    bg-surface text-textPrimary shadow-card
+    ${showConfirm ? "z-[600]" : "z-[1000]"}
+    p-4 sm:p-5 overflow-y-auto
+  `}
+>
 
         <div className="flex justify-between items-center border-b border-borderColor pb-2 mb-4">
           <h2 className="text-base sm:text-lg font-bold">
