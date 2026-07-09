@@ -17,16 +17,12 @@ export default function BookingList() {
   const [currentDate, setCurrentDate] = useState(() => new Date());
   const [selectedBooking, setSelectedBooking] = useState(null);
 
-  // Replaces window.confirm() - holds the booking waiting on a clash
-  // confirmation, plus which action (create/update) should run if confirmed.
   const [pendingClash, setPendingClash] = useState(null);
 
   const allBookings = useBookingStore((s) => s.bookings);
   const addBooking = useBookingStore((s) => s.addBooking);
   const updateBookingInStore = useBookingStore((s) => s.updateBooking);
   const deleteBookingInStore = useBookingStore((s) => s.deleteBooking);
-
-  // Multi-tenant: admin only ever sees bookings for their own city
   const adminCity = useAuthStore((s) => s.user?.city);
   const bookings = useMemo(
     () => allBookings.filter((b) => !adminCity || b.city === adminCity),

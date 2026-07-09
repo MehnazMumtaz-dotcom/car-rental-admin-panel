@@ -1,14 +1,14 @@
 import React from "react";
-import Button from "../../../Components/UI/Button";
-import StatusBadge from "../../../Components/UI/StatusBadge";
+import Button from "../../../components/ui/Button";
+import StatusBadge from "../../../components/ui/StatusBadge";
 
 const BookingDetailsModal = ({ booking, onClose }) => {
   if (!booking) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-secondary/50 flex items-center justify-center z-50">
 
-      <div className="bg-white w-[400px] rounded-xl shadow-lg p-6">
+      <div className="bg-surface text-textPrimary border border-borderColor w-[400px] rounded-xl shadow-card p-6">
 
         <h2 className="text-xl font-semibold mb-4">
           Booking Details

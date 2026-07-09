@@ -6,10 +6,8 @@ function ThemeInitializer() {
   const setTheme = useUIStore((s) => s.setTheme);
 
   useEffect(() => {
-    // ✅ APPLY THEME ON LOAD
     setTheme(theme);
 
-    // ✅ SYSTEM CHANGE LISTENER
     const media = window.matchMedia("(prefers-color-scheme: dark)");
 
     const handler = () => {

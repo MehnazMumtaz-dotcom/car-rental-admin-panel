@@ -82,12 +82,12 @@ export default function CalendarToolbar({
       <div className="flex justify-end mb-2 px-2 sm:px-0">
         <button
           onClick={onOpenForm}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm w-full sm:w-auto"
+          className="bg-primary hover:bg-primaryHover text-white px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm w-full sm:w-auto"
         >
           + New Booking
         </button>
       </div>
-      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 bg-white px-3 sm:px-5 py-3 rounded-lg shadow-sm">
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 bg-surface border border-borderColor px-3 sm:px-5 py-3 rounded-lg shadow-card">
         <div className="flex items-center justify-between sm:justify-start gap-2">
 
           <button
@@ -166,7 +166,7 @@ export default function CalendarToolbar({
 
           <button
             onClick={reset}
-            className="bg-blue-500 text-white px-3 py-1.5 rounded-md text-xs sm:text-sm"
+            className="bg-primary hover:bg-primaryHover text-white px-3 py-1.5 rounded-md text-xs sm:text-sm"
           >
             Reset
           </button>

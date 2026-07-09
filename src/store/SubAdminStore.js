@@ -49,6 +49,24 @@ const defaultSubAdmins = [
     permissions: ["dashboard", "bookingCalendar", "customers", "reports"],
     lastLogin: "Yesterday, 04:45 PM",
   },
+  {
+    id: 5,
+    name: "Bilal Sheikh",
+    email: "bilal.sheikh@rental.com",
+    city: "Karachi",
+    status: "active",
+    permissions: ["dashboard", "complaints"],
+    lastLogin: "Today, 08:00 AM",
+  },
+  {
+    id: 6,
+    name: "Nadia Yousaf",
+    email: "nadia.yousaf@rental.com",
+    city: "Islamabad",
+    status: "inactive",
+    permissions: ["dashboard"],
+    lastLogin: "3 days ago",
+  },
 ];
 
 const defaultAuditLog = [

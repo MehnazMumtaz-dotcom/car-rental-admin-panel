@@ -13,7 +13,7 @@ export default function StatusBadge({ status }) {
 
   return (
     <span
-      className={`px-2 py-1 rounded-xl text-xs font-medium capitalize ${
+      className={`inline-block whitespace-nowrap px-2 py-1 rounded-xl text-xs font-medium capitalize ${
         styles[key] || "bg-borderColor text-textPrimary"
       }`}
     >

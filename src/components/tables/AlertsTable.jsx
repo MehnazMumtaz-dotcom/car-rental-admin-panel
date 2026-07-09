@@ -19,7 +19,6 @@ const AlertsTable = ({ onRowClick }) => {
       .filter((c) => !c.resolved)
       .filter((c) => !adminCity || c.city === adminCity)
       .map((c) => ({ ...c, ...getComplaintStatus(c, now) }))
-      // Only complaints that actually need urgent attention
       .filter((c) => c.status === "at-risk" || c.status === "breached")
       .sort((a, b) => a.msLeft - b.msLeft);
   }, [complaints, adminCity]);

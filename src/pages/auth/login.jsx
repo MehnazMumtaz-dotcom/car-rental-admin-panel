@@ -6,17 +6,15 @@ import Button from "../../components/ui/Button";
 import logo from "../../assets/car-logo.png";
 import { ShieldCheck, Lock, Eye, EyeOff } from "lucide-react";
 
-// Dummy credentials until the real auth API is wired up
 const DUMMY_EMAIL = "admin@gmail.com";
 const DUMMY_PASSWORD = "123456";
-// In production this code is sent by the backend (SMS/email/authenticator app)
 const DUMMY_OTP = "000000";
 
 export default function Login() {
   const navigate = useNavigate();
   const login = useAuthStore((s) => s.login);
 
-  const [step, setStep] = useState("credentials"); // "credentials" | "otp"
+  const [step, setStep] = useState("credentials"); 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -28,9 +26,7 @@ export default function Login() {
     setError("");
 
     if (email === DUMMY_EMAIL && password === DUMMY_PASSWORD) {
-      // ---- BACKEND CALL YAHAN LAGAO ----
       // await fetch("/api/auth/login", { method: "POST", body: JSON.stringify({ email, password }) });
-      // Backend would send the 2FA code at this point.
       setStep("otp");
     } else {
       setError("Invalid email or password.");
@@ -42,13 +38,9 @@ export default function Login() {
     setError("");
 
     if (otp === DUMMY_OTP) {
-      // ---- BACKEND CALL YAHAN LAGAO ----
       // const res = await fetch("/api/auth/verify-otp", { method: "POST", body: JSON.stringify({ email, otp }) });
       // const { user, token } = await res.json();
-
-      // Backend will return the admin's assigned city/tenant here.
-      // Hardcoded to "Lahore" for now since there's only one dummy admin.
-      const user = { name: "Admin", email, city: "Multan" };
+      const user = { name: "Admin", email, city: "Karachi" };
       const token = "dummy-token-123";
 
       login(user, token);
@@ -60,10 +52,7 @@ export default function Login() {
 
   return (
     <div className="min-h-screen flex bg-background">
-
-      {/* ---------- LEFT BRAND PANEL (hidden on mobile) ---------- */}
       <div className="hidden md:flex md:w-1/2 lg:w-3/5 relative overflow-hidden bg-gradient-to-br from-secondary via-secondary to-primary/80">
-        {/* decorative glow shapes */}
         <div className="absolute -top-24 -left-24 w-96 h-96 rounded-full bg-primary/30 blur-3xl" />
         <div className="absolute bottom-0 right-0 w-80 h-80 rounded-full bg-accent/20 blur-3xl" />
 
@@ -93,12 +82,8 @@ export default function Login() {
           </p>
         </div>
       </div>
-
-      {/* ---------- RIGHT FORM PANEL ---------- */}
       <div className="flex-1 flex items-center justify-center px-4 sm:px-6 py-10">
         <div className="w-full max-w-sm">
-
-          {/* mobile-only compact logo */}
           <div className="flex md:hidden items-center gap-2 justify-center mb-8">
             <img src={logo} alt="logo" className="w-9 h-9" />
             <span className="font-bold text-textPrimary">Car Rental</span>

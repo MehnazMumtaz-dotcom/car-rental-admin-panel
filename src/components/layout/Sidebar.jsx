@@ -21,6 +21,7 @@ import logo from "../../assets/car-logo.png";
 import { useUIStore } from "../../store/uiStore";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
+import ConfirmDialog from "../ui/ConfirmDialog";
 
 export default function Sidebar() {
   const user = useAuthStore((state) => state.user);
@@ -55,9 +56,16 @@ export default function Sidebar() {
     return () => document.removeEventListener("mousedown", handleClick);
   }, []);
 
-  const handleLogout = () => {
-    logout();
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+
+  const requestLogout = () => {
     setOpenProfile(false);
+    setShowLogoutConfirm(true);
+  };
+
+  const confirmLogout = () => {
+    logout();
+    setShowLogoutConfirm(false);
     navigate("/login", { replace: true });
   };
 
@@ -240,7 +248,7 @@ export default function Sidebar() {
               <hr className="border-borderColor my-1" />
 
               <button
-                onClick={handleLogout}
+                onClick={requestLogout}
                 className="w-full flex items-center gap-2 text-danger hover:bg-danger/10 p-2 rounded-lg text-sm transition"
               >
                 <LogOut size={16} />
@@ -250,6 +258,16 @@ export default function Sidebar() {
           )}
         </div>
       </aside>
+
+      <ConfirmDialog
+        open={showLogoutConfirm}
+        title="Log Out"
+        message="Are you sure you want to log out?"
+        confirmText="Logout"
+        cancelText="Cancel"
+        onConfirm={confirmLogout}
+        onCancel={() => setShowLogoutConfirm(false)}
+      />
     </>
   );
 }

@@ -4,7 +4,7 @@ import { persist } from "zustand/middleware";
 export const useAuthStore = create(
   persist(
     (set, get) => ({
-      user: null, // { name, email, city } - city drives multi-tenant filtering
+      user: null, 
       token: null,
 
       login: (user, token) => {
@@ -18,7 +18,7 @@ export const useAuthStore = create(
       isAuthenticated: () => !!get().token,
     }),
     {
-      name: "fixitnow_auth", // localStorage key
+      name: "fixitnow_auth", 
     }
   )
 );

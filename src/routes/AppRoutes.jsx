@@ -20,7 +20,6 @@ export default function AppRoutes() {
       <Route element={<ProtectedRoute />}>
         <Route path="/" element={<DashboardLayout />}>
           <Route index element={<Dashboard />} />
-          {/* Complaint queue + live SLA countdowns are one screen per spec (doc 4.2/4.3) */}
           <Route path="complaints" element={<SLATimers />} />
           <Route path="bookings" element={<Bookings />} />
           <Route path="customers" element={<CustomerPage />} />
@@ -28,9 +27,6 @@ export default function AppRoutes() {
           <Route path="config" element={<Config />} />
           <Route path="reports" element={<Reports />} />
           <Route path="profile-settings" element={<ProfileSettings />} />
-          {/* Vendor module intentionally not routed yet - doc defers this to Phase 5,
-              it isn't one of the Admin's 8 current modules. Files kept in
-              src/pages/vendors/ for when that phase starts. */}
         </Route>
       </Route>
 

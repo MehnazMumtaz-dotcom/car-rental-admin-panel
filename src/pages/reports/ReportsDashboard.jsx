@@ -48,7 +48,7 @@ export default function ReportDashboard() {
         title: "Total Bookings",
         value: String(cityBookings.length),
         current: cityBookings.length,
-        lastWeek: cityBookings.length, // no historical snapshot stored yet - see note below
+        lastWeek: cityBookings.length, 
         icon: Calendar,
         iconBg: "bg-primary/10",
         iconColor: "text-primary",

@@ -85,7 +85,6 @@ export default function ComplaintTable({ filters, now }) {
   const [viewingComplaint, setViewingComplaint] = useState(null);
   const [assigningComplaint, setAssigningComplaint] = useState(null);
 
-  // Multi-tenant: admin only ever sees complaints for their own city
   const adminCity = useAuthStore((s) => s.user?.city);
 
   const enriched = useMemo(() => {

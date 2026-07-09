@@ -74,6 +74,54 @@ const defaultCustomers = [
     joined: "2024-05-01",
     lastActivity: "2024-06-29",
   },
+  {
+    id: "C007",
+    name: "Bilal Sheikh",
+    phone: "03011234567",
+    email: "bilal@email.com",
+    city: "Karachi",
+    bookings: 4,
+    spent: 21000,
+    status: "active",
+    joined: "2024-02-20",
+    lastActivity: "2024-06-27",
+  },
+  {
+    id: "C008",
+    name: "Mehak Fatima",
+    phone: "03221234567",
+    email: "mehak@email.com",
+    city: "Karachi",
+    bookings: 2,
+    spent: 9000,
+    status: "flagged",
+    joined: "2024-04-15",
+    lastActivity: "2024-06-18",
+  },
+  {
+    id: "C009",
+    name: "Tariq Jameel",
+    phone: "03331234567",
+    email: "tariq@email.com",
+    city: "Islamabad",
+    bookings: 7,
+    spent: 38000,
+    status: "active",
+    joined: "2024-01-25",
+    lastActivity: "2024-06-30",
+  },
+  {
+    id: "C010",
+    name: "Nadia Yousaf",
+    phone: "03441234567",
+    email: "nadia@email.com",
+    city: "Islamabad",
+    bookings: 1,
+    spent: 4000,
+    status: "suspended",
+    joined: "2024-05-20",
+    lastActivity: "2024-06-15",
+  },
 ];
 
 export const useCustomerStore = create(
@@ -98,7 +146,6 @@ export const useCustomerStore = create(
       openCustomer: (c) => set({ selectedCustomer: c, isDrawerOpen: true }),
       closeCustomer: () => set({ selectedCustomer: null, isDrawerOpen: false }),
 
-      // Multi-tenant: only customers belonging to the admin's own city
       getCustomersByCity: (city) => {
         if (!city) return get().customers;
         return get().customers.filter((c) => c.city === city);

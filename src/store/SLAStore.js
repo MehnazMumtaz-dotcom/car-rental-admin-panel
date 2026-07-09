@@ -1,7 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-// Fixed AI-sorted categories (per spec: Billing, Vehicle Issue, Driver Behavior, Booking Error, Other)
 export const CATEGORIES = [
   "Billing",
   "Vehicle Issue",
@@ -10,7 +9,6 @@ export const CATEGORIES = [
   "Other",
 ];
 
-// Standard = 14 days, Urgent = 7 days (urgent costs the customer extra)
 export const PRIORITIES = [
   { key: "standard", label: "Standard", slaDays: 14 },
   { key: "urgent", label: "Urgent", slaDays: 7 },
@@ -30,110 +28,184 @@ const DAY = 24 * HOUR;
 const now = Date.now();
 
 const defaultComplaints = [
+  // 🟢 ON TRACK
   {
     id: "CMP-2025-00128",
     customer: "Ali Raza",
     category: "Billing",
     priority: "standard",
     city: "Lahore",
-    deadline: now + 10 * DAY + 4 * HOUR + 32 * 60 * 1000,
+    deadline: now + 12 * DAY,
     assignedTo: "Sarah Ahmed",
     resolved: false,
   },
+
+  // 🟠 AT RISK
   {
     id: "CMP-2025-00127",
     customer: "Sara Khan",
     category: "Vehicle Issue",
     priority: "urgent",
     city: "Lahore",
-    deadline: now + 1 * DAY + 6 * HOUR + 15 * 60 * 1000,
+    deadline: now + 1 * DAY,
     assignedTo: "M. Kashif",
     resolved: false,
   },
+
+  // 🔴 BREACHED
   {
     id: "CMP-2025-00126",
     customer: "Usman Malik",
     category: "Driver Behavior",
     priority: "standard",
     city: "Multan",
-    deadline: now + 3 * DAY + 2 * HOUR + 45 * 60 * 1000,
+    deadline: now - 2 * HOUR,
     assignedTo: "Fatima Ali",
     resolved: false,
   },
+
   {
     id: "CMP-2025-00125",
     customer: "Hina Batool",
     category: "Booking Error",
     priority: "urgent",
     city: "Multan",
-    deadline: now + 45 * 60 * 1000,
+    deadline: now + 30 * 60 * 1000,
     assignedTo: null,
     resolved: false,
   },
+
   {
     id: "CMP-2025-00124",
     customer: "Ahmed Nadeem",
     category: "Billing",
     priority: "standard",
     city: "Lahore",
-    deadline: now + 12 * DAY + 18 * HOUR + 10 * 60 * 1000,
+    deadline: now + 10 * DAY,
     assignedTo: "Junaid Tariq",
     resolved: false,
   },
+
   {
     id: "CMP-2025-00123",
     customer: "Bilal Sheikh",
     category: "Other",
     priority: "urgent",
     city: "Multan",
-    deadline: now - (2 * HOUR + 20 * 60 * 1000),
+    deadline: now - 3 * HOUR,
     assignedTo: null,
     resolved: false,
   },
+
   {
     id: "CMP-2025-00122",
     customer: "Ayesha Noor",
     category: "Vehicle Issue",
     priority: "standard",
     city: "Lahore",
-    deadline: now + 6 * DAY + 2 * HOUR,
+    deadline: now + 5 * DAY,
     assignedTo: "Sarah Ahmed",
     resolved: false,
   },
+
   {
     id: "CMP-2025-00121",
     customer: "Kashif Iqbal",
     category: "Billing",
     priority: "urgent",
     city: "Multan",
-    deadline: now + 4 * DAY,
+    deadline: now + 2 * DAY,
     assignedTo: "Fatima Ali",
     resolved: false,
   },
+
   {
     id: "CMP-2025-00120",
     customer: "Mehak Fatima",
     category: "Booking Error",
     priority: "standard",
     city: "Lahore",
-    deadline: now + 9 * DAY,
+    deadline: now + 8 * DAY,
     assignedTo: null,
     resolved: false,
   },
+
   {
     id: "CMP-2025-00119",
     customer: "Tariq Jameel",
     category: "Driver Behavior",
     priority: "urgent",
     city: "Multan",
-    deadline: now + 5 * HOUR,
+    deadline: now + 4 * HOUR,
     assignedTo: "M. Kashif",
+    resolved: false,
+  },
+
+  // KARACHI DATA
+  {
+    id: "CMP-2025-00118",
+    customer: "Bilal Sheikh",
+    category: "Billing",
+    priority: "standard",
+    city: "Karachi",
+    deadline: now + 6 * DAY,
+    assignedTo: "Sarah Ahmed",
+    resolved: false,
+  },
+  {
+    id: "CMP-2025-00117",
+    customer: "Mehak Fatima",
+    category: "Vehicle Issue",
+    priority: "urgent",
+    city: "Karachi",
+    deadline: now + 1 * DAY,
+    assignedTo: null,
+    resolved: false,
+  },
+  {
+    id: "CMP-2025-00114",
+    customer: "Hassan Raza",
+    category: "Driver Behavior",
+    priority: "urgent",
+    city: "Karachi",
+    deadline: now - 1 * HOUR,
+    assignedTo: "Ali Raza",
+    resolved: false,
+  },
+  {
+    id: "CMP-2025-00113",
+    customer: "Zainab Ali",
+    category: "Billing",
+    priority: "standard",
+    city: "Karachi",
+    deadline: now + 9 * DAY,
+    assignedTo: null,
+    resolved: false,
+  },
+
+  // ISLAMABAD
+  {
+    id: "CMP-2025-00116",
+    customer: "Nadia Yousaf",
+    category: "Other",
+    priority: "standard",
+    city: "Islamabad",
+    deadline: now + 11 * DAY,
+    assignedTo: "Junaid Tariq",
+    resolved: false,
+  },
+  {
+    id: "CMP-2025-00115",
+    customer: "Ayesha Noor",
+    category: "Booking Error",
+    priority: "urgent",
+    city: "Islamabad",
+    deadline: now + 10 * 60 * 1000,
+    assignedTo: null,
     resolved: false,
   },
 ];
 
-// Given a complaint and the current time, derive its live SLA status.
-// "at-risk" once less than 25% of the total SLA window remains.
 export function getComplaintStatus(complaint, nowTs) {
   const priorityMeta = PRIORITIES.find((p) => p.key === complaint.priority);
   const totalMs = (priorityMeta?.slaDays || 7) * DAY;
@@ -163,7 +235,6 @@ export const useSLAStore = create(
       complaints: defaultComplaints,
       status: "saved",
 
-      // Multi-tenant: only complaints belonging to the admin's own city
       getComplaintsByCity: (city) => {
         if (!city) return get().complaints;
         return get().complaints.filter((c) => c.city === city);
@@ -172,9 +243,6 @@ export const useSLAStore = create(
       resolveComplaint: async (id) => {
         set({ status: "saving" });
         try {
-          // const res = await fetch(`/api/complaints/${id}/resolve`, { method: "POST" });
-          // if (!res.ok) throw new Error("Resolve failed");
-
           await new Promise((resolve) => setTimeout(resolve, 300));
 
           set((state) => ({
@@ -188,16 +256,10 @@ export const useSLAStore = create(
           set({ status: "error" });
         }
       },
+
       assignComplaint: async (id, agentName) => {
         set({ status: "saving" });
         try {
-          // const res = await fetch(`/api/complaints/${id}/assign`, {
-          //   method: "PUT",
-          //   headers: { "Content-Type": "application/json" },
-          //   body: JSON.stringify({ assignedTo: agentName }),
-          // });
-          // if (!res.ok) throw new Error("Assign failed");
-
           await new Promise((resolve) => setTimeout(resolve, 300));
 
           set((state) => ({
@@ -215,10 +277,6 @@ export const useSLAStore = create(
       refresh: async () => {
         set({ status: "saving" });
         try {
-          // const res = await fetch("/api/complaints");
-          // const data = await res.json();
-          // set({ complaints: data, status: "saved" });
-
           await new Promise((resolve) => setTimeout(resolve, 400));
           set({ status: "saved" });
         } catch (err) {

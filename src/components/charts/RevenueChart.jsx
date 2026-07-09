@@ -22,7 +22,6 @@ const RevenueChart = ({ weekRange }) => {
     [allBookings, adminCity]
   );
 
-  // Real revenue (booking price) for each day of the selected week
   const weekData = useMemo(() => {
     if (!weekRange?.start) return [];
 
@@ -44,7 +43,6 @@ const RevenueChart = ({ weekRange }) => {
     return generated;
   }, [weekRange, cityBookings]);
 
-  // Real revenue for each day of the current month
   const monthData = useMemo(() => {
     const now = new Date();
     const year = now.getFullYear();

@@ -27,7 +27,6 @@ export default function BookingTrendChart() {
     [bookings, adminCity]
   );
 
-  // Real count of bookings starting on each of the last 7 days
   const weeklyData = useMemo(() => {
     const days = [];
     for (let i = 6; i >= 0; i--) {
@@ -41,7 +40,6 @@ export default function BookingTrendChart() {
     return days;
   }, [cityBookings]);
 
-  // Real count of bookings starting in each of the last 4 weeks
   const monthlyData = useMemo(() => {
     const weeks = [];
     for (let w = 3; w >= 0; w--) {

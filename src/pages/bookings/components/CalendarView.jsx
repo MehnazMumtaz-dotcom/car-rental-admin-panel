@@ -87,17 +87,17 @@ export default function CalendarView({
   const getStatusColor = (status) => {
     switch (status) {
       case "Ongoing":
-        return "bg-green-200 border-green-500 text-green-800";
+        return "bg-success/15 border-success text-success";
       case "Upcoming":
-        return "bg-blue-200 border-blue-500 text-blue-800";
+        return "bg-primary/15 border-primary text-primary";
       case "Completed":
-        return "bg-gray-200 border-gray-500 text-gray-800";
+        return "bg-borderColor/60 border-borderColor text-textSecondary";
       case "Cancelled":
-        return "bg-purple-200 border-purple-500 text-purple-800";
+        return "bg-accent/15 border-accent text-accent";
       case "Pending":
-        return "bg-yellow-200 border-yellow-500 text-yellow-800";
+        return "bg-warning/15 border-warning text-warning";
       default:
-        return "bg-blue-200 border-blue-500 text-blue-800";
+        return "bg-primary/15 border-primary text-primary";
     }
   };
 
@@ -117,9 +117,9 @@ export default function CalendarView({
     return bookings.some(
       (b) =>
         b.id !== booking.id &&
-        b.vehicle === booking.vehicle &&
-        booking.startDate <= b.endDate &&
-        booking.endDate >= b.startDate
+        b.vehicle === booking.vehicle && 
+        new Date(booking.startDate).setHours(0,0,0,0) <= new Date(b.endDate).setHours(0,0,0,0) &&
+        new Date(booking.endDate).setHours(0,0,0,0) >= new Date(b.startDate).setHours(0,0,0,0)
     );
   };
 
@@ -128,8 +128,7 @@ export default function CalendarView({
 
   const getDayHighlight = (dateObj) => {
     const dayBookings = getBookingsForDay(dateObj);
-    if (dayBookings.length > 1) return "bg-red-700 text-white";
-    if (dayBookings.length === 1) return "bg-red-200";
+    if (dayBookings.some(b => isClashing(b))) return "bg-danger/5 border-danger/20";
     return "";
   };
 
@@ -153,20 +152,45 @@ export default function CalendarView({
     setDeleteId(null);
   };
 
-  return (
-    <div className="bg-white border rounded-xl shadow-sm p-3 sm:p-4 mt-4 w-full overflow-hidden">
+  const sortedFilteredBookings = [...filteredBookings].sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
+  const bookingRowMap = {};
+  
+  sortedFilteredBookings.forEach((b) => {
+    let assignedRow = 0;
+    while (true) {
+      const hasOverlap = Object.keys(bookingRowMap).some((id) => {
+        const activeBooking = sortedFilteredBookings.find(sb => sb.id === Number(id));
+        if (!activeBooking || bookingRowMap[id] !== assignedRow) return false;
+        
+        const startA = new Date(b.startDate).setHours(0,0,0,0);
+        const endA = new Date(b.endDate).setHours(0,0,0,0);
+        const startB = new Date(activeBooking.startDate).setHours(0,0,0,0);
+        const endB = new Date(activeBooking.endDate).setHours(0,0,0,0);
+        
+        return startA <= endB && endA >= startB;
+      });
 
-      <div className="grid grid-cols-7 text-[10px] sm:text-sm text-gray-500 mb-2">
+      if (!hasOverlap) {
+        bookingRowMap[b.id] = assignedRow;
+        break;
+      }
+      assignedRow++;
+    }
+  });
+
+  return (
+    <div className="bg-surface border border-borderColor rounded-xl shadow-card p-3 sm:p-4 mt-4">
+
+      <div className="grid grid-cols-7 text-[10px] sm:text-sm text-textSecondary mb-2">
         {dayNames.map((d) => (
           <div key={d} className="text-center">{d}</div>
         ))}
       </div>
 
-      <div className="grid grid-cols-7 border relative overflow-x-auto sm:overflow-visible">
+      <div className="grid grid-cols-7 border border-borderColor relative overflow-x-auto sm:overflow-visible">
 
         {days.map((dateObj, i) => {
-
-          const col = i % 7;
+          const dayBookings = getBookingsForDay(dateObj);
 
           return (
             <div
@@ -175,15 +199,13 @@ export default function CalendarView({
                 setSelectedDate(dateObj);
                 setShowModal(true);
               }}
-              className={`h-24 sm:h-28 border p-1 text-[9px] sm:text-xs cursor-pointer relative ${getDayHighlight(dateObj)}`}
+              className={`h-24 sm:h-28 border border-borderColor p-1 text-[9px] sm:text-xs cursor-pointer relative text-textPrimary overflow-hidden ${getDayHighlight(dateObj)}`}
             >
-
-              <span className="font-semibold text-[10px] sm:text-sm">
+              <span className="font-semibold text-[10px] sm:text-sm block mb-1">
                 {dateObj.getDate()}
               </span>
 
-              {filteredBookings.map((b) => {
-
+              {dayBookings.map((b) => {
                 const start = new Date(b.startDate);
                 const end = new Date(b.endDate);
                 const current = new Date(dateObj);
@@ -192,27 +214,17 @@ export default function CalendarView({
                 end.setHours(0,0,0,0);
                 current.setHours(0,0,0,0);
 
-                const isActualStart = start.getTime() === current.getTime();
-
-                const isRowStartContinuation =
-                  col === 0 &&
-                  current.getTime() > start.getTime() &&
-                  current.getTime() <= end.getTime();
-
-                if (!isActualStart && !isRowStartContinuation) return null;
-
-                const daysRemainingInBooking =
-                  Math.floor((end - current) / (1000 * 60 * 60 * 24)) + 1;
-
-                const colsLeftInRow = 7 - col;
-
-                const segmentLength = Math.min(
-                  daysRemainingInBooking,
-                  colsLeftInRow
-                );
+                const isStartDay = start.getTime() === current.getTime();
+                
+                // Doosre cell (Second Day) ki perfect validation ke liye gap check
+                const secondDayTime = start.getTime() + (24 * 60 * 60 * 1000);
+                const isSecondDay = current.getTime() === secondDayTime;
 
                 const clash = isClashing(b);
                 const status = getAutoStatus(b);
+
+                const rowIndex = bookingRowMap[b.id] ?? 0;
+                const topOffset = rowIndex * 23 + 24;
 
                 return (
                   <div
@@ -221,26 +233,36 @@ export default function CalendarView({
                       e.stopPropagation();
                       onBookingClick && onBookingClick(b);
                     }}
-                    className={`absolute top-8 left-0 z-10 px-1 sm:px-2 py-[2px] rounded border text-[7px] min-[400px]:text-[8px] sm:text-[10px] flex items-center justify-between gap-1 overflow-hidden
-                      ${clash ? "bg-red-500 text-white" : getStatusColor(status)}
+                    className={`absolute left-0 right-0 z-10 px-1.5 py-[1px] text-[7.5px] sm:text-[9px] flex items-center justify-between border-y transition-all overflow-hidden
+                      ${isStartDay ? "rounded-l border-l ml-0.5" : "border-l-0"}
+                      ${current.getTime() === end.getTime() ? "rounded-r border-r mr-0.5" : "border-r-0"}
+                      ${clash ? "bg-danger text-white border-danger font-medium" : getStatusColor(status)}
                     `}
                     style={{ 
-                      width: `calc(${segmentLength * 100}% - 2px)`,
-                      marginLeft: '1px'
+                      top: `${topOffset}px`,
+                      height: "19px"
                     }}
                   >
-                    <span className="truncate flex-1 min-w-0">
-                      {b.name}
-                    </span>
-
-                    <span className="flex-shrink-0 font-medium">
-                      ({calculateDays(b.startDate, b.endDate)})
-                    </span>
-
-                    <span className="hidden min-[500px]:flex items-center gap-1 ml-1 flex-shrink-0">
-                      {clash && <AlertTriangle size={10} />}
-                      {clash ? "Conflict" : status}
-                    </span>
+                    {isStartDay ? (
+                      // 1. FIRST CELL: Sirf aur sirf Name show hoga
+                      <div className="flex items-center w-full h-full min-w-0">
+                        <span className="font-bold whitespace-nowrap text-ellipsis overflow-hidden">{b.name}</span>
+                      </div>
+                    ) : isSecondDay ? (
+                      // 2. SECOND CELL: Days aur Status right side par fit spacing ke saath show hoga
+                      <div className="flex items-center justify-between w-full h-full gap-2 min-w-0">
+                        <span className="opacity-90 font-normal whitespace-nowrap text-[7px] sm:text-[8.5px]">
+                          {calculateDays(b.startDate, b.endDate)}
+                        </span>
+                        
+                        <span className="flex items-center gap-0.5 shrink-0 text-[6.5px] sm:text-[7.5px] bg-black/10 px-1.5 py-[0.5px] rounded font-black uppercase tracking-wide whitespace-nowrap ml-auto">
+                          {clash && <AlertTriangle size={7} className="text-white" />}
+                          {clash ? "Conflict" : status}
+                        </span>
+                      </div>
+                    ) : null 
+                    /* 3. REMAINING CELLS: Empty rahenge automatic */
+                    }
                   </div>
                 );
               })}
@@ -248,27 +270,25 @@ export default function CalendarView({
           );
         })}
       </div>
-      {showModal && selectedDate && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 p-2 sm:p-0">
 
+      {showModal && selectedDate && (
+        <div className="fixed inset-0 bg-secondary/50 flex items-center justify-center z-50 p-2 sm:p-0">
           <div
             onClick={(e) => e.stopPropagation()}
-            className="bg-white rounded-xl p-4 sm:p-5 w-full max-w-sm shadow-lg"
+            className="bg-surface border border-borderColor text-textPrimary rounded-xl p-4 sm:p-5 w-full max-w-sm shadow-card"
           >
-
             <div className="flex justify-between items-center mb-3">
               <h2 className="font-semibold flex items-center gap-2 text-sm sm:text-base">
                 <CalendarDays size={18} />
                 {selectedDate.toDateString()}
               </h2>
-              <button onClick={() => setShowModal(false)}>
+              <button onClick={() => setShowModal(false)} className="text-textSecondary hover:text-textPrimary">
                 <X size={16} />
               </button>
             </div>
 
             {selectedDayBookings?.length > 0 ? (
               <div className="flex flex-col gap-2">
-
                 {selectedDayBookings.map((b) => {
                   const clash = isClashing(b);
                   const status = getAutoStatus(b);
@@ -277,24 +297,24 @@ export default function CalendarView({
                     <div
                       key={b.id}
                       className={`p-2 rounded border text-xs sm:text-sm
-                        ${clash ? "bg-red-200 border-red-500" : getStatusColor(status)}
+                        ${clash ? "bg-danger/15 border-danger text-danger" : getStatusColor(status)}
                       `}
                     >
                       <div className="font-semibold flex items-center gap-1">
                         {b.name}
-                        {clash && <AlertTriangle size={12} />}
+                        {clash && <AlertTriangle size={12} className="text-danger" />}
                       </div>
 
-                      <div>{b.vehicle}</div>
+                      <div className="font-medium mt-0.5 text-textSecondary">{b.vehicle}</div>
 
-                      <div className="text-[10px] sm:text-xs">
+                      <div className="text-[10px] sm:text-xs text-textSecondary mt-1">
                         {b.startDate} → {b.endDate}
                       </div>
 
                       <div className="flex gap-3 mt-2">
                         <button
                           onClick={() => onEditBooking && onEditBooking(b)}
-                          className="text-blue-600 text-xs flex items-center gap-1"
+                          className="text-primary text-xs flex items-center gap-1 font-medium"
                         >
                           <Pencil size={12} />
                           Edit
@@ -305,7 +325,7 @@ export default function CalendarView({
                             e.stopPropagation();
                             handleDelete(b.id);
                           }}
-                          className="text-red-600 text-xs flex items-center gap-1"
+                          className="text-danger text-xs flex items-center gap-1 font-medium"
                         >
                           <Trash2 size={12} />
                           Delete
@@ -314,51 +334,47 @@ export default function CalendarView({
                     </div>
                   );
                 })}
-
               </div>
             ) : (
-              <div className="text-gray-400 text-sm text-center flex flex-col items-center gap-2">
+              <div className="text-textSecondary text-sm text-center flex flex-col items-center gap-2">
                 <CalendarDays size={28} />
                 No bookings for this date
               </div>
             )}
-
           </div>
         </div>
       )}
 
-      <div className="flex flex-wrap gap-4 text-xs mt-4 border-t pt-3">
-
+      <div className="flex flex-wrap gap-4 text-xs mt-4 border-t border-borderColor pt-3 text-textPrimary">
         <div className="flex items-center gap-2">
-          <span className="w-3 h-3 bg-green-200 border border-green-500 rounded-full"></span>
+          <span className="w-3 h-3 bg-success/15 border border-success rounded-full"></span>
           <span>Ongoing</span>
         </div>
 
         <div className="flex items-center gap-2">
-          <span className="w-3 h-3 bg-blue-200 border border-blue-500 rounded-full"></span>
+          <span className="w-3 h-3 bg-primary/15 border border-primary rounded-full"></span>
           <span>Upcoming</span>
         </div>
 
         <div className="flex items-center gap-2">
-          <span className="w-3 h-3 bg-gray-200 border border-gray-500 rounded-full"></span>
+          <span className="w-3 h-3 bg-borderColor/60 border border-borderColor rounded-full"></span>
           <span>Completed</span>
         </div>
 
         <div className="flex items-center gap-2">
-          <span className="w-3 h-3 bg-purple-200 border border-purple-500 rounded-full"></span>
+          <span className="w-3 h-3 bg-accent/15 border border-accent rounded-full"></span>
           <span>Cancelled</span>
         </div>
 
         <div className="flex items-center gap-2">
-          <span className="w-3 h-3 bg-red-200 border border-red-500 rounded-full"></span>
+          <span className="w-3 h-3 bg-danger border border-danger rounded-full"></span>
           <span>Conflict</span>
         </div>
 
         <div className="flex items-center gap-2">
-          <span className="w-3 h-3 bg-yellow-200 border border-yellow-500 rounded-full"></span>
+          <span className="w-3 h-3 bg-warning/15 border border-warning rounded-full"></span>
           <span>Pending</span>
         </div>
-
       </div>
 
       <ConfirmDialog

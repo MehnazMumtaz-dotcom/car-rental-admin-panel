@@ -111,7 +111,6 @@ const Dashboard = () => {
         <StatCard title="Active Bookings" value={cityBookings.length} previousValue={cityBookings.length} icon="bookings" color="blue" />
         <StatCard title="Open Complaints" value={cityOpenComplaints.length} previousValue={cityOpenComplaints.length} icon="complaints" color="red" />
         <StatCard title="Total Revenue" value={totalRevenue} previousValue={totalRevenue} icon="revenue" color="green" />
-        {/* Vendor module is Phase 5 (doc-deferred) - no real data model exists yet, kept as a placeholder */}
         <StatCard title="Vendor Count" value={42} previousValue={42} icon="users" color="purple" />
       </div>
 

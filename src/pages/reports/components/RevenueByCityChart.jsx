@@ -12,11 +12,6 @@ import { BarChart3, ChevronDown } from "lucide-react";
 import { useBookingStore } from "../../../store/bookingStore";
 import { useAuthStore } from "../../../store/authStore";
 
-// NOTE: this used to show revenue across ALL cities (Karachi/Lahore/
-// Islamabad/Multan) side by side, which broke multi-tenancy - an admin
-// scoped to one city should never see another tenant's revenue. Since an
-// admin only ever has one city, this now breaks their own city's revenue
-// down by vehicle instead.
 export default function RevenueByCityChart() {
   const [active, setActive] = useState("weekly");
   const [open, setOpen] = useState(false);
@@ -41,7 +36,7 @@ export default function RevenueByCityChart() {
     });
 
     return Object.entries(totals).map(([vehicle, value]) => ({
-      city: vehicle, // keeping the "city" key so the chart's dataKey below still works
+      city: vehicle, 
       value,
     }));
   };

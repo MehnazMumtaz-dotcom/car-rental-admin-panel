@@ -24,14 +24,14 @@ export default function DataTable({
     <div className="w-full overflow-hidden">
 
       {progressPending && (
-        <div className="p-4 text-center text-gray-500">
+        <div className="p-4 text-center text-textSecondary">
           Loading...
         </div>
       )}
 
       <div className="w-full overflow-hidden">
         <table className="w-full table-fixed text-sm">
-          <thead className="bg-gray-100 border-b">
+          <thead className="bg-background border-b border-borderColor">
             <tr>
               {columns.map((col, i) => (
                 <th
@@ -39,7 +39,7 @@ export default function DataTable({
                   style={{
                     width: col.width,
                   }}
-                  className="px-4 py-3 text-left font-medium text-gray-600 whitespace-normal break-words"
+                  className="px-4 py-3 text-left font-medium text-textSecondary whitespace-normal break-words"
                 >
                   {col.header || col.name}
                 </th>
@@ -51,7 +51,7 @@ export default function DataTable({
               <tr>
                 <td
                   colSpan={columns.length}
-                  className="text-center py-6 text-gray-500"
+                  className="text-center py-6 text-textSecondary"
                 >
                   No data found
                 </td>
@@ -61,7 +61,7 @@ export default function DataTable({
                 <tr
                   key={row.id || index}
                   onClick={() => onRowClick?.(row)}
-                  className="border-b hover:bg-gray-50 cursor-pointer transition"
+                  className="border-b border-borderColor hover:bg-background cursor-pointer transition"
                 >
                   {columns.map((col, i) => (
                     <td
@@ -69,7 +69,7 @@ export default function DataTable({
                       style={{
                         width: col.width,
                       }}
-                      className="px-4 py-3 align-middle min-w-0 whitespace-normal break-words"
+                      className="px-4 py-3 align-middle min-w-0 whitespace-normal break-words text-textPrimary"
                     >
                       {col.cell
                         ? col.cell(row)
@@ -92,19 +92,19 @@ export default function DataTable({
         <button
           onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
           disabled={currentPage === 1}
-          className="px-3 py-1 border rounded disabled:opacity-50"
+          className="px-3 py-1 border border-borderColor text-textPrimary rounded disabled:opacity-50"
         >
           Previous
         </button>
 
-        <span className="text-sm text-gray-600">
+        <span className="text-sm text-textSecondary">
           Page {currentPage} of {totalPages || 1}
         </span>
 
         <button
           onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
           disabled={currentPage === totalPages || totalPages === 0}
-          className="px-3 py-1 border rounded disabled:opacity-50"
+          className="px-3 py-1 border border-borderColor text-textPrimary rounded disabled:opacity-50"
         >
           Next
         </button>

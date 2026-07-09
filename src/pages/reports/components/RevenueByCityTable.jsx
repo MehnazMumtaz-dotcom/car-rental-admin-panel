@@ -3,11 +3,6 @@ import { BarChart3 } from "lucide-react";
 import { useBookingStore } from "../../../store/bookingStore";
 import { useAuthStore } from "../../../store/authStore";
 
-// NOTE: this used to show revenue for ALL cities (Karachi/Lahore/
-// Islamabad/Faisalabad/Rawalpindi) in one table - a real multi-tenant
-// leak, since an admin scoped to one city should never see another
-// tenant's revenue numbers. Now shows only the admin's own city, broken
-// down by vehicle instead.
 const RevenueByCityTable = () => {
   const [showAll, setShowAll] = useState(false);
   const bookings = useBookingStore((s) => s.bookings);

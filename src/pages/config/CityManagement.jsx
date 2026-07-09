@@ -5,11 +5,6 @@ import { useAuthStore } from "../../store/authStore";
 import StatusBadge from "../../components/ui/StatusBadge";
 import Switch from "../../components/ui/Switch";
 
-// NOTE: this used to list ALL cities (Karachi/Lahore/Islamabad/Faisalabad)
-// with toggle switches for each - a serious multi-tenant leak, since it let
-// a Lahore admin enable/disable Karachi's or Islamabad's tenant. An admin
-// only ever runs one city's business, so this now only shows and controls
-// their own city's status.
 export default function CityManagement() {
   const configs = useConfigStore((s) => s.configs);
   const toggleCityActive = useConfigStore((s) => s.toggleCityActive);

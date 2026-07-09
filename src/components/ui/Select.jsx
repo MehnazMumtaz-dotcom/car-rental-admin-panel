@@ -2,13 +2,7 @@ import * as SelectPrimitive from "@radix-ui/react-select";
 import { ChevronDown, Check } from "lucide-react";
 import { cn } from "../../lib/utils";
 
-// Radix Select doesn't allow an empty string as an item value, but this
-// project's filters rely on value:"" to mean "All / no filter". This
-// sentinel is translated back to "" before it ever reaches onChange, so
-// every existing call site (Filters, ComplaintFilters, forms, etc.) keeps
-// working exactly as before without any changes.
 const EMPTY_VALUE = "__all__";
-
 export default function Select({
   options = [],
   value = "",

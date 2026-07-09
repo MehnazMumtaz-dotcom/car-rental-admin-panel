@@ -2,25 +2,22 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ---- Light theme (default) ---- */
 :root {
-  --color-background: 241 245 249;   /* #f1f5f9 */
-  --color-surface: 255 255 255;      /* #ffffff */
-  --color-text-primary: 15 23 42;    /* #0f172a */
-  --color-text-secondary: 100 116 139; /* #64748b */
-  --color-border: 226 232 240;       /* #e2e8f0 */
+  --color-background: 241 245 249;   
+  --color-surface: 255 255 255;      
+  --color-text-primary: 15 23 42;    
+  --color-text-secondary: 100 116 139; 
+  --color-border: 226 232 240;       
 }
 
-/* ---- Dark theme ---- */
 .dark {
-  --color-background: 15 23 42;      /* #0f172a */
-  --color-surface: 30 41 59;         /* #1e293b */
-  --color-text-primary: 241 245 249; /* #f1f5f9 */
-  --color-text-secondary: 148 163 184; /* #94a3b8 */
-  --color-border: 51 65 85;          /* #334155 */
+  --color-background: 15 23 42;      
+  --color-surface: 30 41 59;         
+  --color-text-primary: 241 245 249; 
+  --color-text-secondary: 148 163 184; 
+  --color-border: 51 65 85;          
 }
 
-/* Smooth theme switch instead of a jarring instant flip */
 body,
 body * {
   transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;

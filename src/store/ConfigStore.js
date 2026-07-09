@@ -1,9 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-// Each city/tenant gets its own independent config -
-// a Lahore admin's commission rules never affect Multan's, and vice versa.
-const defaultCityConfig = () => ({
+export const defaultCityConfig = () => ({
   active: true,
   commission: {
     enabled: true,
@@ -37,7 +35,6 @@ export const useConfigStore = create(
       status: "saved",
       lastSaved: null,
 
-      // Multi-tenant: get (or lazily create) the config for one city
       getConfigForCity: (city) => {
         return get().configs[city] || defaultCityConfig();
       },
@@ -52,7 +49,6 @@ export const useConfigStore = create(
         set({ configs: updatedConfigs });
 
         try {
-          // ---- BACKEND CALL YAHAN LAGAO ----
           // const res = await fetch(`/api/config/${city}`, {
           //   method: "PUT",
           //   headers: { "Content-Type": "application/json" },
@@ -69,7 +65,6 @@ export const useConfigStore = create(
         }
       },
 
-      // Toggles whether the admin's own city is currently active on the platform
       toggleCityActive: async (city, active) => {
         if (!city) return;
         set({ status: "saving" });
@@ -82,7 +77,6 @@ export const useConfigStore = create(
         set({ configs: updatedConfigs });
 
         try {
-          // ---- BACKEND CALL YAHAN LAGAO ----
           // const res = await fetch(`/api/config/${city}/status`, {
           //   method: "PUT",
           //   headers: { "Content-Type": "application/json" },

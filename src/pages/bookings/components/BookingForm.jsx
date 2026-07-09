@@ -136,13 +136,13 @@ export default function BookingForm({
 
   return createPortal(
     <>
-\
-      <div className="fixed inset-0 bg-black/60 z-[9990]" />
+
+      <div className="fixed inset-0 bg-secondary/50 z-[9990]" />
 
       <div className="fixed inset-0 z-[10000] flex items-center justify-center p-2 sm:p-4">
 
         <div
-          className="w-full sm:w-[520px] max-h-[90vh] bg-white rounded-xl shadow-2xl overflow-y-auto p-3 sm:p-5"
+          className="w-full sm:w-[520px] max-h-[90vh] bg-surface text-textPrimary border border-borderColor rounded-xl shadow-card overflow-y-auto p-3 sm:p-5"
           onClick={(e) => e.stopPropagation()}
         >
           <div className="flex justify-between items-center mb-3 border-b pb-2">
@@ -162,13 +162,13 @@ export default function BookingForm({
           ].map(([key, placeholder]) => (
             <div key={key}>
               <input
-                className="w-full border p-2 mb-2 text-sm"
+                className="w-full border border-borderColor bg-surface text-textPrimary rounded p-2 mb-2 text-sm"
                 placeholder={placeholder}
                 value={form[key]}
                 onChange={(e) => handleChange(key, e.target.value)}
               />
               {errors[key] && (
-                <p className="text-red-500 text-xs">{errors[key]}</p>
+                <p className="text-danger text-xs">{errors[key]}</p>
               )}
             </div>
           ))}
@@ -204,14 +204,14 @@ export default function BookingForm({
           <div className="flex flex-col sm:flex-row gap-2 mt-4">
             <button
               onClick={onClose}
-              className="w-full sm:w-1/2 border p-2 text-sm"
+              className="w-full sm:w-1/2 border border-borderColor text-textPrimary rounded p-2 text-sm hover:bg-background"
             >
               Cancel
             </button>
 
             <button
               onClick={handleSave}
-              className="w-full sm:w-1/2 bg-black text-white p-2 text-sm"
+              className="w-full sm:w-1/2 bg-primary hover:bg-primaryHover text-white rounded p-2 text-sm"
             >
               {editingBooking ? "Update Booking" : "Save Booking"}
             </button>

@@ -1,6 +1,6 @@
 import React from "react";
 import { Info } from "lucide-react";
-import { useConfigStore } from "../../store/ConfigStore";
+import { useConfigStore, defaultCityConfig } from "../../store/ConfigStore";
 import { useAuthStore } from "../../store/authStore";
 import Input from "../../components/ui/Input";
 import Switch from "../../components/ui/Switch";
@@ -11,7 +11,7 @@ export default function SLASettings() {
   const adminCity = useAuthStore((st) => st.user?.city);
 
   const cityConfig = configs[adminCity];
-  const s = cityConfig?.urgentSurcharge || { enabled: true, amount: "0" };
+  const s = cityConfig?.urgentSurcharge || defaultCityConfig().urgentSurcharge;
 
   const patch = (data) => updateConfig(adminCity, "urgentSurcharge", { ...s, ...data });
 

@@ -99,14 +99,14 @@ export default function CustomerPage() {
     { header: "Name", width: "13%", cell: (row) => <span className="whitespace-nowrap font-semibold">{row.name}</span> },
     { header: "Phone", width: "12%", cell: (row) => <span className="whitespace-nowrap">{row.phone}</span> },
     { header: "Email", width: "19%", cell: (row) => <span className="whitespace-nowrap">{row.email}</span> },
-    { header: "Bookings", width: "12%", cell: (row) => <span className="whitespace-nowrap text-center">{row.bookings}</span> },
+    { header: "Bookings", width: "11%", cell: (row) => <span className="whitespace-nowrap text-center">{row.bookings}</span> },
     { header: "Spent", width: "11%", cell: (row) => <span className="whitespace-nowrap">Rs {row.spent.toLocaleString()}</span> },
     {
       header: "Status",
-      width: "14%",
+      width: "12%",
       cell: (row) => <StatusBadge status={row.status} />,
     },
-    { header: "Joined", width: "12%", cell: (row) => <span className="whitespace-nowrap">{row.joined}</span> },
+    { header: "Joined", width: "10%", cell: (row) => <span className="whitespace-nowrap">{row.joined}</span> },
     {
       header: "Actions",
       width: "12%",

@@ -23,7 +23,6 @@ const BookingChart = ({ weekRange }) => {
     [allBookings, adminCity]
   );
 
-  // Real count of bookings starting on each day of the selected week
   const weekData = useMemo(() => {
     if (!weekRange?.start) return [];
 
@@ -47,7 +46,6 @@ const BookingChart = ({ weekRange }) => {
     return generated;
   }, [weekRange, cityBookings]);
 
-  // Real count of bookings starting on each day of the current month
   const monthData = useMemo(() => {
     const now = new Date();
     const year = now.getFullYear();

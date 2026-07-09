@@ -1,6 +1,6 @@
 import React from "react";
 import { Coins, Percent, Layers, Info } from "lucide-react";
-import { useConfigStore } from "../../store/ConfigStore";
+import { useConfigStore, defaultCityConfig } from "../../store/ConfigStore";
 import { useAuthStore } from "../../store/authStore";
 import Switch from "../../components/ui/Switch";
 
@@ -10,14 +10,7 @@ export default function CommisionConfig() {
   const adminCity = useAuthStore((s) => s.user?.city);
 
   const cityConfig = configs[adminCity];
-  const c = cityConfig?.commission || {
-    enabled: true,
-    type: "flat",
-    flatAmount: "0",
-    percentage: "0",
-    hybridFlat: "0",
-    hybridPercentage: "0",
-  };
+  const c = cityConfig?.commission || defaultCityConfig().commission;
 
   const patch = (data) => updateConfig(adminCity, "commission", { ...c, ...data });
 
