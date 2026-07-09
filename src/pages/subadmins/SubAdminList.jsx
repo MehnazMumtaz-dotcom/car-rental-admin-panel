@@ -6,6 +6,7 @@ import SearchInput from "../../components/ui/SearchInput";
 import Select from "../../components/ui/Select";
 import StatusBadge from "../../components/ui/StatusBadge";
 import EditSubAdminModal from "./EditSubAdminModal";
+import ConfirmDialog from "../../components/ui/ConfirmDialog";
 
 const PAGE_SIZE = 4;
 
@@ -28,6 +29,8 @@ export default function SubAdminList() {
   const [statusFilter, setStatusFilter] = useState("");
   const [page, setPage] = useState(1);
   const [editingAdmin, setEditingAdmin] = useState(null);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [selectedId, setSelectedId] = useState(null);
 
   const subAdmins = useMemo(
     () => allSubAdmins.filter((a) => !adminCity || a.city === adminCity),
@@ -62,6 +65,21 @@ export default function SubAdminList() {
   const handleSaveEdit = (id, draft) => {
     updateSubAdmin(id, draft, `Sub-admin "${draft.name}" updated`);
   };
+  const handleDeleteClick = (id) => {
+  setSelectedId(id);
+  setOpenDialog(true);
+};
+
+const handleConfirmDelete = () => {
+  deleteSubAdmin(selectedId);
+  setOpenDialog(false);
+  setSelectedId(null);
+};
+
+const handleCancel = () => {
+  setOpenDialog(false);
+  setSelectedId(null);
+};
 
   return (
     <div className="bg-surface rounded-xl shadow-card border border-borderColor p-4 sm:p-5">
@@ -171,7 +189,7 @@ export default function SubAdminList() {
                     <button
                       className="text-danger hover:opacity-80 shrink-0"
                       aria-label="Delete sub-admin"
-                      onClick={() => deleteSubAdmin(admin.id)}
+                      onClick={() => handleDeleteClick(admin.id)}
                     >
                       <Trash2 size={16} />
                     </button>
@@ -235,6 +253,15 @@ export default function SubAdminList() {
         onClose={() => setEditingAdmin(null)}
         onSave={handleSaveEdit}
       />
+      <ConfirmDialog
+  open={openDialog}
+  title="Delete Sub-Admin"
+  message="Are you sure you want to delete this sub-admin?"
+  confirmText="Delete"
+  cancelText="Cancel"
+  onConfirm={handleConfirmDelete}
+  onCancel={handleCancel}
+/>
     </div>
   );
 }

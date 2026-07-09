@@ -123,13 +123,13 @@ export default function ComplaintTable({ filters, now }) {
         <table className="w-full table-fixed text-sm">
           <colgroup>
             <col className="w-[13%]" />
-            <col className="w-[9%] hidden md:table-column" />
+            <col className="w-[11%] hidden md:table-column" />
             <col className="w-[8%]" />
             <col className="w-[7%] hidden lg:table-column" />
             <col className="w-[19%] hidden sm:table-column" />
-            <col className="w-[9%]" />
-            <col className="w-[18%] hidden lg:table-column" />
-            <col className="w-[17%]" />
+            <col className="w-[11%]" />
+            <col className="w-[12%] hidden lg:table-column" />
+            <col className="w-[8%]" />
           </colgroup>
           <thead>
             <tr className="border-b border-borderColor text-left text-textSecondary">

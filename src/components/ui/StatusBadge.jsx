@@ -5,8 +5,8 @@ export default function StatusBadge({ status }) {
     open: "bg-warning text-white",
     closed: "bg-success text-white",
     pending: "bg-primary text-white",
-    suspended: "bg-danger text-white",
-    flagged: "bg-warning text-white",
+    suspended: "bg-warning text-white",
+    flagged: "bg-danger text-white",
   };
 
   const key = status?.toLowerCase();

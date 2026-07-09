@@ -35,7 +35,8 @@ const ComplaintsTable = ({ onRowClick }) => {
       .sort((a, b) => a.msLeft - b.msLeft);
   }, [complaints, adminCity]);
 
-  const visibleData = showAll ? enriched : enriched.slice(0, 5);
+  // ✅ CHANGE: default 2 records
+  const visibleData = showAll ? enriched : enriched.slice(0, 2);
 
   return (
     <div className="bg-surface p-4 sm:p-5 rounded-xl shadow-card border border-borderColor">
@@ -46,68 +47,77 @@ const ComplaintsTable = ({ onRowClick }) => {
         </h3>
 
         <button
-          onClick={() => setShowAll(!showAll)}
-          className="text-xs sm:text-sm text-primary hover:underline"
+          type="button"
+          onClick={() => setShowAll((prev) => !prev)}
+          className="text-xs sm:text-sm text-primary hover:underline shrink-0 cursor-pointer"
         >
           {showAll ? "Show Less" : "View All"}
         </button>
       </div>
 
-      <table className="w-full table-auto text-[10px] sm:text-xs md:text-sm">
+      <div className="w-full">
+        <table className="w-full table-fixed text-[10px] sm:text-xs md:text-sm">
+          <colgroup>
+            <col className="w-[18%]" />
+            <col className="w-[19%]" />
+            <col className="w-[20%] hidden md:table-column" />
+            <col className="w-[20%] hidden sm:table-column" />
+            <col className="w-[12%]" />
+          </colgroup>
 
-        <thead className="text-textSecondary text-left">
-          <tr className="border-b border-borderColor">
-            <th className="pb-2 px-1">ID</th>
-            <th className="pb-2 px-1">Customer</th>
-            <th className="pb-2 px-1">Category</th>
-            <th className="pb-2 px-1">Time Left</th>
-            <th className="pb-2 px-1">Status</th>
-          </tr>
-        </thead>
-
-        <tbody className="text-textPrimary">
-
-          {visibleData.map((item) => (
-            <tr
-              key={item.id}
-              onClick={() => onRowClick?.(item)}
-              className="border-b border-borderColor last:border-none cursor-pointer hover:bg-background transition"
-            >
-              <td className="py-2 px-1 truncate">{item.id}</td>
-
-              <td className="px-1 truncate">{item.customer}</td>
-
-              <td className="px-1 truncate text-textSecondary">
-                {item.category}
-              </td>
-
-              <td className="px-1 truncate text-warning font-medium whitespace-nowrap">
-                ⏱ {formatTimeLeft(item.msLeft)}
-              </td>
-
-              <td className="px-1">
-                <span
-                  className={`px-2 py-[2px] text-[9px] sm:text-xs rounded-full font-medium whitespace-nowrap ${getStatusStyle(
-                    item.status
-                  )}`}
-                >
-                  {statusLabel[item.status]}
-                </span>
-              </td>
-
+          <thead className="text-textSecondary text-left">
+            <tr className="border-b border-borderColor">
+              <th className="pb-2 pr-1">ID</th>
+              <th className="pb-2 pr-1">Customer</th>
+              <th className="pb-2 pr-1 hidden md:table-cell">Category</th>
+              <th className="pb-2 pr-1 hidden sm:table-cell">Time Left</th>
+              <th className="pb-2 pr-1">Status</th>
             </tr>
-          ))}
+          </thead>
 
-          {visibleData.length === 0 && (
-            <tr>
-              <td colSpan={5} className="py-4 text-center text-textSecondary">
-                No open complaints.
-              </td>
-            </tr>
-          )}
+          <tbody className="text-textPrimary">
 
-        </tbody>
-      </table>
+            {visibleData.map((item) => (
+              <tr
+                key={item.id}
+                onClick={() => onRowClick?.(item)}
+                className="border-b border-borderColor last:border-none cursor-pointer hover:bg-background transition"
+              >
+                <td className="py-2 pr-1 truncate">{item.id}</td>
+
+                <td className="pr-1 truncate">{item.customer}</td>
+
+                <td className="pr-1 truncate hidden md:table-cell text-textSecondary">
+                  {item.category}
+                </td>
+
+                <td className="pr-1 hidden sm:table-cell text-warning font-medium whitespace-nowrap">
+                  ⏱ {formatTimeLeft(item.msLeft)}
+                </td>
+
+                <td className="pr-1">
+                  <span
+                    className={`inline-block whitespace-nowrap px-2 py-[2px] text-[9px] sm:text-xs rounded-full font-medium ${getStatusStyle(
+                      item.status
+                    )}`}
+                  >
+                    {statusLabel[item.status]}
+                  </span>
+                </td>
+              </tr>
+            ))}
+
+            {visibleData.length === 0 && (
+              <tr>
+                <td colSpan={5} className="py-4 text-center text-textSecondary">
+                  No open complaints.
+                </td>
+              </tr>
+            )}
+
+          </tbody>
+        </table>
+      </div>
 
       <div className="text-xs sm:text-sm text-textSecondary mt-4 text-center">
         Showing {visibleData.length} of {enriched.length}
