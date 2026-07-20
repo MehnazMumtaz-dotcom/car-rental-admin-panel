@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import ConflictModal from "./ConflictModal";
 import { useVehicleStore } from "../../../store/vehicleStore";
-import { useCustomerStore } from "../../../store/customerStore";
+import { useCustomerStore } from "../../../store/CustomerStore";
 
 const defaultFormState = {
   vehicleId: "",

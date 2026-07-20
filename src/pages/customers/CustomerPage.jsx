@@ -98,7 +98,7 @@ const filteredCustomers = cityCustomers.filter((c) => {
   if (!deleteRow) return;
 
   try {
-    await deleteCustomer(deleteRow.id); /
+    await deleteCustomer(deleteRow.id); 
 
 if(companyId){
   await fetchCustomers();
