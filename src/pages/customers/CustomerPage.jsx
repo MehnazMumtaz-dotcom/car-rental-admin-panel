@@ -12,12 +12,15 @@ import { useAuthStore } from "../../store/authStore";
 import { Eye, Pencil, Trash2 } from "lucide-react";
 
 export default function CustomerPage() {
-  const allCustomers = useCustomerStore((s) => s.customers);
+const { customers: allCustomers } = useCustomerStore();
   const addCustomer = useCustomerStore((s) => s.addCustomer);
   const updateCustomerStatus = useCustomerStore((s) => s.updateCustomerStatus);
   const deleteCustomer = useCustomerStore((s) => s.deleteCustomer);
+  const fetchCustomers = useCustomerStore((s) => s.fetchCustomers);
 
-  // Multi-tenant: admin only ever sees customers for their own city
+ const companyId = useAuthStore(
+  (s) => s.user?.companyId || s.user?.company_id
+);
   const adminCity = useAuthStore((s) => s.user?.city);
 
   const [selectedCustomer, setSelectedCustomer] = useState(null);
@@ -30,23 +33,31 @@ export default function CustomerPage() {
   const [showConfirm, setShowConfirm] = useState(false);
   const [deleteRow, setDeleteRow] = useState(null);
 
-  const cityCustomers = useMemo(
-    () => allCustomers.filter((c) => !adminCity || c.city === adminCity),
-    [allCustomers, adminCity]
-  );
+  
+ useEffect(() => {
+  if (companyId) {
+    fetchCustomers();
+  }
+}, [companyId]);
+console.log("Customers:", allCustomers);
+ const cityCustomers = useMemo(
+  () => allCustomers,
+  [allCustomers]
+);
 
   const searchValue = searchQuery.trim().toLowerCase();
 
-  const filteredCustomers = cityCustomers.filter((c) => {
-    return (
-      (!searchValue ||
-        c.name.toLowerCase().includes(searchValue) ||
-        c.phone.includes(searchValue) ||
-        c.email.toLowerCase().includes(searchValue)) &&
-      (!statusFilter ||
-        c.status.toLowerCase() === statusFilter.toLowerCase())
-    );
-  });
+const filteredCustomers = cityCustomers.filter((c) => {
+  return (
+    (!searchValue ||
+      c.name?.toLowerCase().includes(searchValue) ||
+      c.phone?.includes(searchValue) ||
+      c.email?.toLowerCase().includes(searchValue)) &&
+
+    (!statusFilter ||
+      c.status === statusFilter.toUpperCase())
+  );
+});
 
   const handleRowClick = (customer) => {
     setSelectedCustomer(customer);
@@ -70,24 +81,39 @@ export default function CustomerPage() {
       name: data.name,
       phone: data.phone,
       email: data.email || "-",
-      city: adminCity || "",
+      companyId: Number(companyId),
     });
     setIsModalOpen(false);
   };
 
   const handleStatusChange = (id, newStatus) => {
     updateCustomerStatus(id, newStatus);
+
     setSelectedCustomer((prev) =>
       prev?.id === id ? { ...prev, status: newStatus } : prev
     );
   };
 
-  const confirmDelete = () => {
-    deleteCustomer(deleteRow.id);
-    setSelectedCustomer((prev) => (prev?.id === deleteRow.id ? null : prev));
+ const confirmDelete = async () => {
+  if (!deleteRow) return;
+
+  try {
+    await deleteCustomer(deleteRow.id); /
+
+if(companyId){
+  await fetchCustomers();
+}
+    setSelectedCustomer((prev) =>
+      prev?.id === deleteRow.id ? null : prev
+    );
+
     setIsDrawerOpen(false);
     setShowConfirm(false);
-  };
+    setDeleteRow(null);
+  } catch (error) {
+    console.error("Delete failed:", error);
+  }
+};
 
   const cancelDelete = () => {
     setShowConfirm(false);
@@ -95,27 +121,96 @@ export default function CustomerPage() {
   };
 
   const columns = [
-    { header: "ID", width: "6%", cell: (row) => <span className="whitespace-nowrap font-semibold">{row.id}</span> },
-    { header: "Name", width: "13%", cell: (row) => <span className="whitespace-nowrap font-semibold">{row.name}</span> },
-    { header: "Phone", width: "12%", cell: (row) => <span className="whitespace-nowrap">{row.phone}</span> },
-    { header: "Email", width: "19%", cell: (row) => <span className="whitespace-nowrap">{row.email}</span> },
-    { header: "Bookings", width: "11%", cell: (row) => <span className="whitespace-nowrap text-center">{row.bookings}</span> },
-    { header: "Spent", width: "11%", cell: (row) => <span className="whitespace-nowrap">Rs {row.spent.toLocaleString()}</span> },
+    {
+      header: "ID",
+      width: "6%",
+      cell: (row) => (
+        <span className="whitespace-nowrap font-semibold">
+          {row.id}
+        </span>
+      ),
+    },
+    {
+      header: "Name",
+      width: "13%",
+      cell: (row) => (
+        <span className="whitespace-nowrap font-semibold">
+          {row.name}
+        </span>
+      ),
+    },
+    {
+      header: "Phone",
+      width: "12%",
+      cell: (row) => (
+        <span className="whitespace-nowrap">
+          {row.phone}
+        </span>
+      ),
+    },
+    {
+      header: "Email",
+      width: "22%",
+      cell: (row) => (
+        <span className="whitespace-nowrap">
+          {row.email}
+        </span>
+      ),
+    },
+    {
+      header: "Bookings",
+      width: "12%",
+      cell: (row) => (
+        <span className="whitespace-nowrap text-center">
+          {row.bookings || 0}
+        </span>
+      ),
+    },
+    {
+      header: "Spent",
+      width: "10%",
+      cell: (row) => (
+        <span className="whitespace-nowrap">
+          Rs {(row.spent || 0).toLocaleString()}
+        </span>
+      ),
+    },
     {
       header: "Status",
       width: "12%",
       cell: (row) => <StatusBadge status={row.status} />,
     },
-    { header: "Joined", width: "10%", cell: (row) => <span className="whitespace-nowrap">{row.joined}</span> },
+ {
+  header: "Joined",
+  width: "12%",
+  cell: (row) => {
+    if (!row.createdAt) return "-";
+
+    const date = new Date(row.createdAt);
+    const formatted = date.toLocaleDateString("en-GB"); 
+
+    return (
+      <span className="whitespace-nowrap">
+        {formatted}
+      </span>
+    );
+  },
+},
     {
       header: "Actions",
       width: "12%",
       cell: (row) => (
         <div className="flex items-center justify-center gap-3 whitespace-nowrap">
-          <button onClick={() => handleRowClick(row)} className="text-textSecondary hover:text-primary">
+          <button
+            onClick={() => handleRowClick(row)}
+            className="text-textSecondary hover:text-primary"
+          >
             <Eye size={18} />
           </button>
-          <button onClick={() => handleRowClick(row)} className="text-textSecondary hover:text-warning">
+          <button
+            onClick={() => handleRowClick(row)}
+            className="text-textSecondary hover:text-warning"
+          >
             <Pencil size={18} />
           </button>
           <button
@@ -144,16 +239,17 @@ export default function CustomerPage() {
             placeholder="Search by name or email"
           />
 
-          <Select
-            placeholder="All Status"
-            options={[
-              { label: "Active", value: "active" },
-              { label: "Suspended", value: "suspended" },
-              { label: "Flagged", value: "flagged" },
-            ]}
-            value={statusFilter}
-            onChange={setStatusFilter}
-          />
+<Select
+  value={statusFilter}
+  onChange={setStatusFilter}
+  placeholder="All Status"
+  options={[
+    { label: "All Status", value: "" },
+    { label: "Active", value: "active" },
+    { label: "Suspended", value: "suspended" },
+    { label: "Flagged", value: "flagged" },
+  ]}
+/>
 
           <Button onClick={resetFilters}>Reset</Button>
         </div>
@@ -161,10 +257,10 @@ export default function CustomerPage() {
         <div className="w-full overflow-x-auto lg:overflow-visible">
           <div className="min-w-[900px] lg:min-w-0">
             <DataTable
-              columns={columns}
-              data={filteredCustomers}
-              onRowClick={handleRowClick}
-            />
+  columns={columns}
+  data={filteredCustomers}
+  onRowClick={handleRowClick}
+/>
           </div>
         </div>
 
@@ -190,8 +286,6 @@ export default function CustomerPage() {
         />
       )}
 
-      {/* ConfirmDialog already renders its own full-screen overlay -
-          the extra wrapper div here was creating a double-dimmed backdrop. */}
       <ConfirmDialog
         open={showConfirm}
         title="Delete Customer"

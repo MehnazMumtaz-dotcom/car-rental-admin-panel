@@ -4,51 +4,105 @@ import { useAuthStore } from "../../store/authStore";
 import Input from "../../components/ui/Input";
 import Button from "../../components/ui/Button";
 import logo from "../../assets/car-logo.png";
+import { loginApi } from "../../services/authService";
+import api from "../../services/api";
 import { ShieldCheck, Lock, Eye, EyeOff } from "lucide-react";
 
-const DUMMY_EMAIL = "admin@gmail.com";
-const DUMMY_PASSWORD = "123456";
-const DUMMY_OTP = "000000";
+const getTokenPayload = (token) => {
+  try {
+    const base64 = token.split(".")[1].replace(/-/g, "+").replace(/_/g, "/");
+    return JSON.parse(atob(base64));
+  } catch {
+    return {};
+  }
+};
 
 export default function Login() {
+
   const navigate = useNavigate();
   const login = useAuthStore((s) => s.login);
 
-  const [step, setStep] = useState("credentials"); 
+
+  const [step, setStep] = useState("credentials");
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
   const [showPassword, setShowPassword] = useState(false);
+
   const [otp, setOtp] = useState("");
+
   const [error, setError] = useState("");
 
-  const handleCredentialsSubmit = (e) => {
+
+
+  const handleCredentialsSubmit = async (e) => {
+
     e.preventDefault();
     setError("");
 
-    if (email === DUMMY_EMAIL && password === DUMMY_PASSWORD) {
-      // await fetch("/api/auth/login", { method: "POST", body: JSON.stringify({ email, password }) });
+    try {
+
+      await loginApi({
+        email,
+        password,
+      });
+
       setStep("otp");
-    } else {
-      setError("Invalid email or password.");
+
+
+    } catch (error) {
+
+      setError(
+        error.response?.data?.message ||
+        "Invalid email or password."
+      );
+
     }
+
   };
 
-  const handleOtpSubmit = (e) => {
+
+
+
+  const handleOtpSubmit = async (e) => {
+
     e.preventDefault();
     setError("");
 
-    if (otp === DUMMY_OTP) {
-      // const res = await fetch("/api/auth/verify-otp", { method: "POST", body: JSON.stringify({ email, otp }) });
-      // const { user, token } = await res.json();
-      const user = { name: "Admin", email, city: "Karachi" };
-      const token = "dummy-token-123";
 
+    try {
+
+
+      const { data } = await api.post("/auth/verify-2fa", {
+        email,
+        code: otp,
+      });
+
+      const token = data.access_token || data.token || data.jwt;
+
+      if (!token) {
+        throw new Error("Token not received from server");
+      }
+
+      const payload = getTokenPayload(token);
+      const user = data.user || {
+        id: payload.sub,
+        email: payload.email,
+        role: payload.role,
+        companyId: payload.companyId,
+      };
       login(user, token);
       navigate("/");
-    } else {
-      setError("Invalid verification code.");
+
+    } catch (err) {
+      setError(err.response?.data?.message || err.message || "Verification failed");
+
     }
+
   };
+
+  
 
   return (
     <div className="min-h-screen flex bg-background">
@@ -145,9 +199,7 @@ export default function Login() {
                   Continue
                 </Button>
 
-                <p className="text-xs text-textSecondary text-center mt-2">
-                  Demo credentials: <span className="text-textPrimary font-medium">admin@gmail.com</span> / <span className="text-textPrimary font-medium">123456</span>
-                </p>
+               
               </form>
             ) : (
               <form onSubmit={handleOtpSubmit} className="flex flex-col gap-4">

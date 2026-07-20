@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import { useMemo, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { BOOKING_STATUS_OPTIONS } from "./bookingStatus";
 
 export default function CalendarToolbar({
   onFilter,
@@ -7,7 +8,8 @@ export default function CalendarToolbar({
   onDateChange,
   onOpenForm,
   currentDate,
-  view
+  view,
+  bookings = [],
 }) {
 
   const [filters, setFilters] = useState({
@@ -50,14 +52,9 @@ export default function CalendarToolbar({
   };
 
   const handleFilter = (key, value) => {
-    const normalizedValue =
-      key === "status"
-        ? value.trim().toLowerCase()
-        : value;
-
     const updated = {
       ...filters,
-      [key]: normalizedValue,
+      [key]: value,
     };
 
     setFilters(updated);
@@ -76,6 +73,14 @@ export default function CalendarToolbar({
         year: "numeric",
       })
     : "";
+
+  const vehicles = useMemo(() => {
+    const names = (bookings || [])
+      .map((booking) => booking?.vehicle?.name || booking?.vehicleName || booking?.vehicle)
+      .filter((vehicle) => typeof vehicle === "string" && vehicle.trim());
+
+    return [...new Set(names)].sort((a, b) => a.localeCompare(b));
+  }, [bookings]);
 
   return (
     <div className="w-full">
@@ -145,24 +150,26 @@ export default function CalendarToolbar({
             className="border px-2 sm:px-3 py-1.5 rounded-md text-xs sm:text-sm"
           >
             <option value="">All Vehicles</option>
-            <option>Corolla</option>
-            <option>Swift</option>
-            <option>Alto</option>
-            <option>Honda City</option>
+            {vehicles.map((vehicle) => (
+              <option key={vehicle} value={vehicle}>
+                {vehicle}
+              </option>
+            ))}
           </select>
 
-          <select
-            value={filters.status}
-            onChange={(e) => handleFilter("status", e.target.value)}
-            className="border px-2 sm:px-3 py-1.5 rounded-md text-xs sm:text-sm"
-          >
-            <option value="">All Status</option>
-            <option value="ongoing">Ongoing</option>
-            <option value="upcoming">Upcoming</option>
-            <option value="completed">Completed</option>
-            <option value="cancelled">Cancelled</option>
-            <option value="pending">Pending</option>
-          </select>
+       <select
+  value={filters.status}
+  onChange={(e) => handleFilter("status", e.target.value)}
+  className="border px-2 sm:px-3 py-1.5 rounded-md text-xs sm:text-sm"
+>
+  <option value="">All Status</option>
+
+  {BOOKING_STATUS_OPTIONS.map(({ label, value }) => (
+    <option key={value} value={value}>
+      {label}
+    </option>
+  ))}
+</select>
 
           <button
             onClick={reset}

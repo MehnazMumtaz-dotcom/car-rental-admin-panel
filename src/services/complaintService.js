@@ -1,5 +1,5 @@
 export const getComplaints = async () => {
-  // future FastAPI call
+
   return [
     {
       id: "#C-1021",

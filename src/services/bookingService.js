@@ -1,17 +1,57 @@
-export const isDateOverlap = (start1, end1, start2, end2) => {
-  return new Date(start1) <= new Date(end2) &&
-         new Date(start2) <= new Date(end1);
+import api from "../api/api";
+export const getBookings = async () => {
+  const response = await api.get("/bookings");
+  return response.data;
 };
 
-export const checkBookingConflict = (newBooking, bookings) => {
-  return bookings.find(b => {
-    if (b.vehicle !== newBooking.vehicle) return false;
+export const getBookingById = async (id) => {
+  const response = await api.get(`/bookings/${id}`);
+  return response.data;
+};
+export const createBooking = async (bookingData) => {
+  const response = await api.post(
+    "/bookings",
+    bookingData
+  );
 
-    return isDateOverlap(
-      b.startDate,
-      b.endDate,
-      newBooking.startDate,
-      newBooking.endDate
-    );
-  });
+  return response.data;
+};
+
+export const updateBooking = async (
+  id,
+  bookingData
+) => {
+  const response = await api.patch(
+    `/bookings/${id}`,
+    bookingData
+  );
+
+  return response.data;
+};
+export const replaceBooking = async (
+  id,
+  bookingData
+) => {
+  const response = await api.put(
+    `/bookings/${id}`,
+    bookingData
+  );
+
+  return response.data;
+};
+export const deleteBooking = async (id) => {
+  const response = await api.delete(
+    `/bookings/${id}`
+  );
+
+  return response.data;
+};
+
+export const overrideBooking = async (bookingData) => {
+  const response = await api.post(
+    "/bookings/override",
+    bookingData
+  );
+
+  return response.data;
 };

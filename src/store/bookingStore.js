@@ -1,256 +1,144 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import api from "../services/api";
+import { useAuthStore } from "./authStore";
 
-function daysFromToday(offset) {
-  const d = new Date();
-  d.setDate(d.getDate() + offset);
-  return d.toISOString().split("T")[0];
-}
+const notifyBookingUpdate = () => {
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new Event("bookingUpdated"));
+  }
+};
 
-const defaultBookings = [
-  {
-    id: 1,
-    name: "Ali Raza",
-    vehicle: "Corolla",
-    city: "Lahore",
-    startDate: daysFromToday(0),
-    endDate: daysFromToday(3),
-    pickupTime: "10:00",
-    dropoffTime: "18:00",
-    phone: "03001234567",
-    cnic: "35202-1234567-1",
-    price: 15000,
-    advance: 5000,
-    remaining: 10000,
-    paymentMethod: "Cash",
-    status: "Upcoming",
-    notes: "",
-  },
-  {
-    id: 2,
-    name: "Sara Khan",
-    vehicle: "Sportage",
-    city: "Multan",
-    startDate: daysFromToday(-2),
-    endDate: daysFromToday(1),
-    pickupTime: "09:30",
-    dropoffTime: "18:30",
-    phone: "03451234567",
-    cnic: "36102-7654321-5",
-    price: 25000,
-    advance: 10000,
-    remaining: 15000,
-    paymentMethod: "Bank Transfer",
-    status: "Upcoming",
-    notes: "Outstation booking",
-  },
-  {
-    id: 3,
-    name: "Hassan Raza",
-    vehicle: "Civic",
-    city: "Lahore",
-    startDate: daysFromToday(-1),
-    endDate: daysFromToday(2),
-    pickupTime: "11:00",
-    dropoffTime: "19:00",
-    phone: "03331234567",
-    cnic: "35202-9876543-1",
-    price: 18000,
-    advance: 6000,
-    remaining: 12000,
-    paymentMethod: "Cash",
-    status: "Upcoming",
-    notes: "",
-  },
-  {
-    id: 4,
-    name: "Ayesha Malik",
-    vehicle: "Corolla",
-    city: "Lahore",
-    startDate: daysFromToday(-3),
-    endDate: daysFromToday(-1),
-    pickupTime: "08:00",
-    dropoffTime: "17:00",
-    phone: "03021234567",
-    cnic: "35202-1112223-4",
-    price: 12000,
-    advance: 4000,
-    remaining: 8000,
-    paymentMethod: "Cash",
-    status: "Completed",
-    notes: "",
-  },
-  {
-    id: 5,
-    name: "Fatima Noor",
-    vehicle: "Sportage",
-    city: "Lahore",
-    startDate: daysFromToday(2),
-    endDate: daysFromToday(5),
-    pickupTime: "14:00",
-    dropoffTime: "20:00",
-    phone: "03451234321",
-    cnic: "35202-2223334-5",
-    price: 22000,
-    advance: 8000,
-    remaining: 14000,
-    paymentMethod: "Bank Transfer",
-    status: "Upcoming",
-    notes: "",
-  },
-  {
-    id: 6,
-    name: "Usman Tariq",
-    vehicle: "Civic",
-    city: "Multan",
-    startDate: daysFromToday(-1),
-    endDate: daysFromToday(2),
-    pickupTime: "09:00",
-    dropoffTime: "18:00",
-    phone: "03211234567",
-    cnic: "36102-1234567-8",
-    price: 16000,
-    advance: 5000,
-    remaining: 11000,
-    paymentMethod: "Cash",
-    status: "Upcoming",
-    notes: "",
-  },
-  {
-    id: 7,
-    name: "Ali Khan",
-    vehicle: "Corolla",
-    city: "Multan",
-    startDate: daysFromToday(0),
-    endDate: daysFromToday(1),
-    pickupTime: "12:00",
-    dropoffTime: "16:00",
-    phone: "03001112223",
-    cnic: "36102-2223334-5",
-    price: 10000,
-    advance: 3000,
-    remaining: 7000,
-    paymentMethod: "Cash",
-    status: "Upcoming",
-    notes: "",
-  },
-  {
-    id: 8,
-    name: "Sarah Khan",
-    vehicle: "Sportage",
-    city: "Multan",
-    startDate: daysFromToday(-5),
-    endDate: daysFromToday(-3),
-    pickupTime: "10:00",
-    dropoffTime: "18:00",
-    phone: "03111234567",
-    cnic: "36102-3334445-6",
-    price: 20000,
-    advance: 7000,
-    remaining: 13000,
-    paymentMethod: "Bank Transfer",
-    status: "Completed",
-    notes: "",
-  },
-  {
-    id: 9,
-    name: "Bilal Sheikh",
-    vehicle: "Civic",
-    city: "Karachi",
-    startDate: daysFromToday(0),
-    endDate: daysFromToday(2),
-    pickupTime: "10:30",
-    dropoffTime: "19:00",
-    phone: "03011234567",
-    cnic: "42101-1234567-1",
-    price: 17000,
-    advance: 6000,
-    remaining: 11000,
-    paymentMethod: "Cash",
-    status: "Upcoming",
-    notes: "",
-  },
-  {
-    id: 10,
-    name: "Mehak Fatima",
-    vehicle: "Corolla",
-    city: "Karachi",
-    startDate: daysFromToday(-2),
-    endDate: daysFromToday(0),
-    pickupTime: "09:00",
-    dropoffTime: "17:00",
-    phone: "03221234567",
-    cnic: "42101-2223334-5",
-    price: 13000,
-    advance: 4000,
-    remaining: 9000,
-    paymentMethod: "Cash",
-    status: "Ongoing",
-    notes: "",
-  },
-  {
-    id: 11,
-    name: "Tariq Jameel",
-    vehicle: "Sportage",
-    city: "Islamabad",
-    startDate: daysFromToday(1),
-    endDate: daysFromToday(4),
-    pickupTime: "13:00",
-    dropoffTime: "20:00",
-    phone: "03331234567",
-    cnic: "61101-1234567-1",
-    price: 24000,
-    advance: 9000,
-    remaining: 15000,
-    paymentMethod: "Bank Transfer",
-    status: "Upcoming",
-    notes: "",
-  },
-  {
-    id: 12,
-    name: "Nadia Yousaf",
-    vehicle: "Civic",
-    city: "Islamabad",
-    startDate: daysFromToday(-4),
-    endDate: daysFromToday(-2),
-    pickupTime: "11:00",
-    dropoffTime: "18:00",
-    phone: "03441234567",
-    cnic: "61101-2223334-5",
-    price: 15000,
-    advance: 5000,
-    remaining: 10000,
-    paymentMethod: "Cash",
-    status: "Completed",
-    notes: "",
-  },
-];
+const normalizeBookingPayload = (booking = {}) => {
+  const customerId = booking.customerId ? Number(booking.customerId) : null;
+  const source = booking.source || (customerId ? "ONLINE" : "WALK_IN");
+  const companyId = Number(
+    booking.companyId ?? useAuthStore.getState().getCompanyId()
+  );
+
+  return {
+    customerName: booking.customerName || booking.name || null,
+    customerId,
+    companyId,
+    vehicleId: Number(booking.vehicleId),
+    phone: booking.phone || null,
+    cnic: booking.cnic || null,
+    city: booking.city || "",
+    startDate: booking.startDate,
+    endDate: booking.endDate,
+    pickupTime: booking.pickupTime || null,
+    dropTime: booking.dropTime || booking.dropoffTime || null,
+    totalPrice: Number(booking.totalPrice || booking.price || 0),
+    dailyRate: Number(booking.dailyRate || booking.price || 0),
+    advance: Number(booking.advance) || 0,
+    discount: Number(booking.discount) || 0,
+    notes: booking.notes || null,
+    forceOverride: Boolean(booking.forceOverride || booking.isOverride),
+    source,
+  };
+};
 
 export const useBookingStore = create(
   persist(
     (set, get) => ({
-      bookings: defaultBookings,
+      bookings: [],
+
+      fetchBookings: async () => {
+        try {
+          const res = await api.get("/bookings");
+          set({ bookings: res.data });
+        } catch (error) {
+          console.error(
+            "Fetch bookings error:",
+            error.response?.data || error.message
+          );
+        }
+      },
+
       getBookingsByCity: (city) => {
         if (!city) return get().bookings;
+
         return get().bookings.filter((b) => b.city === city);
       },
 
-      addBooking: (booking) => {
-        set((state) => ({ bookings: [...state.bookings, booking] }));
+      addBooking: async (booking) => {
+        try {
+          const payload = normalizeBookingPayload(booking);
+          const res = await api.post("/bookings", payload);
+          const data = res.data;
+
+          set((state) => ({
+            bookings: [data, ...state.bookings],
+          }));
+          notifyBookingUpdate();
+          return data;
+        } catch (error) {
+          console.error(
+            "Create booking error:",
+            error.response?.data || error.message
+          );
+          throw error;
+        }
       },
 
-      updateBooking: (updatedBooking) => {
-        set((state) => ({
-          bookings: state.bookings.map((b) =>
-            b.id === updatedBooking.id ? updatedBooking : b
-          ),
-        }));
+      updateBooking: async (booking) => {
+        try {
+          const payload = normalizeBookingPayload(booking);
+          const res = await api.patch(`/bookings/${booking.id}`, payload);
+          const updated = res.data;
+
+          set((state) => ({
+            bookings: state.bookings.map((b) => (b.id === updated.id ? updated : b)),
+          }));
+          notifyBookingUpdate();
+          return updated;
+        } catch (error) {
+          console.error(
+            "Update booking error:",
+            error.response?.data || error.message
+          );
+          throw error;
+        }
       },
 
-      deleteBooking: (id) => {
-        set((state) => ({
-          bookings: state.bookings.filter((b) => b.id !== id),
-        }));
+      overrideBooking: async (booking) => {
+        try {
+          const payload = normalizeBookingPayload({
+            ...booking,
+            forceOverride: true,
+            isOverride: true,
+          });
+          const res = await api.post("/bookings/override", payload);
+          const data = res.data;
+
+          set((state) => ({
+            bookings: [data, ...state.bookings.filter((b) => b.id !== data.id)],
+          }));
+          notifyBookingUpdate();
+          return data;
+        } catch (error) {
+          console.error(
+            "Override booking error:",
+            error.response?.data || error.message
+          );
+          throw error;
+        }
+      },
+
+      deleteBooking: async (id) => {
+        try {
+          await api.delete(`/bookings/${id}`);
+          set((state) => ({
+            bookings: state.bookings.filter((b) => b.id !== id),
+          }));
+          notifyBookingUpdate();
+        } catch (error) {
+          console.error(
+            "Delete error:",
+            error.response?.data || error.message
+          );
+          throw error;
+        }
       },
     }),
     {

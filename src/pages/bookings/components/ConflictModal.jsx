@@ -1,29 +1,20 @@
 export default function ConflictModal({
-  conflict,
+  open,
   onClose,
-  onOverride
+  onConfirm,
 }) {
+  if (!open) return null;
+
   return (
     <div className="fixed inset-0 bg-secondary/50 flex items-center justify-center z-[99999]">
-
       <div className="bg-surface text-textPrimary p-5 rounded-xl w-[400px] shadow-card border border-borderColor">
 
         <h2 className="text-lg font-bold text-danger mb-3">
           ⚠ Conflict Detected
         </h2>
 
-        <p className="text-sm mb-3">
-          This vehicle is already booked for selected dates.
-        </p>
-
-        <div className="bg-background p-3 rounded text-sm mb-4">
-          <p><b>Vehicle:</b> {conflict?.vehicle}</p>
-          <p><b>From:</b> {conflict?.startDate}</p>
-          <p><b>To:</b> {conflict?.endDate}</p>
-        </div>
-
-        <p className="text-xs text-textSecondary mb-4">
-          Do you want to override and continue?
+        <p className="text-sm mb-4">
+          This vehicle is already booked for selected dates. Do you want to override?
         </p>
 
         <div className="flex gap-2">
@@ -35,15 +26,13 @@ export default function ConflictModal({
           </button>
 
           <button
-            onClick={onOverride}
+            onClick={onConfirm}
             className="w-1/2 bg-danger text-white p-2 rounded hover:opacity-90"
           >
-            Override Booking
+            Force Booking
           </button>
         </div>
-
       </div>
-
     </div>
   );
 }

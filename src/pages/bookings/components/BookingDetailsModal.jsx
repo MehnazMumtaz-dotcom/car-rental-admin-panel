@@ -2,8 +2,35 @@ import React from "react";
 import Button from "../../../components/ui/Button";
 import StatusBadge from "../../../components/ui/StatusBadge";
 
+
+const formatDateTime = (date) => {
+  if (!date) return "N/A";
+  try {
+    return new Date(date).toLocaleString();
+  } catch {
+    return "N/A";
+  }
+};
+
 const BookingDetailsModal = ({ booking, onClose }) => {
   if (!booking) return null;
+
+  const customerName =
+    booking.customer?.name ||
+    booking.customerName ||
+    booking.name ||
+    "Walk-in Customer";
+
+
+  const vehicleName =
+    booking.vehicle?.name ||
+    booking.vehicleName ||
+    booking.vehicle ||
+    "N/A";
+
+ 
+  const startDate = booking.startDate || booking.start;
+  const endDate = booking.endDate || booking.end;
 
   return (
     <div className="fixed inset-0 bg-secondary/50 flex items-center justify-center z-50">
@@ -16,23 +43,23 @@ const BookingDetailsModal = ({ booking, onClose }) => {
 
         <div className="space-y-2 text-sm">
 
-          <p><strong>Customer:</strong> {booking.customerName}</p>
+          <p><strong>Customer:</strong> {customerName}</p>
 
-          <p><strong>Vehicle:</strong> {booking.vehicleName}</p>
+          <p><strong>Vehicle:</strong> {vehicleName}</p>
 
           <p>
             <strong>Start:</strong>{" "}
-            {new Date(booking.start).toLocaleString()}
+            {formatDateTime(startDate)}
           </p>
 
           <p>
             <strong>End:</strong>{" "}
-            {new Date(booking.end).toLocaleString()}
+            {formatDateTime(endDate)}
           </p>
 
           <div className="flex items-center gap-2">
             <strong>Status:</strong>
-            <StatusBadge status={booking.status} />
+            <StatusBadge status={booking.status || "Pending"} />
           </div>
 
         </div>

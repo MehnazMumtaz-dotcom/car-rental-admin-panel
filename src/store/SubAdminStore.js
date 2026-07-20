@@ -1,234 +1,562 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import SubAdminService from "../services/SubAdminService";
+
 
 export const PERMISSIONS = [
-  { key: "dashboard", label: "Dashboard", desc: "View dashboard" },
-  { key: "complaints", label: "Complaints", desc: "Manage complaints" },
-  { key: "bookingCalendar", label: "Booking Calendar", desc: "Manage bookings" },
-  { key: "customers", label: "Customers", desc: "Manage customers" },
-  { key: "configPanel", label: "Config Panel", desc: "Manage settings" },
-  { key: "reports", label: "Reports", desc: "View reports" },
-  { key: "subAdmins", label: "Sub-Admins", desc: "Manage sub-admins" },
-  { key: "auditLog", label: "Audit Log", desc: "View audit logs" },
+  { key: "dashboard", label: "Dashboard" },
+  { key: "complaints", label: "Complaints" },
+  { key: "bookingCalendar", label: "Booking Calendar" },
+  { key: "customers", label: "Customers" },
+  { key: "configPanel", label: "Config Panel" },
+  { key: "reports", label: "Reports" },
+  { key: "subAdmins", label: "Sub-Admins" },
+  { key: "auditLog", label: "Audit Log" },
 ];
 
-const defaultSubAdmins = [
-  {
-    id: 1,
-    name: "Farhan Ali",
-    email: "farhan@rental.com",
-    city: "Lahore",
-    status: "active",
-    permissions: ["dashboard", "complaints", "bookingCalendar", "customers", "auditLog"],
-    lastLogin: "Today, 10:30 AM",
-  },
-  {
-    id: 2,
-    name: "Sarah Khan",
-    email: "sarah@rental.com",
-    city: "Lahore",
-    status: "active",
-    permissions: ["dashboard", "complaints", "customers"],
-    lastLogin: "Today, 09:15 AM",
-  },
-  {
-    id: 3,
-    name: "Ali Raza",
-    email: "ali@rental.com",
-    city: "Multan",
-    status: "inactive",
-    permissions: ["dashboard", "reports"],
-    lastLogin: "2 days ago",
-  },
-  {
-    id: 4,
-    name: "Noor Fatima",
-    email: "noor@rental.com",
-    city: "Multan",
-    status: "active",
-    permissions: ["dashboard", "bookingCalendar", "customers", "reports"],
-    lastLogin: "Yesterday, 04:45 PM",
-  },
-  {
-    id: 5,
-    name: "Bilal Sheikh",
-    email: "bilal.sheikh@rental.com",
-    city: "Karachi",
-    status: "active",
-    permissions: ["dashboard", "complaints"],
-    lastLogin: "Today, 08:00 AM",
-  },
-  {
-    id: 6,
-    name: "Nadia Yousaf",
-    email: "nadia.yousaf@rental.com",
-    city: "Islamabad",
-    status: "inactive",
-    permissions: ["dashboard"],
-    lastLogin: "3 days ago",
-  },
-];
 
-const defaultAuditLog = [
-  {
-    id: 1,
-    action: 'Sub-admin "Farhan Ali" created',
-    by: "Admin",
-    time: "Today, 10:30 AM",
-    type: "create",
-  },
-  {
-    id: 2,
-    action: 'Permissions updated for "Sarah Khan"',
-    by: "Admin",
-    time: "Today, 09:15 AM",
-    type: "update",
-  },
-  {
-    id: 3,
-    action: 'Sub-admin "Umair Ahmed" deleted',
-    by: "Admin",
-    time: "Yesterday, 06:20 PM",
-    type: "delete",
-  },
-  {
-    id: 4,
-    action: 'Login by "Noor Fatima"',
-    by: "System",
-    time: "Yesterday, 04:45 PM",
-    type: "login",
-  },
-];
-
-function addLog(entries, action, type) {
-  const entry = {
-    id: Date.now(),
-    action,
-    by: "Admin",
-    time: "Just now",
-    type,
-  };
-  return [entry, ...entries];
-}
 
 export const useSubAdminStore = create(
+
   persist(
+
     (set, get) => ({
-      subAdmins: defaultSubAdmins,
-      auditLog: defaultAuditLog,
-      status: "saved", 
-      getStats: () => {
-        const list = get().subAdmins;
-        const total = list.length;
-        const active = list.filter((a) => a.status === "active").length;
-        const fullAccess = list.filter(
-          (a) => a.permissions.length === PERMISSIONS.length
-        ).length;
-        const restricted = total - fullAccess;
-        return { total, active, fullAccess, restricted };
+
+      subAdmins: [],
+
+      auditLog: [],
+
+      loading: false,
+
+      status: "idle",
+
+
+      normalizeAdmin: (admin) => {
+
+        return {
+
+          id: admin.id || admin._id,
+
+          name:
+            admin.name ||
+            admin.email ||
+            "No Name",
+
+
+          email:
+            admin.email || "",
+
+
+
+          status:
+            admin.status?.toLowerCase() ||
+            (admin.isActive
+              ? "active"
+              : "inactive"),
+
+
+
+          isActive:
+            admin.status?.toLowerCase() === "active" ||
+            admin.isActive === true,
+
+
+
+          permissions:
+            Array.isArray(admin.permissions)
+              ? admin.permissions
+              : [],
+
+
+
+          role:
+            admin.role || "",
+
+
+
+          city:
+            admin.city || "",
+
+
+
+          createdAt:
+            admin.createdAt || null,
+
+
+        };
+
       },
 
-      createSubAdmin: async ({ name, email, status, permissions, city }) => {
-        set({ status: "saving" });
+      fetchSubAdmins: async () => {
+
+
         try {
-          // const res = await fetch("/api/sub-admins", {
-          //   method: "POST",
-          //   headers: { "Content-Type": "application/json" },
-          //   body: JSON.stringify({ name, email, status, permissions, city }),
-          // });
-          // if (!res.ok) throw new Error("Create failed");
 
-          await new Promise((resolve) => setTimeout(resolve, 300));
 
-          const newAdmin = {
-            id: Date.now(),
-            name,
-            email,
-            city: city || "",
-            status: status || "active",
-            permissions: permissions || [],
-            lastLogin: "Never",
-          };
+          set({
+            loading:true
+          });
 
-          set((state) => ({
-            subAdmins: [newAdmin, ...state.subAdmins],
-            auditLog: addLog(
-              state.auditLog,
-              `Sub-admin "${name}" created`,
-              "create"
-            ),
-            status: "saved",
+
+
+          const res =
+            await SubAdminService.getAll();
+
+
+
+          console.log(
+            "RAW SUB ADMINS:",
+            res
+          );
+
+
+
+          let data = res;
+
+
+
+          if(res?.data)
+
+            data = res.data;
+
+
+
+          if(data?.data)
+
+            data = data.data;
+
+
+
+
+          if(!Array.isArray(data)){
+
+            data=[];
+
+          }
+
+
+
+
+
+          const normalized =
+            data.map((item)=>
+
+              get().normalizeAdmin(item)
+
+            );
+
+
+
+
+
+          set({
+
+            subAdmins:
+              normalized,
+
+            loading:false,
+
+          });
+
+
+
+
+
+        }
+
+        catch(error){
+
+
+          console.error(
+            "Fetch sub admins failed:",
+            error
+          );
+
+
+          set({
+
+            loading:false
+
+          });
+
+
+        }
+
+
+      },
+
+      createSubAdmin: async(data)=>{
+
+
+        try{
+
+
+          set({
+            status:"saving"
+          });
+
+
+
+
+          await SubAdminService.create({
+
+            ...data,
+
+            role:"SUB_ADMIN",
+
+          });
+
+
+
+
+
+          await get().fetchSubAdmins();
+
+
+
+
+
+          set({
+
+            status:"saved"
+
+          });
+
+
+
+        }
+
+        catch(error){
+
+
+          console.error(
+            "Create failed:",
+            error
+          );
+
+
+          set({
+
+            status:"error"
+
+          });
+
+
+        }
+
+
+      },
+      updateSubAdmin: async(id,data)=>{
+
+
+        try{
+
+
+          set({
+
+            status:"saving"
+
+          });
+
+
+
+
+          const response =
+            await SubAdminService.update(
+              id,
+              data
+            );
+
+
+
+
+          console.log(
+            "UPDATE RESPONSE:",
+            response
+          );
+
+          set((state)=>({
+
+            subAdmins:
+
+              state.subAdmins.map((admin)=>{
+
+
+                if(admin.id !== id)
+
+                  return admin;
+
+
+
+
+                return {
+
+
+                  ...admin,
+
+                  ...data,
+
+
+
+                  status:
+
+                    data.status
+                      ?.toLowerCase() ||
+
+                    admin.status,
+
+
+
+                  permissions:
+
+                    data.permissions ||
+
+                    admin.permissions,
+
+
+                };
+
+
+              })
+
+
           }));
-        } catch (err) {
-          console.error("Create sub-admin failed:", err);
-          set({ status: "error" });
-        }
-      },
 
-      updateSubAdmin: async (id, patch, logMessage) => {
-        set({ status: "saving" });
-        try {
-          // const res = await fetch(`/api/sub-admins/${id}`, {
-          //   method: "PUT",
-          //   headers: { "Content-Type": "application/json" },
-          //   body: JSON.stringify(patch),
-          // });
-          // if (!res.ok) throw new Error("Update failed");
+          await get().fetchSubAdmins();
 
-          await new Promise((resolve) => setTimeout(resolve, 300));
 
-          set((state) => {
-            const target = state.subAdmins.find((a) => a.id === id);
-            const message =
-              logMessage ||
-              (target ? `Permissions updated for "${target.name}"` : "Sub-admin updated");
 
-            return {
-              subAdmins: state.subAdmins.map((a) =>
-                a.id === id ? { ...a, ...patch } : a
-              ),
-              auditLog: addLog(state.auditLog, message, "update"),
-              status: "saved",
-            };
+
+
+
+          set({
+
+            status:"saved"
+
           });
-        } catch (err) {
-          console.error("Update sub-admin failed:", err);
-          set({ status: "error" });
+
+
+
         }
-      },
 
-      deleteSubAdmin: async (id) => {
-        set({ status: "saving" });
-        try {
-          // const res = await fetch(`/api/sub-admins/${id}`, { method: "DELETE" });
-          // if (!res.ok) throw new Error("Delete failed");
+        catch(error){
 
-          await new Promise((resolve) => setTimeout(resolve, 300));
 
-          set((state) => {
-            const target = state.subAdmins.find((a) => a.id === id);
-            return {
-              subAdmins: state.subAdmins.filter((a) => a.id !== id),
-              auditLog: addLog(
-                state.auditLog,
-                `Sub-admin "${target?.name || "Unknown"}" deleted`,
-                "delete"
-              ),
-              status: "saved",
-            };
+          console.error(
+            "Update failed:",
+            error
+          );
+
+
+          set({
+
+            status:"error"
+
           });
-        } catch (err) {
-          console.error("Delete sub-admin failed:", err);
-          set({ status: "error" });
+
+
+
         }
+
+
       },
+
+      deleteSubAdmin: async(id)=>{
+
+
+        try{
+
+
+          set({
+
+            status:"saving"
+
+          });
+
+
+
+
+          await SubAdminService.remove(id);
+
+
+
+
+          await get().fetchSubAdmins();
+
+
+
+
+          set({
+
+            status:"saved"
+
+          });
+
+
+
+        }
+
+        catch(error){
+
+
+          console.error(
+            "Delete failed:",
+            error
+          );
+
+
+          set({
+
+            status:"error"
+
+          });
+
+
+        }
+
+
+      },
+
+      fetchAuditLog: async()=>{
+
+
+        try{
+
+
+          const res =
+            await SubAdminService.getAuditLogs();
+
+
+
+          let logs=res;
+
+
+
+          if(res?.data)
+
+            logs=res.data;
+
+
+
+          if(logs?.data)
+
+            logs=logs.data;
+
+
+
+
+
+          set({
+
+            auditLog:
+
+              Array.isArray(logs)
+                ? logs
+                : []
+
+          });
+
+
+
+
+        }
+
+        catch(error){
+
+
+          console.error(
+            "Audit log failed:",
+            error
+          );
+
+
+        }
+
+
+      },
+
+      getStats:()=>{
+
+
+        const list =
+          get().subAdmins || [];
+
+
+
+
+        const total =
+          list.length;
+
+
+
+
+        const active =
+          list.filter(
+
+            (admin)=>
+
+              admin.status?.toLowerCase()
+              === "active"
+
+          ).length;
+
+
+
+
+        const inactive =
+          list.filter(
+
+            (admin)=>
+
+              admin.status?.toLowerCase()
+              === "inactive"
+
+          ).length;
+
+
+
+
+        return {
+
+          total,
+
+          active,
+
+          inactive,
+
+        };
+
+
+      },
+
+
     }),
+
+
+
     {
-      name: "fixitnow_subadmins",
-      partialize: (state) => ({
-        subAdmins: state.subAdmins,
-        auditLog: state.auditLog,
+
+
+      name:
+        "fixitnow_subadmins",
+
+
+
+      partialize:(state)=>({
+
+        subAdmins:
+          state.subAdmins,
+
+
+        auditLog:
+          state.auditLog,
+
       }),
+
+
     }
+
+
   )
+
 );

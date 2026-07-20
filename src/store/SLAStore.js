@@ -28,7 +28,6 @@ const DAY = 24 * HOUR;
 const now = Date.now();
 
 const defaultComplaints = [
-  // 🟢 ON TRACK
   {
     id: "CMP-2025-00128",
     customer: "Ali Raza",
@@ -40,7 +39,6 @@ const defaultComplaints = [
     resolved: false,
   },
 
-  // 🟠 AT RISK
   {
     id: "CMP-2025-00127",
     customer: "Sara Khan",
@@ -51,8 +49,6 @@ const defaultComplaints = [
     assignedTo: "M. Kashif",
     resolved: false,
   },
-
-  // 🔴 BREACHED
   {
     id: "CMP-2025-00126",
     customer: "Usman Malik",
@@ -141,7 +137,6 @@ const defaultComplaints = [
     resolved: false,
   },
 
-  // KARACHI DATA
   {
     id: "CMP-2025-00118",
     customer: "Bilal Sheikh",
@@ -183,7 +178,6 @@ const defaultComplaints = [
     resolved: false,
   },
 
-  // ISLAMABAD
   {
     id: "CMP-2025-00116",
     customer: "Nadia Yousaf",
