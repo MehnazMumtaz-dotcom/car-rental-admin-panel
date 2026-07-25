@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { X } from "lucide-react";
 import Button from "../../components/ui/Button";
-import { useSubAdminStore } from "../../store/subAdminStore";
+import { useSubAdminStore } from "../../store/SubAdminStore";
 import { useAuthStore } from "../../store/authStore";
 
 export default function AssignComplaintModal({
