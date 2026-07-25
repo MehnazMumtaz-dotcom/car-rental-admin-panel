@@ -1,6 +1,6 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState } from "react"
 import { Eye, UserPlus, CheckCircle2 } from "lucide-react";
-import { useSubAdminStore } from "../../store/subAdminStore";
+import { useSubAdminStore } from "../../store/SubAdminStore";
 import {
   useSLAStore,
   getComplaintStatus,
@@ -387,8 +387,6 @@ Actions
 {
 paginated.map((c)=>{
 
-console.log("FULL COMPLAINT:", c);
-console.log("assignedTo:", c.assignedTo);
 const slaDays =
 c.priority==="URGENT"
 ?
