@@ -155,7 +155,7 @@ export default function Login() {
               <p className="text-sm text-textSecondary mt-1">
                 {step === "credentials"
                   ? "Sign in to manage your rental business"
-                  : `Enter the 6-digit code sent to ${email}`}
+                  : "Enter the 6-digit verification code sent to your email. Please check your inbox or spam folder."}
               </p>
             </div>
 
@@ -164,7 +164,7 @@ export default function Login() {
                 <Input
                   label="Email"
                   type="email"
-                  placeholder="you@company.com"
+                  
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                 />
@@ -208,12 +208,45 @@ export default function Login() {
                   Two-factor authentication is enabled for this account.
                 </div>
 
-                <Input
-                  label="Verification Code"
-                  placeholder="000000"
-                  value={otp}
-                  onChange={(e) => setOtp(e.target.value)}
-                />
+               <div>
+  <label className="text-sm text-textSecondary mb-2 block">
+    Verification Code
+  </label>
+
+  <div className="flex gap-2 justify-between">
+    {[0, 1, 2, 3, 4, 5].map((index) => (
+      <input
+        key={index}
+        type="text"
+        maxLength="1"
+        value={otp[index] || ""}
+        onChange={(e) => {
+          const value = e.target.value.replace(/\D/, "");
+          if (!value) return;
+
+          const newOtp = otp.split("");
+          newOtp[index] = value;
+          setOtp(newOtp.join(""));
+
+          // focus next box
+          const next = e.target.nextSibling;
+          if (next) next.focus();
+        }}
+        onKeyDown={(e) => {
+          if (e.key === "Backspace") {
+            const newOtp = otp.split("");
+            newOtp[index] = "";
+            setOtp(newOtp.join(""));
+
+            const prev = e.target.previousSibling;
+            if (prev) prev.focus();
+          }
+        }}
+        className="w-12 h-12 text-center text-lg rounded-lg border border-borderColor bg-surface focus:outline-none focus:ring-2 focus:ring-primary"
+      />
+    ))}
+  </div>
+</div>
 
                 {error && (
                   <p className="text-sm text-danger bg-danger/10 border border-danger/20 rounded-lg px-3 py-2">
@@ -236,9 +269,7 @@ export default function Login() {
                   Back
                 </Button>
 
-                <p className="text-xs text-textSecondary text-center mt-1">
-                  Demo code: <span className="text-textPrimary font-medium">000000</span>
-                </p>
+                
               </form>
             )}
           </div>

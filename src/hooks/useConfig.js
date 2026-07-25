@@ -11,14 +11,12 @@ export const useConfig = (companyId) => {
     editConfig,
   } = useConfigStore();
 
-  // 🔹 Auto fetch on mount
   useEffect(() => {
     if (companyId) {
       fetchConfig(companyId);
     }
-  }, [companyId, fetchConfig]); // ✅ include dependency
+  }, [companyId, fetchConfig]); 
 
-  // 🔹 Save (Create or Update)
   const saveConfig = async (formData) => {
     try {
       if (config && config.id) {
@@ -27,7 +25,7 @@ export const useConfig = (companyId) => {
         return await addConfig({ ...formData, companyId });
       }
     } catch (err) {
-      // 🔥 propagate backend error to UI
+      
       throw err;
     }
   };

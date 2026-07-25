@@ -92,41 +92,42 @@ export default function CalendarToolbar({
           + New Booking
         </button>
       </div>
+
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 bg-surface border border-borderColor px-3 sm:px-5 py-3 rounded-lg shadow-card">
+
         <div className="flex items-center justify-between sm:justify-start gap-2">
 
           <button
             onClick={() => changeDate("prev")}
-            className="p-2 border rounded"
+            className="p-2 border border-borderColor bg-surface text-textPrimary rounded hover:bg-hover"
           >
             <ChevronLeft size={18} />
           </button>
 
           <button
             onClick={() => changeDate("today")}
-            className="px-3 py-1 border rounded text-xs sm:text-sm"
+            className="px-3 py-1 border border-borderColor bg-surface text-textPrimary rounded text-xs sm:text-sm hover:bg-hover"
           >
             Today
           </button>
 
           <button
             onClick={() => changeDate("next")}
-            className="p-2 border rounded"
+            className="p-2 border border-borderColor bg-surface text-textPrimary rounded hover:bg-hover"
           >
             <ChevronRight size={18} />
           </button>
         </div>
-
         <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-2 sm:gap-3 w-full lg:w-auto">
 
-          <h2 className="text-base sm:text-lg font-semibold text-center sm:text-left">
+          <h2 className="text-base sm:text-lg font-semibold text-textPrimary text-center sm:text-left">
             {monthYear}
           </h2>
 
           <select
             value={view}
             onChange={(e) => handleView(e.target.value)}
-            className="border px-2 sm:px-3 py-1.5 rounded-md text-xs sm:text-sm"
+            className="bg-surface text-textPrimary border border-borderColor px-2 sm:px-3 py-1.5 rounded-md text-xs sm:text-sm focus:outline-none"
           >
             <option value="month">Monthly</option>
             <option value="week">Weekly</option>
@@ -135,7 +136,7 @@ export default function CalendarToolbar({
           <select
             value={filters.city}
             onChange={(e) => handleFilter("city", e.target.value)}
-            className="border px-2 sm:px-3 py-1.5 rounded-md text-xs sm:text-sm"
+            className="bg-surface text-textPrimary border border-borderColor px-2 sm:px-3 py-1.5 rounded-md text-xs sm:text-sm focus:outline-none"
           >
             <option value="">All Cities</option>
             <option>Lahore</option>
@@ -147,7 +148,7 @@ export default function CalendarToolbar({
           <select
             value={filters.vehicle}
             onChange={(e) => handleFilter("vehicle", e.target.value)}
-            className="border px-2 sm:px-3 py-1.5 rounded-md text-xs sm:text-sm"
+            className="bg-surface text-textPrimary border border-borderColor px-2 sm:px-3 py-1.5 rounded-md text-xs sm:text-sm focus:outline-none"
           >
             <option value="">All Vehicles</option>
             {vehicles.map((vehicle) => (
@@ -157,19 +158,19 @@ export default function CalendarToolbar({
             ))}
           </select>
 
-       <select
-  value={filters.status}
-  onChange={(e) => handleFilter("status", e.target.value)}
-  className="border px-2 sm:px-3 py-1.5 rounded-md text-xs sm:text-sm"
->
-  <option value="">All Status</option>
+          <select
+            value={filters.status}
+            onChange={(e) => handleFilter("status", e.target.value)}
+            className="bg-surface text-textPrimary border border-borderColor px-2 sm:px-3 py-1.5 rounded-md text-xs sm:text-sm focus:outline-none"
+          >
+            <option value="">All Status</option>
 
-  {BOOKING_STATUS_OPTIONS.map(({ label, value }) => (
-    <option key={value} value={value}>
-      {label}
-    </option>
-  ))}
-</select>
+            {BOOKING_STATUS_OPTIONS.map(({ label, value }) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
+          </select>
 
           <button
             onClick={reset}

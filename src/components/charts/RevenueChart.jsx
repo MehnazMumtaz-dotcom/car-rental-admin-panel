@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useEffect } from "react";
 import {
   LineChart,
   Line,
@@ -9,58 +9,49 @@ import {
   Area,
   CartesianGrid,
 } from "recharts";
-import { useBookingStore } from "../../store/bookingStore";
-import { useAuthStore } from "../../store/authStore";
+import axios from "axios";
 
-const RevenueChart = ({ weekRange }) => {
+const RevenueChart = () => {
   const [isWeek, setIsWeek] = useState(true);
-  const allBookings = useBookingStore((s) => s.bookings);
-  const adminCity = useAuthStore((s) => s.user?.city);
+  const [chartData, setChartData] = useState([]);
 
-  const cityBookings = useMemo(
-    () => allBookings.filter((b) => !adminCity || b.city === adminCity),
-    [allBookings, adminCity]
-  );
+  useEffect(() => {
+    const fetchRevenue = async () => {
+      try {
+        const type = isWeek ? "week" : "month";
 
-  const weekData = useMemo(() => {
-    if (!weekRange?.start) return [];
+        const res = await axios.get(
+          `http://localhost:3000/dashboard/revenue-trend?type=${type}`
+        );
 
-    const startDate = new Date(weekRange.start);
-    const generated = [];
+        console.log("Revenue Trend:", res.data);
 
-    for (let i = 0; i < 7; i++) {
-      const d = new Date(startDate);
-      d.setDate(d.getDate() + i);
-      const iso = d.toISOString().split("T")[0];
+        const data = Array.isArray(res.data)
+          ? res.data
+          : res.data.data || res.data.revenue || [];
 
-      const revenue = cityBookings
-        .filter((b) => b.startDate === iso)
-        .reduce((sum, b) => sum + (Number(b.price) || 0), 0);
+        setChartData(
+          data.map((item) => ({
+            day: item.day || item.label || item.date,
+            revenue:
+              Number(
+                item.revenue ||
+                item.totalRevenue ||
+                item.value ||
+                0
+              ),
+            fullDate: item.date || item.label || "",
+          }))
+        );
 
-      generated.push({ day: d.getDate(), fullDate: d.toDateString(), revenue });
-    }
+      } catch (error) {
+        console.log("Revenue Error:", error);
+      }
+    };
 
-    return generated;
-  }, [weekRange, cityBookings]);
+    fetchRevenue();
+  }, [isWeek]);
 
-  const monthData = useMemo(() => {
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = now.getMonth();
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-    const generated = [];
-    for (let day = 1; day <= daysInMonth; day++) {
-      const iso = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
-      const revenue = cityBookings
-        .filter((b) => b.startDate === iso)
-        .reduce((sum, b) => sum + (Number(b.price) || 0), 0);
-      generated.push({ day, revenue });
-    }
-    return generated;
-  }, [cityBookings]);
-
-  const chartData = isWeek ? weekData : monthData;
 
   const formatYAxis = (value) => `${value / 1000}K`;
 
@@ -80,17 +71,20 @@ const RevenueChart = ({ weekRange }) => {
         </button>
       </div>
 
+
       <div className="flex-1 w-full">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart
             data={chartData}
             margin={{ top: 10, right: 10, left: 0, bottom: 5 }}
           >
+
             <CartesianGrid
               stroke="#eef2f7"
               strokeDasharray="3 3"
               vertical={false}
             />
+
 
             <XAxis
               dataKey="day"
@@ -110,20 +104,27 @@ const RevenueChart = ({ weekRange }) => {
               width={30}
             />
 
+
             <Tooltip
               content={({ active, payload }) => {
                 if (active && payload && payload.length) {
                   return (
                     <div className="bg-surface border border-borderColor rounded-lg px-3 py-2 text-xs shadow-card">
+
                       <p className="text-textSecondary mb-1">
-                        {payload[0].payload.fullDate || `Day ${payload[0].payload.day}`}
+                        {payload[0].payload.fullDate ||
+                          `Day ${payload[0].payload.day}`}
                       </p>
+
                       <p className="text-textPrimary font-medium">
-                        Revenue: PKR {payload[0].value.toLocaleString()}
+                        Revenue: PKR{" "}
+                        {Number(payload[0].value).toLocaleString()}
                       </p>
+
                     </div>
                   );
                 }
+
                 return null;
               }}
             />
@@ -131,10 +132,22 @@ const RevenueChart = ({ weekRange }) => {
 
             <defs>
               <linearGradient id="revenueFill" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#22c55e" stopOpacity={0.35} />
-                <stop offset="100%" stopColor="#22c55e" stopOpacity={0} />
+
+                <stop
+                  offset="0%"
+                  stopColor="#22c55e"
+                  stopOpacity={0.35}
+                />
+
+                <stop
+                  offset="100%"
+                  stopColor="#22c55e"
+                  stopOpacity={0}
+                />
+
               </linearGradient>
             </defs>
+
 
             <Area
               type="monotone"
@@ -142,6 +155,7 @@ const RevenueChart = ({ weekRange }) => {
               stroke="none"
               fill="url(#revenueFill)"
             />
+
 
             <Line
               type="monotone"
@@ -151,9 +165,12 @@ const RevenueChart = ({ weekRange }) => {
               dot={{ r: 2 }}
               activeDot={{ r: 5 }}
             />
+
+
           </LineChart>
         </ResponsiveContainer>
       </div>
+
     </div>
   );
 };

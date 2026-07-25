@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import {
   AreaChart,
@@ -12,53 +12,33 @@ import {
 } from "recharts";
 
 import { Calendar, ChevronDown } from "lucide-react";
-import { useBookingStore } from "../../../store/bookingStore";
-import { useAuthStore } from "../../../store/authStore";
+
+import { useReportStore } from "../../../store/reportStore";
+
 
 export default function BookingTrendChart() {
+
   const [active, setActive] = useState("weekly");
   const [open, setOpen] = useState(false);
+const {
+  bookingTrend,
+  fetchBookingTrend,
+} = useReportStore();
 
-  const bookings = useBookingStore((s) => s.bookings);
-  const adminCity = useAuthStore((s) => s.user?.city);
 
-  const cityBookings = useMemo(
-    () => bookings.filter((b) => !adminCity || b.city === adminCity),
-    [bookings, adminCity]
-  );
+useEffect(() => {
 
-  const weeklyData = useMemo(() => {
-    const days = [];
-    for (let i = 6; i >= 0; i--) {
-      const d = new Date();
-      d.setDate(d.getDate() - i);
-      const iso = d.toISOString().split("T")[0];
-      const label = d.toLocaleDateString("en-GB", { day: "2-digit", month: "short" });
-      const value = cityBookings.filter((b) => b.startDate === iso).length;
-      days.push({ date: label, value });
-    }
-    return days;
-  }, [cityBookings]);
+  fetchBookingTrend(active);
 
-  const monthlyData = useMemo(() => {
-    const weeks = [];
-    for (let w = 3; w >= 0; w--) {
-      const weekEnd = new Date();
-      weekEnd.setDate(weekEnd.getDate() - w * 7);
-      const weekStart = new Date(weekEnd);
-      weekStart.setDate(weekStart.getDate() - 6);
+}, [active]);
+console.log("ACTIVE:", active);
+console.log("BOOKING TREND:", bookingTrend);
+  const data = (bookingTrend || []).map((item) => ({
+  date: item.label,
+  value: item.value,
+}));
 
-      const value = cityBookings.filter((b) => {
-        const d = new Date(b.startDate);
-        return d >= weekStart && d <= weekEnd;
-      }).length;
 
-      weeks.push({ date: `W${4 - w}`, value });
-    }
-    return weeks;
-  }, [cityBookings]);
-
-  const data = active === "weekly" ? weeklyData : monthlyData;
 
   return (
     <div className="bg-surface p-3 sm:p-4 md:p-6 rounded-2xl border border-borderColor shadow-card w-full">
@@ -70,63 +50,97 @@ export default function BookingTrendChart() {
           Booking Trend
         </div>
 
+
         <div className="relative w-full sm:w-auto">
+
           <button
             onClick={() => setOpen(!open)}
             className="flex items-center justify-between w-full sm:w-auto gap-2 px-3 sm:px-4 py-2 bg-background hover:bg-borderColor rounded-md text-sm text-textSecondary transition"
           >
+
             {active === "weekly" ? "Weekly" : "Monthly"}
+
             <ChevronDown size={16} />
+
           </button>
 
+
           {open && (
+
             <div className="absolute right-0 mt-2 w-full sm:w-28 bg-surface border border-borderColor rounded-md shadow-card z-10">
 
+
               {active === "weekly" && (
+
                 <div
                   onClick={() => {
                     setActive("monthly");
                     setOpen(false);
                   }}
+
                   className="px-3 py-2 text-sm text-textPrimary hover:bg-background cursor-pointer"
                 >
                   Monthly
                 </div>
+
               )}
 
+
+
               {active === "monthly" && (
+
                 <div
                   onClick={() => {
                     setActive("weekly");
                     setOpen(false);
                   }}
+
                   className="px-3 py-2 text-sm text-textPrimary hover:bg-background cursor-pointer"
                 >
                   Weekly
                 </div>
+
               )}
 
+
             </div>
+
           )}
+
         </div>
+
       </div>
 
+
+
       <div className="w-full h-[200px] sm:h-[240px] md:h-[300px]">
+
         <ResponsiveContainer width="100%" height="100%">
+
           <AreaChart data={data}>
 
+
             <defs>
+
               <linearGradient id="blueGradient" x1="0" y1="0" x2="0" y2="1">
+
                 <stop offset="0%" stopColor="#3b82f6" stopOpacity={0.3} />
+
                 <stop offset="100%" stopColor="#3b82f6" stopOpacity={0} />
+
               </linearGradient>
+
             </defs>
+
+
 
             <CartesianGrid
               strokeDasharray="3 3"
               vertical={false}
               stroke="#e5e7eb"
             />
+
+
 
             <XAxis
               dataKey="date"
@@ -135,12 +149,16 @@ export default function BookingTrendChart() {
               tickLine={false}
             />
 
+
+
             <YAxis
               allowDecimals={false}
               tick={{ fontSize: 11, fill: "#6b7280" }}
               axisLine={false}
               tickLine={false}
             />
+
+
 
             <Tooltip
               contentStyle={{
@@ -150,6 +168,8 @@ export default function BookingTrendChart() {
               }}
             />
 
+
+
             <Area
               type="monotone"
               dataKey="value"
@@ -157,6 +177,8 @@ export default function BookingTrendChart() {
               strokeWidth={3}
               fill="url(#blueGradient)"
             />
+
+
 
             <Line
               type="monotone"
@@ -167,9 +189,16 @@ export default function BookingTrendChart() {
               activeDot={{ r: 6 }}
             />
 
+
           </AreaChart>
+
+
         </ResponsiveContainer>
+
+
       </div>
+
+
     </div>
   );
 }

@@ -7,7 +7,6 @@ import {
   deleteCustomer,
 } from "../services/customerService";
 
-// 🔥 GET
 export const useFetchCustomers = () => {
   const setCustomers = useCustomerStore((s) => s.setCustomers);
 
@@ -23,7 +22,7 @@ export const useFetchCustomers = () => {
   return { fetchCustomers };
 };
 
-// 🔥 CREATE
+
 export const useCreateCustomer = () => {
   const addCustomer = useCustomerStore((s) => s.addCustomer);
 
@@ -39,7 +38,7 @@ export const useCreateCustomer = () => {
   return { create };
 };
 
-// 🔥 PUT (FULL UPDATE)
+
 export const useUpdateCustomerPut = () => {
   const updateCustomer = useCustomerStore((s) => s.updateCustomer);
 
@@ -55,7 +54,7 @@ export const useUpdateCustomerPut = () => {
   return { update };
 };
 
-// 🔥 PATCH (GENERIC UPDATE 🔥)
+
 export const useUpdateCustomerPatch = () => {
   const updateCustomer = useCustomerStore((s) => s.updateCustomer);
 
@@ -71,7 +70,7 @@ export const useUpdateCustomerPatch = () => {
   return { update };
 };
 
-// 🔥 DELETE
+
 export const useDeleteCustomer = () => {
   const deleteCustomerFromStore = useCustomerStore((s) => s.deleteCustomer);
 

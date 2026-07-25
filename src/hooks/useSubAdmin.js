@@ -13,28 +13,20 @@ export const useSubAdmin = () => {
     getStats,
   } = useSubAdminStore();
 
-  // ======================
-  // AUTO FETCH ON MOUNT
-  // ======================
   useEffect(() => {
     fetchSubAdmins();
   }, []);
 
   return {
-    // data
     subAdmins,
-
-    // states
     loading,
     status,
 
-    // actions
     fetchSubAdmins,
     createSubAdmin,
     updateSubAdmin,
     deleteSubAdmin,
 
-    // computed
     stats: getStats(),
   };
 };

@@ -1,6 +1,4 @@
 import { useMemo, useState } from "react";
-import { useSLAStore, getComplaintStatus, formatTimeLeft } from "../../store/SLAStore";
-import { useAuthStore } from "../../store/authStore";
 
 const getStatusStyle = (status) => {
   switch (status) {
@@ -21,27 +19,82 @@ const statusLabel = {
   breached: "Breached",
 };
 
-const ComplaintsTable = ({ onRowClick }) => {
+const mapBackendStatus = (status, timeLeft) => {
+  if (timeLeft === "Expired") return "breached";
+
+  if (status === "RESOLVED") return "on-track";
+  if (status === "IN_PROGRESS") return "on-track";
+  if (status === "OPEN") return "at-risk";
+
+  return "on-track";
+};
+
+const formatTime = (val) => {
+  if (!val) return "N/A";
+  if (val === "Expired") return "Expired";
+
+  const numeric = parseInt(val);
+
+  if (isNaN(numeric)) return val;
+
+  const totalMinutes = numeric;
+
+  const days = Math.floor(totalMinutes / (60 * 24));
+  const hours = Math.floor((totalMinutes % (60 * 24)) / 60);
+  const minutes = totalMinutes % 60;
+
+  let result = "";
+
+  if (days > 0) result += `${days}d `;
+  if (hours > 0) result += `${hours}h `;
+  if (minutes > 0) result += `${minutes}m`;
+
+  return result.trim() || "0m";
+};
+
+const ComplaintsTable = ({ data = [], onRowClick }) => {
+
   const [showAll, setShowAll] = useState(false);
-  const complaints = useSLAStore((s) => s.complaints);
-  const adminCity = useAuthStore((s) => s.user?.city);
 
   const enriched = useMemo(() => {
-    const now = Date.now();
-    return complaints
-      .filter((c) => !c.resolved)
-      .filter((c) => !adminCity || c.city === adminCity)
-      .map((c) => ({ ...c, ...getComplaintStatus(c, now) }))
-      .sort((a, b) => a.msLeft - b.msLeft);
-  }, [complaints, adminCity]);
 
-  // ✅ CHANGE: default 2 records
-  const visibleData = showAll ? enriched : enriched.slice(0, 2);
+    return data
+
+     
+      .filter((c) => c.status !== "RESOLVED")
+
+      .map((c) => {
+        
+        const status = mapBackendStatus(c.status, c.timeLeft);
+
+        return {
+          ...c,
+          status,
+          customer:
+            c.customer || 
+            c.customerName ||
+            c.booking?.customerName ||
+            "N/A",
+
+          category: c.category || "Other",
+
+          timeText: formatTime(c.timeLeft),
+        };
+      });
+
+     
+
+  }, [data]);
+
+  const visibleData = showAll
+    ? enriched
+    : enriched.slice(0, 2);
 
   return (
     <div className="bg-surface p-4 sm:p-5 rounded-xl shadow-card border border-borderColor">
 
       <div className="flex justify-between items-center mb-4">
+
         <h3 className="font-semibold text-textPrimary text-sm sm:text-base">
           Recent Complaints
         </h3>
@@ -49,79 +102,91 @@ const ComplaintsTable = ({ onRowClick }) => {
         <button
           type="button"
           onClick={() => setShowAll((prev) => !prev)}
-          className="text-xs sm:text-sm text-primary hover:underline shrink-0 cursor-pointer"
+          className="text-xs sm:text-sm text-primary hover:underline cursor-pointer"
         >
           {showAll ? "Show Less" : "View All"}
         </button>
+
       </div>
 
       <div className="w-full">
+
         <table className="w-full table-fixed text-[10px] sm:text-xs md:text-sm">
-          <colgroup>
-            <col className="w-[18%]" />
-            <col className="w-[19%]" />
-            <col className="w-[20%] hidden md:table-column" />
-            <col className="w-[20%] hidden sm:table-column" />
-            <col className="w-[12%]" />
-          </colgroup>
 
           <thead className="text-textSecondary text-left">
             <tr className="border-b border-borderColor">
-              <th className="pb-2 pr-1">ID</th>
-              <th className="pb-2 pr-1">Customer</th>
-              <th className="pb-2 pr-1 hidden md:table-cell">Category</th>
-              <th className="pb-2 pr-1 hidden sm:table-cell">Time Left</th>
-              <th className="pb-2 pr-1">Status</th>
+              <th className="pb-2">ID</th>
+              <th className="pb-2">Customer</th>
+              <th className="pb-2 hidden md:table-cell">Category</th>
+              <th className="pb-2 hidden sm:table-cell">Time Left</th>
+              <th className="pb-2 text-right">Status</th>
             </tr>
           </thead>
 
           <tbody className="text-textPrimary">
 
             {visibleData.map((item) => (
+
               <tr
                 key={item.id}
                 onClick={() => onRowClick?.(item)}
-                className="border-b border-borderColor last:border-none cursor-pointer hover:bg-background transition"
+                className="border-b border-borderColor cursor-pointer hover:bg-background"
               >
-                <td className="py-2 pr-1 truncate">{item.id}</td>
 
-                <td className="pr-1 truncate">{item.customer}</td>
+                <td className="py-2 truncate">
+                  #{item.id}
+                </td>
 
-                <td className="pr-1 truncate hidden md:table-cell text-textSecondary">
+                <td className="truncate">
+                  {item.customer}
+                </td>
+
+                <td className="hidden md:table-cell text-textSecondary">
                   {item.category}
                 </td>
 
-                <td className="pr-1 hidden sm:table-cell text-warning font-medium whitespace-nowrap">
-                  ⏱ {formatTimeLeft(item.msLeft)}
+               
+                <td className="hidden sm:table-cell text-warning font-medium whitespace-nowrap">
+                  ⏱ {item.timeText}
                 </td>
 
-                <td className="pr-1">
+                <td className="text-right">
                   <span
-                    className={`inline-block whitespace-nowrap px-2 py-[2px] text-[9px] sm:text-xs rounded-full font-medium ${getStatusStyle(
-                      item.status
-                    )}`}
+                    className={`
+                      px-2 py-[2px]
+                      rounded-full
+                      text-[9px]
+                      sm:text-xs
+                      font-medium
+                      ${getStatusStyle(item.status)}
+                    `}
                   >
                     {statusLabel[item.status]}
                   </span>
                 </td>
+
               </tr>
+
             ))}
 
             {visibleData.length === 0 && (
               <tr>
-                <td colSpan={5} className="py-4 text-center text-textSecondary">
-                  No open complaints.
+                <td colSpan="5" className="py-4 text-center text-textSecondary">
+                  No complaints found.
                 </td>
               </tr>
             )}
 
           </tbody>
+
         </table>
+
       </div>
 
       <div className="text-xs sm:text-sm text-textSecondary mt-4 text-center">
         Showing {visibleData.length} of {enriched.length}
       </div>
+
     </div>
   );
 };

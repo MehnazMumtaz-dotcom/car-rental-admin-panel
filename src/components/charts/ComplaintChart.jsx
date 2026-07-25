@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useState, useEffect } from "react";
 import {
   PieChart,
   Pie,
@@ -7,108 +7,107 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { AlertCircle } from "lucide-react";
-import { useSLAStore, getComplaintStatus } from "../../store/SLAStore";
-import { useAuthStore } from "../../store/authStore";
+import axios from "axios";
 
-const STATUS_META = [
-  { key: "on-track", name: "On Track", color: "#22c55e" },
-  { key: "at-risk", name: "At Risk", color: "#f59e0b" },
-  { key: "breached", name: "Breached", color: "#ef4444" },
-];
+const COLORS = {
+  onTrack: "#22c55e",
+  atRisk: "#f59e0b",
+  breached: "#ef4444",
+  completed: "#9ca3af",
+};
 
 const ComplaintChart = () => {
-  const complaints = useSLAStore((s) => s.complaints);
-  const adminCity = useAuthStore((s) => s.user?.city);
+  const [data, setData] = useState([]);
+  const [total, setTotal] = useState(0);
 
-  const data = useMemo(() => {
-    const now = Date.now();
-    const active = complaints
-      .filter((c) => !c.resolved)
-      .filter((c) => !adminCity || c.city === adminCity)
-      .map((c) => getComplaintStatus(c, now).status);
+  useEffect(() => {
+    const fetchComplaintSummary = async () => {
+      try {
+        const res = await axios.get(
+          "http://localhost:3000/dashboard/complaint-summary"
+        );
 
-    return STATUS_META.map((s) => ({
-      name: s.name,
-      color: s.color,
-      value: active.filter((status) => status === s.key).length,
-    }));
-  }, [complaints, adminCity]);
+        const chartData = [
+          {
+            name: "On Track",
+            value: res.data.onTrack || 0,
+            color: COLORS.onTrack,
+          },
+          {
+            name: "At Risk",
+            value: res.data.atRisk || 0,
+            color: COLORS.atRisk,
+          },
+          {
+            name: "Breached",
+            value: res.data.breached || 0,
+            color: COLORS.breached,
+          },
+          {
+            name: "Completed",
+            value: res.data.completed || 0,
+            color: COLORS.completed,
+          },
+        ];
 
-  const total = data.reduce((sum, item) => sum + item.value, 0);
+        setData(chartData);
+        setTotal(res.data.total || 0);
+      } catch (err) {
+        console.log("Error:", err);
+      }
+    };
+
+    fetchComplaintSummary();
+  }, []);
 
   return (
-    <div className="bg-surface p-3 sm:p-4 rounded-xl shadow-card h-auto md:h-80 flex flex-col border border-borderColor">
-
-      <div className="flex items-center gap-2 mb-3">
-        <AlertCircle size={18} className="text-textPrimary shrink-0" />
-        <h3 className="text-textPrimary font-semibold text-sm sm:text-base whitespace-nowrap">
-          Complaint Status
-        </h3>
+    <div className="bg-white rounded-2xl shadow p-4 w-full h-[300px] flex flex-col">
+      
+      <div className="flex items-center gap-2 mb-2">
+        <AlertCircle size={18} />
+        <h2 className="font-semibold text-sm">Complaint Summary</h2>
       </div>
 
-      <div className="flex flex-col md:flex-row flex-1 gap-4">
+      <div className="flex flex-col md:flex-row flex-1 items-center justify-between gap-4">
+        <div className="relative w-full md:w-[55%] h-[200px] md:h-full flex items-center justify-center">
+          <ResponsiveContainer width="100%" height="100%">
+            <PieChart>
+              <Pie
+                data={data}
+                dataKey="value"
+                innerRadius={50}   
+                outerRadius={75}   
+                paddingAngle={3}
+              >
+                {data.map((entry, index) => (
+                  <Cell key={index} fill={entry.color} />
+                ))}
+              </Pie>
+              <Tooltip />
+            </PieChart>
+          </ResponsiveContainer>
 
-
-        <div className="w-full md:w-1/2 flex items-center justify-center relative">
-
-          <div className="w-full h-[200px] sm:h-[240px] md:h-[260px] max-w-[260px] sm:max-w-[300px] lg:max-w-[340px] mx-auto">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={data}
-                  dataKey="value"
-                  nameKey="name"
-                  cx="50%"
-                  cy="50%"
-                  innerRadius="55%"
-                  outerRadius="90%"
-                >
-                  {data.map((entry, i) => (
-                    <Cell key={i} fill={entry.color} />
-                  ))}
-                </Pie>
-
-                <Tooltip formatter={(v, n) => [`${v}`, n]} />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
-
-          <div className="absolute inset-0 flex flex-col items-center justify-center text-center pointer-events-none">
-            <span className="text-xl sm:text-2xl font-bold text-textPrimary whitespace-nowrap">
-              {total}
-            </span>
-            <span className="text-[10px] sm:text-xs text-textSecondary whitespace-nowrap">
-              Total
-            </span>
+          {/* Center Total */}
+          <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+            <span className="text-xs text-gray-500">Total</span>
+            <span className="text-base font-bold">{total}</span>
           </div>
         </div>
 
-        <div className="w-full md:w-1/2 flex flex-col justify-center space-y-3 mt-2 md:mt-0 min-w-0">
-
-          {data.map((item, i) => (
-            <div
-              key={i}
-              className="flex items-center justify-between gap-2"
-            >
-
-              <div className="flex items-center gap-2 flex-1 min-w-0">
+      
+        <div className="w-full md:w-[45%] flex flex-col gap-2 text-sm">
+          {data.map((item, idx) => (
+            <div key={idx} className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
                 <span
-                  className="w-2 h-2 rounded-full shrink-0"
-                  style={{ backgroundColor: item.color }}
-                />
-
-                <span className="text-xs sm:text-sm text-textPrimary whitespace-nowrap truncate">
-                  {item.name}
-                </span>
+                  className="w-3 h-3 rounded-full"
+                  style={{ background: item.color }}
+                ></span>
+                <span>{item.name}</span>
               </div>
-
-              <span className="text-xs sm:text-sm font-medium text-textPrimary shrink-0 whitespace-nowrap">
-                {item.value}
-              </span>
-
+              <span className="font-medium">{item.value}</span>
             </div>
           ))}
-
         </div>
 
       </div>

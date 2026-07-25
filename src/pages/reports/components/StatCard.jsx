@@ -6,18 +6,11 @@ export default function StatCard({
   value,
   current = 0,
   lastWeek = 0,
+  percentage = 0, // ✅ ADD
   icon: Icon,
   iconBg,
   iconColor,
 }) {
-  let percentage = 0;
-
-  if (lastWeek > 0) {
-    percentage = ((current - lastWeek) / lastWeek) * 100;
-  } else if (current > 0) {
-    percentage = 100;
-  }
-
   const isUp = percentage >= 0;
 
   return (
@@ -47,25 +40,23 @@ export default function StatCard({
         </h2>
       </div>
 
-      <div
-        className={`
-          flex items-center gap-1 sm:gap-2 
-          text-xs sm:text-sm font-medium
-          ${isUp ? "text-success" : "text-danger"}
-        `}
-      >
-        {isUp ? (
-          <ArrowUp className="w-3 h-3 sm:w-4 sm:h-4" />
-        ) : (
-          <ArrowDown className="w-3 h-3 sm:w-4 sm:h-4" />
-        )}
+   <div
+  className={`
+    flex items-center gap-1 
+    text-[10px] sm:text-xs font-normal
+    ${isUp ? "text-success" : "text-danger"}
+  `}
+>
+  {isUp ? (
+    <ArrowUp className="w-3 h-3 sm:w-4 sm:h-4" />
+  ) : (
+    <ArrowDown className="w-3 h-3 sm:w-4 sm:h-4" />
+  )}
 
-        <span>{Math.abs(percentage).toFixed(1)}%</span>
-
-        <span className="text-textSecondary font-normal">
-          Last 7 days
-        </span>
-      </div>
+  <span>
+    {Math.abs(percentage).toFixed(1)}% {isUp ? "growth" : "decline"} · Last 7 days
+  </span>
+</div>
     </div>
   );
 }

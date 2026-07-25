@@ -1,14 +1,9 @@
 import React from "react";
 import { Users, DollarSign, Calendar, AlertCircle } from "lucide-react";
 
-const StatCard = ({ title, value, previousValue = 0, icon, color }) => {
+const StatCard = ({ title, value, percentage = 0, icon, color }) => {
   const current = Number(value) || 0;
-  const prev = Number(previousValue) || 0;
-
-  let change = 0;
-  if (prev > 0) {
-    change = ((current - prev) / prev) * 100;
-  }
+  const change = Number(percentage) || 0;
 
   const isPositive = change >= 0;
 
@@ -38,16 +33,9 @@ const StatCard = ({ title, value, previousValue = 0, icon, color }) => {
   const Icon = icons[icon] || Users;
 
   return (
-    <div className="
-      bg-surface border border-border rounded-xl p-4 sm:p-5
-      shadow-card hover:shadow-md transition w-full
-    ">
+    <div className="bg-surface border border-border rounded-xl p-4 sm:p-5 shadow-card hover:shadow-md transition w-full">
 
-      <div className="
-        flex items-center gap-3
-        flex-col sm:flex-row
-        text-center
-      ">
+      <div className="flex items-center gap-3 flex-col sm:flex-row text-center sm:text-left">
         <div className={`w-10 h-10 flex items-center justify-center rounded-full ${selectedColor}`}>
           <Icon size={18} />
         </div>
@@ -57,20 +45,15 @@ const StatCard = ({ title, value, previousValue = 0, icon, color }) => {
         </p>
       </div>
 
-      <div className="flex justify-center mt-4">
-        <h3 className="text-lg sm:text-xl font-semibold text-textPrimary text-center">
+      <div className="flex justify-center sm:justify-start mt-4">
+        <h3 className="text-lg sm:text-xl font-semibold text-textPrimary">
           {formatValue()}
         </h3>
       </div>
 
-      <p
-        className={`
-          text-sm mt-2 font-medium text-center
-          ${isPositive ? "text-success" : "text-danger"}
-        `}
-      >
+      <p className={`text-sm mt-2 font-medium flex justify-center sm:justify-start ${isPositive ? "text-success" : "text-danger"}`}>
         {isPositive ? "↑" : "↓"} {Math.abs(change).toFixed(1)}%
-        <span className="text-textSecondary font-normal ml-1">
+        <span className="text-textSecondary ml-1">
           Last 7 days
         </span>
       </p>

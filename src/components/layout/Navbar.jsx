@@ -1,21 +1,28 @@
+import { useState, useEffect, useRef } from "react";
 import { Menu, Bell } from "lucide-react";
 import { useLocation } from "react-router-dom";
 import { useUIStore } from "../../store/uiStore";
+import { useNotificationStore } from "../../store/notificationStore";
+import NotificationDropdown from "../notifications/NotificationDropdown";
 import Button from "../ui/Button";
 
 export default function Navbar() {
-  const notifications =
-    useUIStore((state) => state.notifications) || [];
-
   const toggleSidebar = useUIStore((state) => state.toggleSidebar);
   const location = useLocation();
 
+  const { notifications, fetchNotifications } = useNotificationStore();
   const unreadCount = notifications.filter((n) => !n.read).length;
+
+  const [showDropdown, setShowDropdown] = useState(false);
+  const bellRef = useRef(null);
+
+  useEffect(() => {
+    fetchNotifications();
+  }, []);
 
   const routeConfig = {
     "/": {
       title: "Dashboard Overview",
-      showNotification: true,
     },
     "/customers": {
       title: "Customers Directory",
@@ -92,8 +99,12 @@ export default function Navbar() {
 
         {page.action}
 
-        {page.showNotification && (
-          <div className="relative cursor-pointer flex-shrink-0">
+        <div className="relative">
+          <button
+            ref={bellRef}
+            onClick={() => setShowDropdown((v) => !v)}
+            className="relative cursor-pointer flex-shrink-0"
+          >
             <Bell size={20} className="text-textSecondary" />
 
             {unreadCount > 0 && (
@@ -101,8 +112,15 @@ export default function Navbar() {
                 {unreadCount}
               </span>
             )}
-          </div>
-        )}
+          </button>
+
+          {showDropdown && (
+            <NotificationDropdown
+              anchorEl={bellRef}
+              onClose={() => setShowDropdown(false)}
+            />
+          )}
+        </div>
 
       </div>
     </header>
