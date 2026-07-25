@@ -408,7 +408,7 @@ onClick={async (e) => {
     await onResolve(complaint.id);
   }
 
-  onClose(); /
+  onClose(); 
 }}
 >
 <CheckCircle2 size={16}/>
