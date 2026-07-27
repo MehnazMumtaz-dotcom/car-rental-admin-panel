@@ -3,13 +3,17 @@ import { useAuthStore } from "../store/authStore";
 
 let isRedirectingToLogin = false;
 
+const BASE_URL =
+  import.meta.env.MODE === "development"
+    ? import.meta.env.VITE_LOCAL_API_URL
+    : import.meta.env.VITE_API_URL;
+
 const api = axios.create({
-  baseURL: "http://localhost:3000",
+  baseURL: BASE_URL,
   headers: {
     "Content-Type": "application/json",
   },
 });
-
 api.interceptors.request.use(
   (config) => {
     const token = useAuthStore.getState().token;
