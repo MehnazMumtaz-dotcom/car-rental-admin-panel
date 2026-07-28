@@ -7,7 +7,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { AlertCircle } from "lucide-react";
-import axios from "axios";
+import api from "../../services/api";
 
 const COLORS = {
   onTrack: "#22c55e",
@@ -23,8 +23,8 @@ const ComplaintChart = () => {
   useEffect(() => {
     const fetchComplaintSummary = async () => {
       try {
-        const res = await axios.get(
-          "http://localhost:3000/dashboard/complaint-summary"
+        const res = await api.get(
+          "/dashboard/complaint-summary"
         );
 
         const chartData = [
@@ -87,14 +87,12 @@ const ComplaintChart = () => {
             </PieChart>
           </ResponsiveContainer>
 
-          {/* Center Total */}
           <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
             <span className="text-xs text-gray-500">Total</span>
             <span className="text-base font-bold">{total}</span>
           </div>
         </div>
 
-      
         <div className="w-full md:w-[45%] flex flex-col gap-2 text-sm">
           {data.map((item, idx) => (
             <div key={idx} className="flex items-center justify-between">

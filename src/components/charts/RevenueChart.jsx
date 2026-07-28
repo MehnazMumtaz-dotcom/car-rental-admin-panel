@@ -9,7 +9,7 @@ import {
   Area,
   CartesianGrid,
 } from "recharts";
-import axios from "axios";
+import api from "../../services/api";
 
 const RevenueChart = () => {
   const [isWeek, setIsWeek] = useState(true);
@@ -20,8 +20,8 @@ const RevenueChart = () => {
       try {
         const type = isWeek ? "week" : "month";
 
-        const res = await axios.get(
-          `http://localhost:3000/dashboard/revenue-trend?type=${type}`
+        const res = await api.get(
+          `/dashboard/revenue-trend?type=${type}`
         );
 
         console.log("Revenue Trend:", res.data);

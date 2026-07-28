@@ -10,7 +10,7 @@ import {
   CartesianGrid,
 } from "recharts";
 import { FiCalendar } from "react-icons/fi";
-import axios from "axios";
+import api from "../../services/api";
 
 const BookingChart = () => {
   const [isWeek, setIsWeek] = useState(true);
@@ -21,8 +21,8 @@ const BookingChart = () => {
       try {
         const type = isWeek ? "week" : "month";
 
-        const res = await axios.get(
-          `http://localhost:3000/dashboard/booking-trend?type=${type}`
+        const res = await api.get(
+          `/dashboard/booking-trend?type=${type}`
         );
 
         console.log("Booking Trend:", res.data);

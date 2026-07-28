@@ -1,7 +1,12 @@
 import { create } from "zustand";
 import { useAuthStore } from "./authStore";
 
-const API = "http://localhost:3000/customers";
+const BASE_URL =
+  import.meta.env.MODE === "development"
+    ? import.meta.env.VITE_LOCAL_API_URL
+    : import.meta.env.VITE_API_URL;
+
+const API = `${BASE_URL}/customers`;
 
 export const useCustomerStore = create((set) => ({
 
