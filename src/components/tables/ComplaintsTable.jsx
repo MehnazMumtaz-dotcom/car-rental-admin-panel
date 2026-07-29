@@ -60,18 +60,17 @@ const ComplaintsTable = ({ data = [], onRowClick }) => {
 
     return data
 
-     
       .filter((c) => c.status !== "RESOLVED")
 
       .map((c) => {
-        
+
         const status = mapBackendStatus(c.status, c.timeLeft);
 
         return {
           ...c,
           status,
           customer:
-            c.customer || 
+            c.customer ||
             c.customerName ||
             c.booking?.customerName ||
             "N/A",
@@ -81,8 +80,6 @@ const ComplaintsTable = ({ data = [], onRowClick }) => {
           timeText: formatTime(c.timeLeft),
         };
       });
-
-     
 
   }, [data]);
 
@@ -109,16 +106,24 @@ const ComplaintsTable = ({ data = [], onRowClick }) => {
 
       </div>
 
-      <div className="w-full">
+      <div className="w-full overflow-x-auto">
 
-        <table className="w-full table-fixed text-[10px] sm:text-xs md:text-sm">
+        <table className="w-full table-fixed text-[10px] sm:text-xs md:text-sm border-collapse">
+
+          <colgroup>
+            <col className="w-[12%]" />
+            <col className="w-[26%]" />
+            <col className="hidden md:table-column md:w-[22%]" />
+            <col className="hidden sm:table-column sm:w-[22%]" />
+            <col className="w-[18%]" />
+          </colgroup>
 
           <thead className="text-textSecondary text-left">
             <tr className="border-b border-borderColor">
-              <th className="pb-2">ID</th>
-              <th className="pb-2">Customer</th>
-              <th className="pb-2 hidden md:table-cell">Category</th>
-              <th className="pb-2 hidden sm:table-cell">Time Left</th>
+              <th className="pb-2 pr-2">ID</th>
+              <th className="pb-2 pr-2">Customer</th>
+              <th className="pb-2 pr-2 hidden md:table-cell">Category</th>
+              <th className="pb-2 pr-2 hidden sm:table-cell">Time Left</th>
               <th className="pb-2 text-right">Status</th>
             </tr>
           </thead>
@@ -133,26 +138,29 @@ const ComplaintsTable = ({ data = [], onRowClick }) => {
                 className="border-b border-borderColor cursor-pointer hover:bg-background"
               >
 
-                <td className="py-2 truncate">
+                <td className="py-2.5 pr-2 truncate">
                   #{item.id}
                 </td>
 
-                <td className="truncate">
+                <td className="py-2.5 pr-2 truncate" title={item.customer}>
                   {item.customer}
                 </td>
 
-                <td className="hidden md:table-cell text-textSecondary">
+                <td className="py-2.5 pr-2 hidden md:table-cell truncate text-textSecondary" title={item.category}>
                   {item.category}
                 </td>
 
-               
-                <td className="hidden sm:table-cell text-warning font-medium whitespace-nowrap">
-                  ⏱ {item.timeText}
+                <td className="py-2.5 pr-2 hidden sm:table-cell text-warning font-medium whitespace-nowrap">
+                  <span className="inline-flex items-center gap-1">
+                    <span>⏱</span>
+                    <span>{item.timeText}</span>
+                  </span>
                 </td>
 
-                <td className="text-right">
+                <td className="py-2.5 text-right">
                   <span
                     className={`
+                      inline-block whitespace-nowrap
                       px-2 py-[2px]
                       rounded-full
                       text-[9px]
