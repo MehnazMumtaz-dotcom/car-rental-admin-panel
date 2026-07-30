@@ -11,7 +11,10 @@ export const PERMISSIONS = [
   { key: "configPanel", label: "Config Panel" },
   { key: "reports", label: "Reports" },
   { key: "subAdmins", label: "Sub-Admins" },
-  { key: "auditLog", label: "Audit Log" },
+  // "auditLog" ko alag permission ke tor per hata diya — requirement doc ke
+  // mutabiq Audit Log, Sub-Admin Management module ka hi hissa hai, alag nahi.
+  // Jis sub-admin ko "subAdmins" permission milegi, usay Audit Log bhi
+  // automatically dikhegi.
 ];
 
 
