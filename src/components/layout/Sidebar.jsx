@@ -74,17 +74,33 @@ export default function Sidebar() {
       setSidebarOpen(false);
     }
   };
+const permissionMap = {
+  "/complaints": "complaints",
+  "/bookings": "bookingCalendar",
+  "/customers": "customers",
+  "/subadmins": "subAdmins",
+  "/config": "configPanel",
+  "/reports": "reports",
+};
 
-  const menuItems = [
-    { icon: LayoutDashboard, text: "Dashboard", path: "/" },
-    { icon: AlertCircle, text: "Complaints", path: "/complaints" },
-    { icon: Calendar, text: "Booking Calendar", path: "/bookings" },
-    { icon: Users, text: "Customers", path: "/customers" },
-    { icon: UserCog, text: "Sub Admins", path: "/subadmins" },
-    { icon: Settings, text: "Config Panel", path: "/config" },
-    { icon: BarChart3, text: "Reports", path: "/reports" },
-  ];
+const allMenuItems = [
+  { icon: LayoutDashboard, text: "Dashboard", path: "/" },
+  { icon: AlertCircle, text: "Complaints", path: "/complaints" },
+  { icon: Calendar, text: "Booking Calendar", path: "/bookings" },
+  { icon: Users, text: "Customers", path: "/customers" },
+  { icon: UserCog, text: "Sub Admins", path: "/subadmins" },
+  { icon: Settings, text: "Config Panel", path: "/config" },
+  { icon: BarChart3, text: "Reports", path: "/reports" },
+];
 
+const menuItems =
+  user?.role === "ADMIN"
+    ? allMenuItems
+    : allMenuItems.filter((item) =>
+        item.path === "/" ||
+        (user?.permissions || []).includes(permissionMap[item.path])
+      );
+ 
   return (
     <>
       {sidebarOpen && (
