@@ -12,9 +12,9 @@ import { useAuthStore } from "../../store/authStore";
 import {
   useFetchCustomers,
   useCreateCustomer,
-  useUpdateCustomerStatus,
+  useUpdateCustomerPatch,
   useDeleteCustomer,
-} from "../../hooks/useCustomerHooks";
+} from "../../hooks/useCustomers";
 import { Eye, Pencil, Trash2 } from "lucide-react";
 
 export default function CustomerPage() {
@@ -24,7 +24,7 @@ export default function CustomerPage() {
 
   const { fetchCustomers } = useFetchCustomers();
   const { create } = useCreateCustomer();
-  const { update } = useUpdateCustomerStatus();
+  const { update } = useUpdateCustomerPatch();
   const { remove } = useDeleteCustomer();
 
   const companyId = useAuthStore(
@@ -101,7 +101,7 @@ export default function CustomerPage() {
 
   const handleStatusChange = async (id, newStatus) => {
     try {
-      await update(id, newStatus);
+      await update(id, { status: newStatus });
 
       setSelectedCustomer((prev) =>
         prev?.id === id ? { ...prev, status: newStatus } : prev
