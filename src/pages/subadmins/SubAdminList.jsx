@@ -98,7 +98,6 @@ export default function SubAdminList() {
 
 
 
-
   const filtered = useMemo(() => {
 
 
@@ -120,7 +119,6 @@ export default function SubAdminList() {
 
 
 
-
       const matchesStatus =
 
         statusFilter
@@ -129,7 +127,6 @@ export default function SubAdminList() {
             statusFilter.toLowerCase()
 
           : true;
-
 
 
 
@@ -181,7 +178,6 @@ export default function SubAdminList() {
 
 
 
-
   const toggleStatus = async(admin)=>{
 
 
@@ -201,7 +197,6 @@ export default function SubAdminList() {
 
 
 
-
     if(
       !window.confirm(
         `Change status to ${newStatus}?`
@@ -209,7 +204,6 @@ export default function SubAdminList() {
     )
 
       return;
-
 
 
 
@@ -230,7 +224,6 @@ export default function SubAdminList() {
 
 
   };
-
 
 
 
@@ -261,12 +254,10 @@ export default function SubAdminList() {
     await fetchSubAdmins();
 
 
-
     setEditingAdmin(null);
 
 
   };
-
 
 
 
@@ -326,11 +317,6 @@ export default function SubAdminList() {
 
 
 
-
-
-
-
-
   if(loading){
 
     return (
@@ -356,7 +342,6 @@ export default function SubAdminList() {
   return (
 
     <div className="bg-surface rounded-xl shadow-card border border-borderColor p-4 sm:p-5">
-
 
 
 
@@ -388,7 +373,6 @@ export default function SubAdminList() {
 
 
 
-
         <div className="flex flex-col sm:flex-row gap-2">
 
 
@@ -407,7 +391,6 @@ export default function SubAdminList() {
             }}
 
           />
-
 
 
 
@@ -450,224 +433,263 @@ export default function SubAdminList() {
 
         </div>
 
+      </div>
+
+
+
+
+      {/* DESKTOP TABLE — sirf md aur usse bari screens per dikhega */}
+      <div className="hidden md:block overflow-x-auto">
+
+        <table className="w-full text-sm">
+
+
+          <thead>
+
+            <tr className="border-b border-borderColor text-left">
+
+              <th className="py-2">#</th>
+
+              <th className="py-2">Name</th>
+
+              <th className="py-2">Email</th>
+
+              <th className="py-2">Status</th>
+
+              <th className="py-2">Actions</th>
+
+            </tr>
+
+          </thead>
+
+
+
+
+          <tbody>
+
+          {paginated.map((admin,index)=>(
+
+
+            <tr
+
+              key={admin.id || index}
+
+              className="border-b border-borderColor"
+
+            >
+
+
+              <td className="py-3">
+
+                {
+                  (currentPage-1)*PAGE_SIZE
+                  +
+                  index
+                  +
+                  1
+                }
+
+              </td>
+
+
+
+
+              <td className="py-3">
+
+
+                <div className="flex items-center gap-2">
+
+
+                  <span className="w-7 h-7 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs shrink-0">
+
+                    {initials(admin.name)}
+
+                  </span>
+
+
+                  <span className="truncate">{admin.name || "N/A"}</span>
+
+
+                </div>
+
+              </td>
+
+
+
+
+              <td className="py-3 text-textSecondary truncate">
+
+                {admin.email || "-"}
+
+              </td>
+
+
+
+
+              <td className="py-3">
+
+
+                <button
+                  onClick={()=>toggleStatus(admin)}
+                >
+
+                  <StatusBadge
+                    status={admin.status}
+                  />
+
+                </button>
+
+
+              </td>
+
+
+
+
+              <td className="py-3">
+
+
+                <div className="flex gap-3">
+
+
+                 <button
+                   onClick={() => {
+                     setEditingAdmin(admin);
+                   }}
+                 >
+
+                    <Edit2 size={16}/>
+
+                  </button>
+
+
+
+
+                  <button
+
+                    onClick={()=>
+                      handleDeleteClick(admin.id)
+                    }
+
+                    className="text-danger"
+
+                  >
+
+                    <Trash2 size={16}/>
+
+                  </button>
+
+
+                </div>
+
+              </td>
+
+
+            </tr>
+
+          ))}
+
+
+
+
+          {paginated.length===0 && (
+
+            <tr>
+
+              <td
+
+                colSpan="5"
+
+                className="text-center py-4 text-textSecondary"
+
+              >
+
+                No sub-admins found
+
+              </td>
+
+            </tr>
+
+          )}
+
+
+          </tbody>
+
+        </table>
 
       </div>
 
 
 
 
+      {/* MOBILE CARD LIST — sirf md se choti screens per dikhega */}
+      <div className="md:hidden space-y-3">
 
+        {paginated.map((admin, index) => (
 
-
-
-
-
-      {/* TABLE */}
-
-      <table className="w-full text-sm">
-
-
-        <thead>
-
-          <tr className="border-b border-borderColor text-left">
-
-            <th className="py-2">#</th>
-
-            <th className="py-2">Name</th>
-
-            <th className="py-2">Email</th>
-
-            <th className="py-2">Status</th>
-
-            <th className="py-2">Actions</th>
-
-
-          </tr>
-
-        </thead>
-
-
-
-
-
-        <tbody>
-
-
-        {paginated.map((admin,index)=>(
-
-
-          <tr
-
+          <div
             key={admin.id || index}
-
-            className="border-b border-borderColor"
-
+            className="border border-borderColor rounded-xl p-3"
           >
 
+            <div className="flex items-start justify-between gap-2 mb-2">
 
+              <div className="flex items-center gap-2 min-w-0">
 
-            <td className="py-3">
-
-              {
-                (currentPage-1)*PAGE_SIZE
-                +
-                index
-                +
-                1
-              }
-
-            </td>
-
-
-
-
-
-            <td className="py-3">
-
-
-              <div className="flex items-center gap-2">
-
-
-                <span className="w-7 h-7 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs">
-
+                <span className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs shrink-0">
                   {initials(admin.name)}
-
                 </span>
 
-
-
-                {admin.name || "N/A"}
-
+                <div className="min-w-0">
+                  <p className="font-semibold text-textPrimary truncate">
+                    {admin.name || "N/A"}
+                  </p>
+                  <p className="text-xs text-textSecondary truncate">
+                    {admin.email || "-"}
+                  </p>
+                </div>
 
               </div>
 
+              <span className="text-xs text-textSecondary shrink-0">
+                #{(currentPage - 1) * PAGE_SIZE + index + 1}
+              </span>
 
-            </td>
+            </div>
 
+            <div className="flex items-center justify-between mt-3">
 
-
-
-
-
-            <td className="py-3 text-textSecondary">
-
-              {admin.email || "-"}
-
-            </td>
-
-
-
-
-
-
-            <td className="py-3">
-
-
-              <button
-                onClick={()=>toggleStatus(admin)}
-              >
-
-                <StatusBadge
-                  status={admin.status}
-                />
-
+              <button onClick={() => toggleStatus(admin)}>
+                <StatusBadge status={admin.status} />
               </button>
 
+              <div className="flex gap-4">
 
-            </td>
-
-
-
-
-
-
-
-
-            <td className="py-3">
-
-
-              <div className="flex gap-3">
-
-
-               <button 
- onClick={() => {
-   setEditingAdmin(admin);
- }}
->
-
-                  <Edit2 size={16}/>
-
+                <button onClick={() => setEditingAdmin(admin)}>
+                  <Edit2 size={18} />
                 </button>
-
-
-
-
 
                 <button
-
-                  onClick={()=>
-                    handleDeleteClick(admin.id)
-                  }
-
+                  onClick={() => handleDeleteClick(admin.id)}
                   className="text-danger"
-
                 >
-
-                  <Trash2 size={16}/>
-
+                  <Trash2 size={18} />
                 </button>
-
-
 
               </div>
 
+            </div>
 
-            </td>
-
-
-
-          </tr>
-
+          </div>
 
         ))}
 
-
-
-
-
-
-        {paginated.length===0 && (
-
-          <tr>
-
-            <td
-
-              colSpan="5"
-
-              className="text-center py-4 text-textSecondary"
-
-            >
-
-              No sub-admins found
-
-            </td>
-
-          </tr>
-
+        {paginated.length === 0 && (
+          <p className="text-center py-4 text-textSecondary text-sm">
+            No sub-admins found
+          </p>
         )}
 
-
-
-        </tbody>
-
-
-      </table>
-
-
-
-
-
-
+      </div>
 
 
 
@@ -682,7 +704,6 @@ export default function SubAdminList() {
           Page {currentPage} of {totalPages}
 
         </span>
-
 
 
 
@@ -707,7 +728,6 @@ export default function SubAdminList() {
             Prev
 
           </button>
-
 
 
 
@@ -738,9 +758,7 @@ export default function SubAdminList() {
 
         </div>
 
-
       </div>
-
 
 
 
@@ -760,7 +778,6 @@ export default function SubAdminList() {
         onSave={handleSaveEdit}
 
       />
-
 
 
 

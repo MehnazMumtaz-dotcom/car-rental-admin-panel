@@ -9,18 +9,27 @@ import DataTable from "../../components/tables/DataTable";
 import ConfirmDialog from "../../components/ui/ConfirmDialog";
 import { useCustomerStore } from "../../store/CustomerStore";
 import { useAuthStore } from "../../store/authStore";
+import {
+  useFetchCustomers,
+  useCreateCustomer,
+  useUpdateCustomerStatus,
+  useDeleteCustomer,
+} from "../../hooks/useCustomerHooks";
 import { Eye, Pencil, Trash2 } from "lucide-react";
 
 export default function CustomerPage() {
-const { customers: allCustomers } = useCustomerStore();
-  const addCustomer = useCustomerStore((s) => s.addCustomer);
-  const updateCustomerStatus = useCustomerStore((s) => s.updateCustomerStatus);
-  const deleteCustomer = useCustomerStore((s) => s.deleteCustomer);
-  const fetchCustomers = useCustomerStore((s) => s.fetchCustomers);
+  const { customers: allCustomers } = useCustomerStore();
+  const loading = useCustomerStore((s) => s.loading);
+  const error = useCustomerStore((s) => s.error);
 
- const companyId = useAuthStore(
-  (s) => s.user?.companyId || s.user?.company_id
-);
+  const { fetchCustomers } = useFetchCustomers();
+  const { create } = useCreateCustomer();
+  const { update } = useUpdateCustomerStatus();
+  const { remove } = useDeleteCustomer();
+
+  const companyId = useAuthStore(
+    (s) => s.user?.companyId || s.user?.company_id
+  );
   const adminCity = useAuthStore((s) => s.user?.city);
 
   const [selectedCustomer, setSelectedCustomer] = useState(null);
@@ -33,31 +42,31 @@ const { customers: allCustomers } = useCustomerStore();
   const [showConfirm, setShowConfirm] = useState(false);
   const [deleteRow, setDeleteRow] = useState(null);
 
-  
- useEffect(() => {
-  if (companyId) {
-    fetchCustomers();
-  }
-}, [companyId]);
-console.log("Customers:", allCustomers);
- const cityCustomers = useMemo(
-  () => allCustomers,
-  [allCustomers]
-);
+
+  useEffect(() => {
+    if (companyId) {
+      fetchCustomers();
+    }
+  }, [companyId]);
+
+  const cityCustomers = useMemo(
+    () => allCustomers,
+    [allCustomers]
+  );
 
   const searchValue = searchQuery.trim().toLowerCase();
 
-const filteredCustomers = cityCustomers.filter((c) => {
-  return (
-    (!searchValue ||
-      c.name?.toLowerCase().includes(searchValue) ||
-      c.phone?.includes(searchValue) ||
-      c.email?.toLowerCase().includes(searchValue)) &&
+  const filteredCustomers = cityCustomers.filter((c) => {
+    return (
+      (!searchValue ||
+        c.name?.toLowerCase().includes(searchValue) ||
+        c.phone?.includes(searchValue) ||
+        c.email?.toLowerCase().includes(searchValue)) &&
 
-    (!statusFilter ||
-      c.status === statusFilter.toUpperCase())
-  );
-});
+      (!statusFilter ||
+        c.status === statusFilter.toUpperCase())
+    );
+  });
 
   const handleRowClick = (customer) => {
     setSelectedCustomer(customer);
@@ -76,44 +85,49 @@ const filteredCustomers = cityCustomers.filter((c) => {
       window.removeEventListener("openWalkInCustomer", openWalkInCustomer);
   }, []);
 
-  const handleAddCustomer = (data) => {
-    addCustomer({
-      name: data.name,
-      phone: data.phone,
-      email: data.email || "-",
-      companyId: Number(companyId),
-    });
-    setIsModalOpen(false);
+  const handleAddCustomer = async (data) => {
+    try {
+      await create({
+        name: data.name,
+        phone: data.phone,
+        email: data.email || "-",
+        companyId: Number(companyId),
+      });
+      setIsModalOpen(false);
+    } catch (err) {
+      console.error("Add customer failed:", err);
+    }
   };
 
-  const handleStatusChange = (id, newStatus) => {
-    updateCustomerStatus(id, newStatus);
+  const handleStatusChange = async (id, newStatus) => {
+    try {
+      await update(id, newStatus);
 
-    setSelectedCustomer((prev) =>
-      prev?.id === id ? { ...prev, status: newStatus } : prev
-    );
+      setSelectedCustomer((prev) =>
+        prev?.id === id ? { ...prev, status: newStatus } : prev
+      );
+    } catch (err) {
+      console.error("Status change failed:", err);
+    }
   };
 
- const confirmDelete = async () => {
-  if (!deleteRow) return;
+  const confirmDelete = async () => {
+    if (!deleteRow) return;
 
-  try {
-    await deleteCustomer(deleteRow.id); 
+    try {
+      await remove(deleteRow.id);
 
-if(companyId){
-  await fetchCustomers();
-}
-    setSelectedCustomer((prev) =>
-      prev?.id === deleteRow.id ? null : prev
-    );
+      setSelectedCustomer((prev) =>
+        prev?.id === deleteRow.id ? null : prev
+      );
 
-    setIsDrawerOpen(false);
-    setShowConfirm(false);
-    setDeleteRow(null);
-  } catch (error) {
-    console.error("Delete failed:", error);
-  }
-};
+      setIsDrawerOpen(false);
+      setShowConfirm(false);
+      setDeleteRow(null);
+    } catch (error) {
+      console.error("Delete failed:", error);
+    }
+  };
 
   const cancelDelete = () => {
     setShowConfirm(false);
@@ -180,22 +194,22 @@ if(companyId){
       width: "12%",
       cell: (row) => <StatusBadge status={row.status} />,
     },
- {
-  header: "Joined",
-  width: "12%",
-  cell: (row) => {
-    if (!row.createdAt) return "-";
+    {
+      header: "Joined",
+      width: "12%",
+      cell: (row) => {
+        if (!row.createdAt) return "-";
 
-    const date = new Date(row.createdAt);
-    const formatted = date.toLocaleDateString("en-GB"); 
+        const date = new Date(row.createdAt);
+        const formatted = date.toLocaleDateString("en-GB");
 
-    return (
-      <span className="whitespace-nowrap">
-        {formatted}
-      </span>
-    );
-  },
-},
+        return (
+          <span className="whitespace-nowrap">
+            {formatted}
+          </span>
+        );
+      },
+    },
     {
       header: "Actions",
       width: "12%",
@@ -232,6 +246,12 @@ if(companyId){
     <div className="bg-background min-h-screen p-4 md:p-6 w-full">
       <div className="bg-surface rounded-xl shadow-card p-5 md:p-6 w-full min-w-0">
 
+        {error && (
+          <div className="mb-4 p-3 rounded-lg bg-danger/10 text-danger text-sm">
+            {error}
+          </div>
+        )}
+
         <div className="flex flex-wrap md:flex-nowrap gap-4 mb-6">
           <SearchInput
             value={searchQuery}
@@ -239,28 +259,34 @@ if(companyId){
             placeholder="Search by name or email"
           />
 
-<Select
-  value={statusFilter}
-  onChange={setStatusFilter}
-  placeholder="All Status"
-  options={[
-    { label: "All Status", value: "" },
-    { label: "Active", value: "active" },
-    { label: "Suspended", value: "suspended" },
-    { label: "Flagged", value: "flagged" },
-  ]}
-/>
+          <Select
+            value={statusFilter}
+            onChange={setStatusFilter}
+            placeholder="All Status"
+            options={[
+              { label: "All Status", value: "" },
+              { label: "Active", value: "active" },
+              { label: "Suspended", value: "suspended" },
+              { label: "Flagged", value: "flagged" },
+            ]}
+          />
 
           <Button onClick={resetFilters}>Reset</Button>
         </div>
 
         <div className="w-full overflow-x-auto lg:overflow-visible">
           <div className="min-w-[900px] lg:min-w-0">
-            <DataTable
-  columns={columns}
-  data={filteredCustomers}
-  onRowClick={handleRowClick}
-/>
+            {loading ? (
+              <div className="text-center py-10 text-textSecondary">
+                Loading customers...
+              </div>
+            ) : (
+              <DataTable
+                columns={columns}
+                data={filteredCustomers}
+                onRowClick={handleRowClick}
+              />
+            )}
           </div>
         </div>
 

@@ -1,4 +1,5 @@
 import { useCustomerStore } from "../store/CustomerStore";
+import { useAuthStore } from "../store/authStore";
 import {
   getCustomers,
   createCustomer,
@@ -7,79 +8,143 @@ import {
   deleteCustomer,
 } from "../services/customerService";
 
+function getAuthContext() {
+  const { token, user } = useAuthStore.getState();
+  const companyId = user?.companyId || user?.company_id;
+
+  if (!token || !companyId) {
+    throw new Error("Auth not ready — token ya companyId missing hai");
+  }
+
+  return { token, companyId };
+}
+
 export const useFetchCustomers = () => {
   const setCustomers = useCustomerStore((s) => s.setCustomers);
+  const setLoading = useCustomerStore((s) => s.setLoading);
+  const setError = useCustomerStore((s) => s.setError);
 
-  const fetchCustomers = async (companyId) => {
+  const fetchCustomers = async () => {
     try {
-      const data = await getCustomers(companyId);
-      setCustomers(data);
+      setLoading(true);
+      setError(null);
+
+      const { token, companyId } = getAuthContext();
+      const data = await getCustomers(companyId, token);
+
+      setCustomers(Array.isArray(data) ? data : data?.data || []);
     } catch (err) {
-      console.error("Fetch error:", err);
+      console.error("Fetch customers failed:", err);
+      setError(err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
   return { fetchCustomers };
 };
 
-
 export const useCreateCustomer = () => {
   const addCustomer = useCustomerStore((s) => s.addCustomer);
+  const setLoading = useCustomerStore((s) => s.setLoading);
+  const setError = useCustomerStore((s) => s.setError);
 
-  const create = async (data) => {
+  const create = async (customerData) => {
     try {
-      const newCustomer = await createCustomer(data);
+      setLoading(true);
+      setError(null);
+
+      const { token } = getAuthContext();
+      const newCustomer = await createCustomer(customerData, token);
+
       addCustomer(newCustomer);
+      return newCustomer;
     } catch (err) {
-      console.error("Create error:", err);
+      console.error("Create customer failed:", err);
+      setError(err.message);
+      throw err;
+    } finally {
+      setLoading(false);
     }
   };
 
   return { create };
 };
 
+export const useUpdateCustomerPatch = () => {
+  const updateCustomer = useCustomerStore((s) => s.updateCustomer);
+  const setLoading = useCustomerStore((s) => s.setLoading);
+  const setError = useCustomerStore((s) => s.setError);
+
+  const update = async (id, data) => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const { token, companyId } = getAuthContext();
+      const updated = await updateCustomerPatch(companyId, id, data, token);
+
+      updateCustomer(updated);
+      return updated;
+    } catch (err) {
+      console.error("Patch customer failed:", err);
+      setError(err.message);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { update };
+};
 
 export const useUpdateCustomerPut = () => {
   const updateCustomer = useCustomerStore((s) => s.updateCustomer);
+  const setLoading = useCustomerStore((s) => s.setLoading);
+  const setError = useCustomerStore((s) => s.setError);
 
-  const update = async (companyId, id, data) => {
+  const update = async (id, data) => {
     try {
-      const updated = await updateCustomerPut(companyId, id, data);
+      setLoading(true);
+      setError(null);
+
+      const { token, companyId } = getAuthContext();
+      const updated = await updateCustomerPut(companyId, id, data, token);
+
       updateCustomer(updated);
+      return updated;
     } catch (err) {
-      console.error("PUT error:", err);
+      console.error("Put customer failed:", err);
+      setError(err.message);
+      throw err;
+    } finally {
+      setLoading(false);
     }
   };
 
   return { update };
 };
-
-
-export const useUpdateCustomerPatch = () => {
-  const updateCustomer = useCustomerStore((s) => s.updateCustomer);
-
-  const update = async (companyId, id, data) => {
-    try {
-      const updated = await updateCustomerPatch(companyId, id, data);
-      updateCustomer(updated);
-    } catch (err) {
-      console.error("PATCH error:", err);
-    }
-  };
-
-  return { update };
-};
-
 
 export const useDeleteCustomer = () => {
   const deleteCustomerFromStore = useCustomerStore((s) => s.deleteCustomer);
+  const setLoading = useCustomerStore((s) => s.setLoading);
+  const setError = useCustomerStore((s) => s.setError);
 
-  const remove = async (companyId, id) => {
+  const remove = async (id) => {
     try {
-      await deleteCustomer(companyId, id);
-      deleteCustomerFromStore(companyId, id);
+      setLoading(true);
+      setError(null);
+
+      const { token, companyId } = getAuthContext();
+      await deleteCustomer(companyId, id, token);
+
+      deleteCustomerFromStore(id);
     } catch (err) {
-      console.error("Delete error:", err);
+      console.error("Delete customer failed:", err);
+      setError(err.message);
+      throw err;
+    } finally {
+      setLoading(false);
     }
   };
 

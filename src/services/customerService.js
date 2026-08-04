@@ -1,60 +1,82 @@
-import { create } from "zustand";
+const BASE_URL =
+  import.meta.env.MODE === "development"
+    ? import.meta.env.VITE_LOCAL_API_URL
+    : import.meta.env.VITE_API_URL;
 
-export const useCustomerStore = create((set, get) => ({
+const API = `${BASE_URL}/customers`;
 
+function buildHeaders(token, includeJson = false) {
+  const headers = {
+    Authorization: `Bearer ${token}`,
+  };
 
-  customers: [],
-  selectedCustomer: null,
-  isDrawerOpen: false,
-  loading: false,
+  if (includeJson) {
+    headers["Content-Type"] = "application/json";
+  }
 
-  filters: {
-    search: "",
-    status: "",
-    city: "",
-    type: "",
-  },
+  return headers;
+}
 
-  setFilters: (f) =>
-    set((state) => ({
-      filters: { ...state.filters, ...f },
-    })),
+async function handleResponse(res) {
+  if (!res.ok) {
+    let message = `Request failed (status ${res.status})`;
 
-  openCustomer: (c) =>
-    set({ selectedCustomer: c, isDrawerOpen: true }),
+    try {
+      const errorBody = await res.json();
+      message = errorBody.message || message;
+    } catch {
+      // response body JSON nahi thi, default message hi use hoga
+    }
 
-  closeCustomer: () =>
-    set({ selectedCustomer: null, isDrawerOpen: false }),
+    throw new Error(message);
+  }
 
-  setCustomers: (data) => set({ customers: data }),
+  return res.json();
+}
 
-  setLoading: (val) => set({ loading: val }),
+export async function getCustomers(companyId, token) {
+  const res = await fetch(`${API}/company/${companyId}`, {
+    headers: buildHeaders(token),
+  });
 
-  addCustomer: (customer) =>
-    set((state) => ({
-      customers: [customer, ...state.customers],
-    })),
+  return handleResponse(res);
+}
 
-  updateCustomer: (updatedCustomer) =>
-    set((state) => ({
-      customers: state.customers.map((c) =>
-        c.id === updatedCustomer.id ? updatedCustomer : c
-      ),
-      selectedCustomer:
-        state.selectedCustomer?.id === updatedCustomer.id
-          ? updatedCustomer
-          : state.selectedCustomer,
-    })),
+export async function createCustomer(data, token) {
+  const res = await fetch(API, {
+    method: "POST",
+    headers: buildHeaders(token, true),
+    body: JSON.stringify(data),
+  });
 
-  deleteCustomer: (id) =>
-    set((state) => ({
-      customers: state.customers.filter((c) => c.id !== id),
-      selectedCustomer:
-        state.selectedCustomer?.id === id ? null : state.selectedCustomer,
-    })),
+  return handleResponse(res);
+}
 
-  getCustomerById: (id) => {
-    return get().customers.find((c) => c.id === id);
-  },
+export async function updateCustomerPatch(companyId, id, data, token) {
+  const res = await fetch(`${API}/company/${companyId}/${id}`, {
+    method: "PATCH",
+    headers: buildHeaders(token, true),
+    body: JSON.stringify(data),
+  });
 
-}));
+  return handleResponse(res);
+}
+
+export async function updateCustomerPut(companyId, id, data, token) {
+  const res = await fetch(`${API}/company/${companyId}/${id}`, {
+    method: "PUT",
+    headers: buildHeaders(token, true),
+    body: JSON.stringify(data),
+  });
+
+  return handleResponse(res);
+}
+
+export async function deleteCustomer(companyId, id, token) {
+  const res = await fetch(`${API}/company/${companyId}/${id}`, {
+    method: "DELETE",
+    headers: buildHeaders(token),
+  });
+
+  return handleResponse(res);
+}
