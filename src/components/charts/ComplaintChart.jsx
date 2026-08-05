@@ -61,11 +61,11 @@ const ComplaintChart = () => {
   }, []);
 
   return (
-    <div className="bg-white rounded-2xl shadow p-4 w-full h-[300px] flex flex-col">
-      
+    <div className="bg-surface border border-borderColor rounded-2xl shadow-card p-4 w-full h-[300px] flex flex-col">
+
       <div className="flex items-center gap-2 mb-2">
-        <AlertCircle size={18} />
-        <h2 className="font-semibold text-sm">Complaint Summary</h2>
+        <AlertCircle size={18} className="text-textPrimary" />
+        <h2 className="font-semibold text-sm text-textPrimary">Complaint Summary</h2>
       </div>
 
       <div className="flex flex-col md:flex-row flex-1 items-center justify-between gap-4">
@@ -83,13 +83,23 @@ const ComplaintChart = () => {
                   <Cell key={index} fill={entry.color} />
                 ))}
               </Pie>
-              <Tooltip />
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: "rgb(var(--color-surface))",
+                  border: "1px solid rgb(var(--color-border))",
+                  borderRadius: "0.5rem",
+                  color: "rgb(var(--color-text-primary))",
+                }}
+                itemStyle={{
+                  color: "rgb(var(--color-text-primary))",
+                }}
+              />
             </PieChart>
           </ResponsiveContainer>
 
           <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-            <span className="text-xs text-gray-500">Total</span>
-            <span className="text-base font-bold">{total}</span>
+            <span className="text-xs text-textSecondary">Total</span>
+            <span className="text-base font-bold text-textPrimary">{total}</span>
           </div>
         </div>
 
@@ -101,9 +111,9 @@ const ComplaintChart = () => {
                   className="w-3 h-3 rounded-full"
                   style={{ background: item.color }}
                 ></span>
-                <span>{item.name}</span>
+                <span className="text-textPrimary">{item.name}</span>
               </div>
-              <span className="font-medium">{item.value}</span>
+              <span className="font-medium text-textPrimary">{item.value}</span>
             </div>
           ))}
         </div>
