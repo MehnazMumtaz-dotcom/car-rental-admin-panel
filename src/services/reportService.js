@@ -14,9 +14,9 @@ export const getBookingTrend = async (type) => {
 };
 
 
-export const getRevenueByVehicle = async (type) => {
+export const getRevenueByCity = async (type) => {
   const response = await api.get(
-    `/reports/revenue-by-vehicle?type=${type}`
+    `/reports/revenue-by-city?type=${type}`
   );
 
   return response.data;

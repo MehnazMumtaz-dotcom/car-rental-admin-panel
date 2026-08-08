@@ -3,7 +3,7 @@ import { create } from "zustand";
 import {
   getReportStats,
   getBookingTrend,
-  getRevenueByVehicle,
+  getRevenueByCity,
   getComplaintSummary,
 } from "../services/reportService";
 
@@ -12,7 +12,7 @@ export const useReportStore = create((set) => ({
   
   stats: null,
   bookingTrend: [],
-  revenueByVehicle: [],
+  revenueByCity: [],
   complaintSummary: [],
 
   loading: false,
@@ -31,7 +31,7 @@ fetchReports: async () => {
     const [
       stats,
       bookingTrend,
-      revenueByVehicle,
+      revenueByCity,
       complaintSummary,
     ] = await Promise.all([
 
@@ -39,7 +39,7 @@ fetchReports: async () => {
 
       getBookingTrend("monthly"),
 
-      getRevenueByVehicle(),
+      getRevenueByCity(),
 
       getComplaintSummary(),
 
@@ -52,7 +52,7 @@ fetchReports: async () => {
 
       bookingTrend,
 
-      revenueByVehicle,
+      revenueByCity,
 
       complaintSummary,
 
@@ -76,20 +76,20 @@ fetchReports: async () => {
 
   }
 },
-fetchRevenueByVehicle: async (type) => {
+fetchRevenueByCity: async (type) => {
 
   try {
 
-    const revenueByVehicle = await getRevenueByVehicle(type);
+    const revenueByCity = await getRevenueByCity(type);
 
     set({
-      revenueByVehicle,
+      revenueByCity,
     });
 
 
   } catch (error) {
 
-    console.log("Revenue Vehicle Error:", error);
+    console.log("Revenue City Error:", error);
 
     set({
       error: error.message,
@@ -129,7 +129,7 @@ fetchBookingTrend: async (type) => {
 
       bookingTrend: [],
 
-      revenueByVehicle: [],
+      revenueByCity: [],
 
       complaintSummary: [],
 

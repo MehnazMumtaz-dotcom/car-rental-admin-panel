@@ -1,5 +1,16 @@
 import React, { useState } from "react";
 import { X } from "lucide-react";
+const formatDate = (date) => {
+  if (!date) return "-";
+  return new Date(date).toLocaleDateString();
+};
+
+const bookingStatusStyles = {
+  Upcoming: "text-primary",
+  Ongoing: "text-green-600",
+  Completed: "text-gray-500",
+  Cancelled: "text-rose-600",
+};
 
 export default function CustomerDrawer({
   isOpen,
@@ -16,6 +27,23 @@ export default function CustomerDrawer({
     suspended: "bg-amber-100 text-amber-700 border-amber-200",
     flagged: "bg-rose-100 text-rose-700 border-rose-200",
   };
+
+  const bookingsList = customer.bookingsList || [];
+
+  // Activity feed real data se derive ki jati hai — customer create hone ka
+  // event, aur har booking create hone ka event, date ke hisab se sorted
+  const activityFeed = [
+    {
+      label: "Account Created",
+      date: customer.joined,
+    },
+    ...bookingsList.map((b) => ({
+      label: `Booking #${b.id} Created (${b.vehicleName})`,
+      date: b.createdAt,
+    })),
+  ]
+    .filter((item) => item.date)
+    .sort((a, b) => new Date(b.date) - new Date(a.date));
 
   return (
     <div className="fixed inset-0 z-50 flex bg-black/40">
@@ -65,26 +93,28 @@ export default function CustomerDrawer({
           <div className="p-3 sm:p-4 bg-white border rounded-lg">
             <p className="text-xs text-gray-500">Total Bookings</p>
             <p className="text-base sm:text-lg font-semibold">
-              {customer.bookings}
+              {customer.totalBookings || 0}
             </p>
           </div>
 
           <div className="p-3 sm:p-4 bg-white border rounded-lg">
             <p className="text-xs text-gray-500">Total Spent</p>
             <p className="text-base sm:text-lg font-semibold">
-              Rs {customer.spent?.toLocaleString()}
+             Rs {(customer.totalSpent || 0).toLocaleString()}
             </p>
           </div>
 
           <div className="p-3 sm:p-4 bg-white border rounded-lg">
             <p className="text-xs text-gray-500">Active Bookings</p>
-            <p className="text-base sm:text-lg font-semibold">2</p>
+            <p className="text-base sm:text-lg font-semibold">
+              {customer.activeBookings || 0}
+              </p>
           </div>
 
           <div className="p-3 sm:p-4 bg-white border rounded-lg">
             <p className="text-xs text-gray-500">Last Activity</p>
             <p className="text-sm font-semibold">
-              {customer.lastActivity}
+              {formatDate(customer.lastActivity)}
             </p>
           </div>
 
@@ -119,9 +149,9 @@ export default function CustomerDrawer({
               </div>
 
               <div className="bg-white p-3 sm:p-4 rounded-lg border text-sm">
-                <p><b>Total Bookings:</b> {customer.bookings}</p>
-                <p><b>Total Spent:</b> Rs {customer.spent}</p>
-                <p><b>Joined:</b> {customer.joined}</p>
+               <p><b>Total Bookings:</b> {customer.totalBookings || 0}</p>
+               <p><b>Total Spent:</b> Rs {(customer.totalSpent || 0).toLocaleString()}</p>
+                <p><b>Joined:</b> {formatDate(customer.joined)}</p>
               </div>
 
             </div>
@@ -130,15 +160,32 @@ export default function CustomerDrawer({
           {activeTab === "bookings" && (
             <div className="space-y-3">
 
-              {[1, 2].map((b) => (
+              {bookingsList.length === 0 && (
+                <p className="text-center text-sm text-gray-500 py-6">
+                  No bookings yet.
+                </p>
+              )}
+
+              {bookingsList.map((b) => (
                 <div
-                  key={b}
+                  key={b.id}
                   className="bg-white p-3 sm:p-4 border rounded-lg text-sm"
                 >
-                  <p className="font-semibold">Booking #{b}</p>
-                  <p className="text-gray-500">Toyota Corolla</p>
-                  <p className="text-gray-500">10 Jun - 12 Jun</p>
-                  <p className="text-green-600 font-medium">Active</p>
+                  <p className="font-semibold">Booking #{b.id}</p>
+                  <p className="text-gray-500">{b.vehicleName}</p>
+                  <p className="text-gray-500">
+                    {formatDate(b.startDate)} - {formatDate(b.endDate)}
+                  </p>
+                  <p className="text-gray-700 mt-1">
+                    Rs {(b.totalPrice || 0).toLocaleString()}
+                  </p>
+                  <p
+                    className={`font-medium ${
+                      bookingStatusStyles[b.displayStatus] || "text-gray-500"
+                    }`}
+                  >
+                    {b.displayStatus}
+                  </p>
                 </div>
               ))}
 
@@ -148,17 +195,21 @@ export default function CustomerDrawer({
           {activeTab === "activity" && (
             <div className="space-y-3">
 
-              {[
-                "Account Created",
-                "Booking Created",
-                "Payment Done",
-                "Status Updated",
-              ].map((item, i) => (
+              {activityFeed.length === 0 && (
+                <p className="text-center text-sm text-gray-500 py-6">
+                  No activity yet.
+                </p>
+              )}
+
+              {activityFeed.map((item, i) => (
                 <div
                   key={i}
                   className="bg-white border-l-4 border-blue-500 p-3 text-sm"
                 >
-                  {item}
+                  <p>{item.label}</p>
+                  <p className="text-xs text-gray-500 mt-1">
+                    {formatDate(item.date)}
+                  </p>
                 </div>
               ))}
 

@@ -10,7 +10,7 @@ const RevenueByCityTable = () => {
 
 
   const {
-    revenueByVehicle,
+    revenueByCity,
     fetchReports,
   } = useReportStore();
 
@@ -24,14 +24,14 @@ const RevenueByCityTable = () => {
 
 
 
-  const totalRevenue = revenueByVehicle.reduce(
+  const totalRevenue = revenueByCity.reduce(
   (sum, item) => sum + item.revenue,
   0
 );
 
 const data = [
-  ...revenueByVehicle.map((item) => ({
-    city: item.vehicle,
+  ...revenueByCity.map((item) => ({
+    city: item.city,
     revenue: item.revenue,
     percentage: totalRevenue
       ? ((item.revenue / totalRevenue) * 100).toFixed(1) + "%"
@@ -40,7 +40,7 @@ const data = [
 
     {
       city: "Total",
-      revenue: revenueByVehicle.reduce(
+      revenue: revenueByCity.reduce(
         (sum, item) => sum + item.revenue,
         0
       ),
@@ -65,7 +65,7 @@ const data = [
 
           <BarChart3 size={18} className="text-primary" />
 
-          Revenue by Vehicle
+          Revenue by City
 
         </h3>
 
@@ -96,7 +96,7 @@ const data = [
             <tr className="border-b border-borderColor text-textSecondary text-left">
 
               <th className="py-2 pr-2">
-                Vehicle
+                City
               </th>
 
               <th className="py-2 pr-2">

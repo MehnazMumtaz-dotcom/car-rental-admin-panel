@@ -11,6 +11,7 @@ import { useCustomerStore } from "../../store/CustomerStore";
 import { useAuthStore } from "../../store/authStore";
 import {
   useFetchCustomers,
+  useFetchCustomerById,
   useCreateCustomer,
   useUpdateCustomerPatch,
   useDeleteCustomer,
@@ -23,6 +24,7 @@ export default function CustomerPage() {
   const error = useCustomerStore((s) => s.error);
 
   const { fetchCustomers } = useFetchCustomers();
+  const { fetchById } = useFetchCustomerById();
   const { create } = useCreateCustomer();
   const { update } = useUpdateCustomerPatch();
   const { remove } = useDeleteCustomer();
@@ -68,9 +70,14 @@ export default function CustomerPage() {
     );
   });
 
-  const handleRowClick = (customer) => {
-    setSelectedCustomer(customer);
-    setIsDrawerOpen(true);
+  const handleRowClick = async (customer) => {
+    try {
+      const fullCustomer = await fetchById(customer.id);
+      setSelectedCustomer(fullCustomer);
+      setIsDrawerOpen(true);
+    } catch (err) {
+      console.error("Failed to load customer details:", err);
+    }
   };
 
   const resetFilters = () => {

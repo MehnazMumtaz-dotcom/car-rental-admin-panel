@@ -21,18 +21,17 @@ export default function RevenueByCityChart() {
   const [open, setOpen] = useState(false);
 
 const {
-  revenueByVehicle,
-  fetchRevenueByVehicle,
+  revenueByCity,
+  fetchRevenueByCity,
 } = useReportStore();
 
 useEffect(() => {
-  console.log("Revenue Period:", active);
-  fetchRevenueByVehicle(active);
+  fetchRevenueByCity(active);
 }, [active]);
 
-const data = Array.isArray(revenueByVehicle)
-  ? revenueByVehicle.map((item) => ({
-      city: item.vehicle,
+const data = Array.isArray(revenueByCity)
+  ? revenueByCity.map((item) => ({
+      city: item.city,
       value: item.revenue,
       percentage: 0,
     }))
@@ -50,7 +49,7 @@ const data = Array.isArray(revenueByVehicle)
 
           <BarChart3 size={18} className="text-primary" />
 
-          Revenue by Vehicle
+          Revenue by City
 
         </div>
 

@@ -2,6 +2,7 @@ import { useCustomerStore } from "../store/CustomerStore";
 import { useAuthStore } from "../store/authStore";
 import {
   getCustomers,
+  getCustomerById,
   createCustomer,
   updateCustomerPut,
   updateCustomerPatch,
@@ -42,6 +43,31 @@ export const useFetchCustomers = () => {
   };
 
   return { fetchCustomers };
+};
+
+export const useFetchCustomerById = () => {
+  const setLoading = useCustomerStore((s) => s.setLoading);
+  const setError = useCustomerStore((s) => s.setError);
+
+  const fetchById = async (id) => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const { token } = getAuthContext();
+      const customer = await getCustomerById(id, token);
+
+      return customer;
+    } catch (err) {
+      console.error("Fetch customer by id failed:", err);
+      setError(err.message);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { fetchById };
 };
 
 export const useCreateCustomer = () => {
