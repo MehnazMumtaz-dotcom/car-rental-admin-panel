@@ -1,11 +1,21 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Sidebar from "./Sidebar";
 import Navbar from "./Navbar";
 import { useUIStore } from "../../store/uiStore";
+import { useSocketStore } from "../../store/socketStore";
 import { Outlet } from "react-router-dom";
 
 const DashboardLayout = () => {
   const { sidebarOpen } = useUIStore();
+  const connectSocket = useSocketStore((s) => s.connectSocket);
+  const disconnectSocket = useSocketStore((s) => s.disconnectSocket);
+
+  useEffect(() => {
+    connectSocket();
+    return () => {
+      disconnectSocket();
+    };
+  }, []);
 
   return (
     <div className="flex h-screen overflow-hidden bg-background">
