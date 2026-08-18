@@ -72,12 +72,13 @@ export default function BookingCalendar() {
 
       <div className="flex flex-col flex-1 gap-4">
         <CalendarToolbar
-          view={view}
-          onViewChange={setView}
-          currentDate={currentDate}
-          onDateChange={setCurrentDate}
-          onOpenForm={() => openCreateModal(null)}
-        />
+           view={view}
+           onViewChange={setView}
+           currentDate={currentDate}
+           onDateChange={setCurrentDate}
+           onOpenForm={() => openCreateModal(null)}
+           bookings={bookings}
+/>
 
         <CalendarView
           view={view}

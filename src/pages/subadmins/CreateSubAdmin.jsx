@@ -3,6 +3,7 @@ import { Eye, EyeOff, UserPlus, RotateCcw } from "lucide-react";
 
 import Input from "../../components/ui/Input";
 import Button from "../../components/ui/Button";
+import { useAuthStore } from "../../store/authStore";
 
 
 export default function CreateSubAdmin({
@@ -14,6 +15,9 @@ export default function CreateSubAdmin({
 
   const [showPassword, setShowPassword] = useState(false);
 
+  const companyId = useAuthStore((s) => s.user?.companyId);
+  const companyName = useAuthStore((s) => s.user?.companyName);
+
   const safeData = {
 
     name: formData.name || "",
@@ -22,11 +26,7 @@ export default function CreateSubAdmin({
       formData.email !== "admin@test.com"
         ? formData.email
         : "",
-password: formData.password || "",
-
-
-    companyId:
-      formData.companyId || "",
+    password: formData.password || "",
 
   };
 
@@ -57,10 +57,7 @@ password: formData.password || "",
 
         ...prev,
 
-        [field]:
-          field === "companyId"
-            ? Number(value) || ""
-            : value,
+        [field]: value,
 
       }));
 
@@ -75,6 +72,15 @@ password: formData.password || "",
 
 
   const handleSubmit = () => {
+
+    if(setFormData){
+
+      setFormData((prev)=>({
+        ...prev,
+        companyId,
+      }));
+
+    }
 
     if(onSubmit){
       onSubmit();
@@ -104,7 +110,7 @@ password: formData.password || "",
         name:"",
         email:"",
         password:"",
-        companyId:"",
+        companyId,
 
       });
 
@@ -180,17 +186,16 @@ password: formData.password || "",
 
         <div className="[&_label]:text-blue-600 [&_label]:font-semibold">
 
-          <Input
+          <label className="text-sm text-blue-600 font-semibold block mb-1">
+            Company
+          </label>
 
-            label="Company ID"
-
-            placeholder="Enter company ID"
-
-            value={safeData.companyId}
-
-            onChange={update("companyId")}
-
-          />
+          <div
+            className="w-full px-3 py-2 rounded-xl border border-borderColor bg-background text-textSecondary text-sm"
+            title="Sub-admins are always created under your own company"
+          >
+            {companyName || `Company #${companyId}`}
+          </div>
 
         </div>
 

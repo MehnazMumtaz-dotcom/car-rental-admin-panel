@@ -4,6 +4,7 @@ import { persist } from "zustand/middleware";
 const normalizeUser = (user) => ({
   ...user,
   companyId: user?.companyId || user?.company_id || null,
+  companyName: user?.companyName || null,
 });
 
 export const useAuthStore = create(

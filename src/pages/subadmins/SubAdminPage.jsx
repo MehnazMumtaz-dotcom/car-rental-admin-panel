@@ -93,8 +93,6 @@ export default function SubAdminPage(){
     (state)=>state.fetchSubAdmins
   );
 
-
-  // ✅ FIX: audit logs fetch function
   const fetchAuditLog = useSubAdminStore(
     (state)=>state.fetchAuditLog
   );
@@ -106,27 +104,14 @@ export default function SubAdminPage(){
 
 
 
-  // ==========================
-  // INITIAL LOAD
-  // ==========================
-
   useEffect(()=>{
 
     fetchSubAdmins();
 
-    // ✅ FIX: load audit activity
     fetchAuditLog();
 
   },[]);
 
-
-
-
-
-
-  // ==========================
-  // FILTER SUB ADMINS
-  // ==========================
 
   const subAdmins = useMemo(()=>{
 
@@ -162,14 +147,6 @@ export default function SubAdminPage(){
   },[allSubAdmins,adminCity]);
 
 
-
-
-
-
-
-  // ==========================
-  // STATS
-  // ==========================
 
   const stats = useMemo(()=>{
 
