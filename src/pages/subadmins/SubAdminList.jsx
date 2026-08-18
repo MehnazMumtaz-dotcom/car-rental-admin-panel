@@ -343,11 +343,6 @@ export default function SubAdminList() {
 
     <div className="bg-surface rounded-xl shadow-card border border-borderColor p-4 sm:p-5">
 
-
-
-
-      {/* HEADER */}
-
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-4">
 
 
@@ -435,10 +430,6 @@ export default function SubAdminList() {
 
       </div>
 
-
-
-
-      {/* DESKTOP TABLE — sirf md aur usse bari screens per dikhega */}
       <div className="hidden md:block overflow-x-auto">
 
         <table className="w-full text-sm">
@@ -619,9 +610,6 @@ export default function SubAdminList() {
       </div>
 
 
-
-
-      {/* MOBILE CARD LIST — sirf md se choti screens per dikhega */}
       <div className="md:hidden space-y-3">
 
         {paginated.map((admin, index) => (
@@ -690,11 +678,6 @@ export default function SubAdminList() {
         )}
 
       </div>
-
-
-
-
-      {/* PAGINATION */}
 
       <div className="flex justify-between items-center mt-4 text-sm">
 

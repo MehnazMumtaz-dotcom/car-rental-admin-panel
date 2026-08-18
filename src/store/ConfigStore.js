@@ -30,6 +30,26 @@ export const defaultCompanyConfig = {
   active: true,
 };
 
+function flattenForBackend(companyId, uiConfig) {
+  const c = uiConfig.commission || defaultCompanyConfig.commission;
+  const m = uiConfig.minBooking || defaultCompanyConfig.minBooking;
+  const s = uiConfig.urgentSurcharge || defaultCompanyConfig.urgentSurcharge;
+
+  return {
+    companyId,
+    commissionType: (c.type || "flat").toUpperCase(),
+    flatAmount: Number(c.flatAmount) || 0,
+    percentage: Number(c.percentage) || 0,
+    hybridFlat: Number(c.hybridFlat) || 0,
+    hybridPercentage: Number(c.hybridPercentage) || 0,
+    minBookingEnabled: Boolean(m.enabled),
+    minBookingAmount: Number(m.amount) || 0,
+    urgentSurchargeEnabled: Boolean(s.enabled),
+    urgentSurchargeAmount: Number(s.amount) || 0,
+    active: uiConfig.active ?? true,
+  };
+}
+
 export const useConfigStore = create((set, get) => ({
 
   configs: {},
@@ -55,56 +75,56 @@ export const useConfigStore = create((set, get) => ({
       const res = await getConfig(companyId);
 
       const data = res?.data ?? res;
-   const formattedConfig = {
-  ...defaultCompanyConfig,
-companyName:
-  data.company?.name || `Company ${companyId}`,
-  active: data.active ?? true,
+      const formattedConfig = {
+        ...defaultCompanyConfig,
+        companyName:
+          data.company?.name || `Company ${companyId}`,
+        active: data.active ?? true,
 
-  commission: {
-    enabled: true,
+        commission: {
+          enabled: true,
 
-    type:
-      data.commissionType
-        ? data.commissionType.toLowerCase()
-        : "flat",
+          type:
+            data.commissionType
+              ? data.commissionType.toLowerCase()
+              : "flat",
 
-    flatAmount:
-      data.flatAmount ?? 0,
+          flatAmount:
+            data.flatAmount ?? 0,
 
-    percentage:
-      data.percentage ?? 0,
+          percentage:
+            data.percentage ?? 0,
 
-    hybridFlat:
-      data.hybridFlat ?? 0,
+          hybridFlat:
+            data.hybridFlat ?? 0,
 
-    hybridPercentage:
-      data.hybridPercentage ?? 0,
-  },
-
-
-  minBooking: {
-    enabled:
-      data.minBookingEnabled ?? false,
-
-    amount:
-      data.minBookingAmount ?? 0,
-  },
+          hybridPercentage:
+            data.hybridPercentage ?? 0,
+        },
 
 
-  urgentSurcharge: {
-    enabled:
-      data.urgentSurchargeEnabled ?? false,
+        minBooking: {
+          enabled:
+            data.minBookingEnabled ?? false,
 
-    amount:
-      data.urgentSurchargeAmount ?? 0,
-  },
-};   
-  
+          amount:
+            data.minBookingAmount ?? 0,
+        },
+
+
+        urgentSurcharge: {
+          enabled:
+            data.urgentSurchargeEnabled ?? false,
+
+          amount:
+            data.urgentSurchargeAmount ?? 0,
+        },
+      };
+
       set((state) => ({
         configs: {
           ...state.configs,
-        [companyId]: formattedConfig,
+          [companyId]: formattedConfig,
         },
 
         loading: false,
@@ -176,13 +196,15 @@ companyName:
     }));
 
 
+    const payload = flattenForBackend(companyId, updatedConfig);
+
 
     try {
 
 
       await updateConfigAPI(
         companyId,
-        updatedConfig
+        payload
       );
 
 
@@ -207,13 +229,10 @@ companyName:
 
 
       try {
-        await createConfig({
-
+        await createConfig(
           companyId,
-
-          ...updatedConfig,
-
-        });
+          payload,
+        );
 
 
 
@@ -276,11 +295,14 @@ toggleCompanyActive: async (companyId, value) => {
   }));
 
 
+  const payload = flattenForBackend(companyId, updatedConfig);
+
+
   try {
 
     await updateConfigAPI(
       companyId,
-      updatedConfig
+      payload
     );
 
 

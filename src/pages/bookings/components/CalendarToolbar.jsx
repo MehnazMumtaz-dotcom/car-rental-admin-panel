@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { BOOKING_STATUS_OPTIONS } from "./bookingStatus";
+import { useAuthStore } from "../../../store/authStore";
 
 export default function CalendarToolbar({
   onFilter,
@@ -12,8 +13,10 @@ export default function CalendarToolbar({
   bookings = [],
 }) {
 
+  const companyName = useAuthStore((state) => state.user?.companyName);
+  const cityLabel = companyName ? companyName.split(" ")[0] : "—";
+
   const [filters, setFilters] = useState({
-    city: "",
     vehicle: "",
     status: "",
   });
@@ -62,7 +65,7 @@ export default function CalendarToolbar({
   };
 
   const reset = () => {
-    const empty = { city: "", vehicle: "", status: "" };
+    const empty = { vehicle: "", status: "" };
     setFilters(empty);
     onFilter?.(empty);
   };
@@ -133,17 +136,12 @@ export default function CalendarToolbar({
             <option value="week">Weekly</option>
           </select>
 
-          <select
-            value={filters.city}
-            onChange={(e) => handleFilter("city", e.target.value)}
-            className="bg-surface text-textPrimary border border-borderColor px-2 sm:px-3 py-1.5 rounded-md text-xs sm:text-sm focus:outline-none"
+          <div
+            title="Your company's city"
+            className="bg-surface text-textPrimary border border-borderColor px-2 sm:px-3 py-1.5 rounded-md text-xs sm:text-sm flex items-center whitespace-nowrap"
           >
-            <option value="">All Cities</option>
-            <option>Lahore</option>
-            <option>Karachi</option>
-            <option>Islamabad</option>
-            <option>Multan</option>
-          </select>
+            📍 {cityLabel}
+          </div>
 
           <select
             value={filters.vehicle}

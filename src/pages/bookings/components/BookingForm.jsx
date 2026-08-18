@@ -3,6 +3,8 @@ import { createPortal } from "react-dom";
 import ConflictModal from "./ConflictModal";
 import { useVehicleStore } from "../../../store/vehicleStore";
 import { useCustomerStore } from "../../../store/CustomerStore";
+import { useFetchCustomers } from "../../../hooks/useCustomers";
+import { useAuthStore } from "../../../store/authStore";
 
 const defaultFormState = {
   vehicleId: "",
@@ -52,7 +54,10 @@ export default function BookingForm({
   const fetchVehicles = useVehicleStore((state) => state.fetchVehicles);
 
   const customers = useCustomerStore((state) => state.customers);
-  const fetchCustomers = useCustomerStore((state) => state.fetchCustomers);
+  const { fetchCustomers } = useFetchCustomers();
+
+  const companyName = useAuthStore((state) => state.user?.companyName);
+  const companyCity = companyName ? companyName.split(" ")[0] : "";
 
   useEffect(() => {
     Promise.all([fetchVehicles(), fetchCustomers()]).catch((error) => {
@@ -94,6 +99,15 @@ export default function BookingForm({
 
     return { ...defaultFormState };
   });
+
+  // Naya booking banate waqt city hamesha apni company ki city per lock —
+  // is se galat/doosri city select hone ka masla hamesha ke liye khatam
+  useEffect(() => {
+    if (!editingBooking && companyCity && !form.city) {
+      setForm((prev) => ({ ...prev, city: companyCity }));
+    }
+  }, [editingBooking, companyCity]);
+
   const [originalDates] = useState(() => ({
     startDate: editingBooking ? form.startDate : null,
     endDate: editingBooking ? form.endDate : null,
@@ -296,7 +310,6 @@ export default function BookingForm({
                   customerName: selected?.name || "",
                   name: selected?.name || "",
                   phone: selected?.phone || "",
-                  city: selected?.city || prev.city,
                 }));
               }}
             >
@@ -316,10 +329,16 @@ export default function BookingForm({
             />
           )}
 
+          <input
+            className="w-full border p-2 mb-2 bg-gray-100 text-gray-500"
+            value={form.city}
+            readOnly
+            title="City is locked to your company's city"
+          />
+
           {[
             ["phone", "Phone"],
             ["cnic", "CNIC"],
-            ["city", "City"],
             ["dailyRate", "Daily Rate"],
             ["discount", "Discount"],
             ["advance", "Advance"],
